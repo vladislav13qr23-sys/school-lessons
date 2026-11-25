@@ -1,646 +1,879 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Урок физики: Механические колебания</title>
-    
-    <!-- MathJax для красивых формул -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <!-- Matter.js для физики -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    
-    <!-- Chart.js для графиков -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-        
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        
-        .content {
-            padding: 40px;
-        }
-        
-        section {
-            margin-bottom: 40px;
-        }
-        
-        h2 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-        
-        h3 {
-            color: #764ba2;
-            font-size: 1.5em;
-            margin: 20px 0 15px 0;
-        }
-        
-        .intro {
-            background: #f8f9fa;
-            padding: 20px;
-            border-left: 5px solid #667eea;
-            border-radius: 5px;
-            margin-bottom: 30px;
-        }
-        
-        .formula-box {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .formula-box h4 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        
-        .simulation-container {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 30px 0;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-        }
-        
-        .control-group {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .control-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #555;
-        }
-        
-        .control-group input[type="range"] {
-            width: 100%;
-            margin-bottom: 5px;
-        }
-        
-        .control-group .value {
-            font-size: 0.9em;
-            color: #667eea;
-            font-weight: bold;
-        }
-        
-        button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        
-        button:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-        }
-        
-        #canvas-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        canvas {
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            cursor: grab;
-        }
-        
-        canvas:active {
-            cursor: grabbing;
-        }
-        
-        .chart-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            max-height: 300px;
-        }
-        
-        .task {
-            background: #e3f2fd;
-            border-left: 5px solid #2196f3;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        
-        .task h4 {
-            color: #1976d2;
-            margin-bottom: 10px;
-        }
-        
-        .task input[type="number"] {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-            width: 150px;
-            margin: 10px 0;
-        }
-        
-        .task button {
-            margin-left: 10px;
-        }
-        
-        .feedback {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        
-        .feedback.correct {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .feedback.incorrect {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .highlight {
-            background: #fff3cd;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-        
-        ul, ol {
-            margin-left: 30px;
-            margin-bottom: 15px;
-        }
-        
-        li {
-            margin-bottom: 8px;
-        }
-        
-        .info-box {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            border-radius: 5px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        
-        .info-box strong {
-            color: #0c5460;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Каталог уроков · Фабрика интерактивных уроков</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2306121a'/><rect x='6' y='7' width='8' height='8' rx='2' fill='%2339e0ff'/><rect x='18' y='7' width='8' height='8' rx='2' fill='%237ef29d'/><rect x='6' y='18' width='8' height='8' rx='2' fill='%23a78bfa'/><rect x='18' y='18' width='8' height='8' rx='2' fill='%23ffb020'/></svg>">
+<style>
+:root{
+  --abyss:#06121a;--deep:#0a1e28;--surface:#0f2b36;--surface2:#143845;
+  --line:rgba(88,214,240,.16);--line2:rgba(88,214,240,.34);
+  --cyan:#39e0ff;--teal:#12b3c9;--acid:#7ef29d;--amber:#ffb020;--coral:#ff5f6d;--violet:#a78bfa;--brass:#d9a441;
+  --sand:#f2e9dc;--muted:#93b4c1;--dim:#5f8494;
+  --mono:"Cascadia Mono",Consolas,"SF Mono",ui-monospace,monospace;
+  --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --r:16px;--shadow:0 22px 60px -26px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--abyss);color:var(--sand);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(57,224,255,.3);color:#fff}
+*{scrollbar-width:thin;scrollbar-color:var(--teal) rgba(10,30,40,.8)}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:rgba(10,30,40,.8);border-radius:9px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--cyan),var(--teal));border-radius:9px;border:2px solid rgba(10,30,40,.9)}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8bf1ff,var(--cyan))}
+::-webkit-scrollbar-corner{background:transparent}
+
+.bg{position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden}
+.mesh{position:absolute;inset:-20%;background:
+  radial-gradient(46% 38% at 10% 6%,rgba(18,179,201,.30),transparent 62%),
+  radial-gradient(40% 34% at 90% 2%,rgba(167,139,250,.20),transparent 60%),
+  radial-gradient(52% 44% at 76% 80%,rgba(57,224,255,.16),transparent 64%),
+  radial-gradient(38% 30% at 20% 94%,rgba(126,242,157,.13),transparent 62%);
+  animation:drift 36s ease-in-out infinite alternate;filter:blur(6px)}
+@keyframes drift{0%{transform:translate3d(-2%,-1%,0) scale(1.02)}100%{transform:translate3d(3%,2%,0) scale(1.08)}}
+.gridbg{position:absolute;inset:0;opacity:.55;background-image:linear-gradient(rgba(88,214,240,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(88,214,240,.05) 1px,transparent 1px);background-size:46px 46px;mask-image:radial-gradient(72% 62% at 50% 26%,#000,transparent 82%);-webkit-mask-image:radial-gradient(72% 62% at 50% 26%,#000,transparent 82%)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.top{position:fixed;top:0;left:0;right:0;z-index:70;display:flex;align-items:center;gap:14px;padding:9px 18px;flex-wrap:wrap;background:rgba(6,18,26,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);box-shadow:0 10px 34px -22px #000}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+.brand svg{filter:drop-shadow(0 0 8px rgba(57,224,255,.5))}
+.brand small{display:block;font:600 9.5px/1 var(--mono);letter-spacing:.2em;color:var(--dim);margin-top:3px}
+.nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;padding-bottom:2px}
+.nav::-webkit-scrollbar{height:5px}
+.nav a{font:600 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:8px 11px;border-radius:9px;white-space:nowrap;border:1px solid transparent;transition:.2s}
+.nav a:hover{color:var(--sand);background:rgba(57,224,255,.09);border-color:var(--line)}
+.nav a.on{color:#06121a;background:linear-gradient(135deg,var(--cyan),var(--teal));border-color:transparent}
+.acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+button,.btn{font-family:var(--sans);cursor:pointer;border:none;transition:transform .16s,box-shadow .2s,background .2s,border-color .2s,color .2s}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:11px;font-size:13px;font-weight:600;background:rgba(57,224,255,.08);color:var(--sand);border:1px solid var(--line2);text-decoration:none}
+.btn:hover{background:rgba(57,224,255,.18);transform:translateY(-1px);box-shadow:0 8px 20px -12px var(--cyan)}
+.btn:active{transform:translateY(0)}
+.btn.p{background:linear-gradient(135deg,var(--cyan),var(--teal));color:#06121a;border-color:transparent;font-weight:700}
+.btn.p:hover{box-shadow:0 10px 26px -10px var(--cyan)}
+.btn.g{background:linear-gradient(135deg,var(--acid),#37b869);color:#06121a;border-color:transparent;font-weight:700}
+.btn.s{padding:6px 10px;font-size:12px;border-radius:9px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;font:600 11px/1 var(--mono);border:1px solid var(--line2);background:rgba(57,224,255,.08);color:var(--cyan);white-space:nowrap}
+.pill.ok{color:var(--acid);border-color:rgba(126,242,157,.42);background:rgba(126,242,157,.1)}
+.pill.bad{color:var(--coral);border-color:rgba(255,95,109,.42);background:rgba(255,95,109,.1)}
+.pill.warn{color:var(--amber);border-color:rgba(255,176,32,.42);background:rgba(255,176,32,.1)}
+
+main{max-width:1300px;margin:0 auto;padding:96px 18px 40px}
+section{scroll-margin-top:120px;margin-bottom:54px}
+.shead{display:flex;align-items:baseline;gap:12px;margin:0 0 16px;flex-wrap:wrap}
+.snum{font:700 11px/1 var(--mono);letter-spacing:.2em;color:var(--cyan)}
+.shead h2{margin:0;font-size:clamp(20px,2.6vw,27px);letter-spacing:-.015em;font-weight:700}
+.shead .rule{flex:1;height:1px;min-width:20px;background:linear-gradient(90deg,var(--line2),transparent)}
+.shead .tag{font:600 10.5px/1 var(--mono);letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+
+.card{background:linear-gradient(180deg,rgba(20,56,69,.5),rgba(10,30,40,.72));border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);position:relative}
+.card::before{content:"";position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,rgba(126,240,255,.45),transparent);pointer-events:none}
+.pad{padding:18px}
+
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:stretch}
+.kicker{font:700 11px/1 var(--mono);letter-spacing:.22em;color:var(--brass);margin-bottom:12px}
+.hero h1{margin:0 0 12px;font-size:clamp(30px,5vw,50px);line-height:1.03;letter-spacing:-.035em;font-weight:800}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--cyan),var(--acid));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:#d5e6ec;font-size:16px;margin:0 0 16px;max-width:60ch}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:rgba(6,18,26,.6);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat i{display:block;font:600 9.5px/1 var(--mono);letter-spacing:.14em;color:var(--dim);font-style:normal;text-transform:uppercase}
+.stat b{display:block;font:800 28px/1.1 var(--mono);margin-top:6px}
+.stat.a b{color:var(--acid)}.stat.b b{color:var(--cyan)}.stat.c b{color:var(--violet)}.stat.d b{color:var(--brass)}
+
+.flow{display:flex;flex-direction:column;gap:10px;justify-content:center;height:100%}
+.flow .ft{font:700 10px/1 var(--mono);letter-spacing:.2em;color:var(--dim)}
+.step{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:11px;background:rgba(6,18,26,.55);border:1px solid var(--line);position:relative;overflow:hidden}
+.step .dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 2.6s ease-in-out infinite}
+.step:nth-child(3) .dot{background:var(--violet);box-shadow:0 0 10px var(--violet);animation-delay:.3s}
+.step:nth-child(4) .dot{background:var(--brass);box-shadow:0 0 10px var(--brass);animation-delay:.6s}
+.step:nth-child(5) .dot{background:var(--amber);box-shadow:0 0 10px var(--amber);animation-delay:.9s}
+.step:nth-child(6) .dot{background:var(--acid);box-shadow:0 0 10px var(--acid);animation-delay:1.2s}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.5);opacity:1}}
+.step b{font:700 12.5px/1 var(--sans)}
+.step span{font:11px/1 var(--mono);color:var(--dim);margin-left:auto}
+.step::after{content:"";position:absolute;left:0;top:0;bottom:0;width:38%;background:linear-gradient(90deg,transparent,rgba(57,224,255,.10),transparent);animation:sweep 3.4s linear infinite}
+@keyframes sweep{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.search{position:relative;flex:1;min-width:220px}
+.search input{width:100%;background:rgba(6,18,26,.8);border:1px solid var(--line2);color:var(--sand);padding:10px 40px 10px 36px;border-radius:11px;font:14px/1 var(--sans)}
+.search input::placeholder{color:var(--dim)}
+.search .ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:14px;pointer-events:none}
+.search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);font:600 10px/1 var(--mono);color:var(--dim);border:1px solid var(--line);border-radius:5px;padding:4px 6px;pointer-events:none}
+select{background:rgba(6,18,26,.8);color:var(--sand);border:1px solid var(--line2);border-radius:11px;padding:9px 11px;font:600 12.5px/1 var(--sans);cursor:pointer}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:7px 12px;border-radius:99px;font:600 12px/1 var(--sans);background:rgba(6,18,26,.6);border:1px solid var(--line);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.chip:hover{border-color:var(--line2);color:var(--sand)}
+.chip.on{background:rgba(57,224,255,.16);border-color:var(--line2);color:var(--cyan)}
+.chip .n{font:700 10px/1 var(--mono);opacity:.75}
+.chip .sw{width:8px;height:8px;border-radius:50%}
+.viewtog{display:flex;border:1px solid var(--line2);border-radius:11px;overflow:hidden}
+.viewtog button{padding:8px 12px;background:rgba(6,18,26,.6);color:var(--muted);font:600 12px/1 var(--sans)}
+.viewtog button.on{background:linear-gradient(135deg,var(--cyan),var(--teal));color:#06121a}
+.resline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;font:12px/1 var(--mono);color:var(--dim)}
+.resline b{color:var(--cyan)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));gap:12px}
+.lc{background:linear-gradient(180deg,rgba(20,56,69,.45),rgba(10,30,40,.7));border:1px solid var(--line);border-left:3px solid var(--dim);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:9px;transition:.2s;cursor:pointer;position:relative;overflow:hidden}
+.lc:hover{transform:translateY(-3px);border-color:var(--line2);box-shadow:0 16px 36px -22px var(--cyan)}
+.lc.ready{border-left-color:var(--acid)}
+.lc.t-lab{border-left-color:var(--amber)}
+.lc.t-practice{border-left-color:var(--violet)}
+.lc.t-test{border-left-color:var(--brass)}
+.lc.ready.t-lab,.lc.ready.t-practice,.lc.ready.t-test{border-left-color:var(--acid)}
+.lc .top-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lid{font:700 10px/1 var(--mono);letter-spacing:.08em;color:var(--dim)}
+.badge{font:700 9px/1 var(--mono);letter-spacing:.12em;padding:4px 7px;border-radius:6px;text-transform:uppercase}
+.b-физика{background:rgba(57,224,255,.16);color:var(--cyan)}
+.b-биология{background:rgba(126,242,157,.16);color:var(--acid)}
+.b-химия{background:rgba(255,95,109,.16);color:var(--coral)}
+.b-математика{background:rgba(167,139,250,.18);color:var(--violet)}
+.tb{font:700 9px/1 var(--mono);letter-spacing:.1em;padding:4px 7px;border-radius:6px;text-transform:uppercase;border:1px solid}
+.tb.theory{color:var(--cyan);border-color:rgba(57,224,255,.35)}
+.tb.lab{color:var(--amber);border-color:rgba(255,176,32,.35)}
+.tb.practice{color:var(--violet);border-color:rgba(167,139,250,.35)}
+.tb.test{color:var(--brass);border-color:rgba(217,164,65,.35)}
+.tb.reserve{color:var(--dim);border-color:var(--line)}
+.lc h3{margin:0;font-size:15px;line-height:1.3;font-weight:650;letter-spacing:-.01em}
+.lc .goal{font-size:12.5px;color:var(--muted);margin:0;flex:1}
+.lc .foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px}
+.lc .thumb{position:absolute;right:-10px;top:-10px;width:86px;height:86px;opacity:.14;pointer-events:none}
+.status{font:700 10px/1 var(--mono);letter-spacing:.1em;display:inline-flex;align-items:center;gap:6px}
+.status.ready{color:var(--acid)}.status.planned{color:var(--dim)}
+.status .d{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+.linkwarn{font:600 10.5px/1 var(--mono);color:var(--coral)}
+
+.tablewrap{border:1px solid var(--line);border-radius:14px;overflow:auto;max-height:640px;background:rgba(10,30,40,.5)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:720px}
+thead th{position:sticky;top:0;background:rgba(6,18,26,.96);backdrop-filter:blur(8px);font:600 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:11px 12px;text-align:left;border-bottom:1px solid var(--line2);z-index:2}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr{cursor:pointer;transition:.15s}
+tbody tr:hover{background:rgba(57,224,255,.07)}
+tbody tr.ready td:first-child{box-shadow:inset 3px 0 0 var(--acid)}
+td.mono{font:600 11.5px/1 var(--mono);color:var(--dim);white-space:nowrap}
+
+.empty{padding:44px 20px;text-align:center;border:1px dashed var(--line2);border-radius:14px;background:rgba(10,30,40,.4)}
+.empty h3{margin:0 0 8px;font-size:18px}
+.empty p{margin:0 0 14px;color:var(--muted);font-size:14px}
+
+.prog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.sec{padding:16px;cursor:pointer;transition:.2s}
+.sec:hover{transform:translateY(-3px);border-color:var(--line2)}
+.sec .sh{display:flex;align-items:baseline;gap:9px;margin-bottom:8px}
+.sec .sn{font:800 22px/1 var(--mono);color:var(--cyan);opacity:.55}
+.sec h3{margin:0;font-size:15px;flex:1;line-height:1.3}
+.sec .meta{font:11px/1 var(--mono);color:var(--dim);margin-bottom:10px}
+.pbar{height:7px;border-radius:99px;background:rgba(6,18,26,.8);border:1px solid var(--line);overflow:hidden}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--acid));box-shadow:0 0 12px rgba(126,242,157,.5);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.sec .pn{display:flex;justify-content:space-between;font:11px/1 var(--mono);color:var(--muted);margin-top:7px}
+.mix{display:flex;height:26px;border-radius:9px;overflow:hidden;border:1px solid var(--line);margin:10px 0 8px}
+.mix div{display:flex;align-items:center;justify-content:center;font:700 10px/1 var(--mono);color:#06121a;min-width:0;overflow:hidden}
+.mixleg{display:flex;gap:12px;flex-wrap:wrap;font:11px/1 var(--mono);color:var(--muted)}
+.mixleg span{display:inline-flex;align-items:center;gap:6px}
+.mixleg i{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+.checkwrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:14px}
+.clist{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow:auto;padding-right:4px}
+.crow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;background:rgba(6,18,26,.55);border-left:3px solid var(--dim);font-size:13px;flex-wrap:wrap}
+.crow.ok{border-left-color:var(--acid)}.crow.bad{border-left-color:var(--coral)}.crow.local{border-left-color:var(--amber)}
+.crow .cid{font:700 11px/1 var(--mono);color:var(--muted)}
+.crow .cp{font:11.5px/1.4 var(--mono);color:var(--cyan);word-break:break-all;flex:1;min-width:120px}
+.note{border-left:3px solid var(--amber);background:rgba(255,176,32,.08);padding:11px 13px;border-radius:0 11px 11px 0;font-size:13px;color:#f0dfc0}
+.note.i{border-left-color:var(--cyan);background:rgba(57,224,255,.08);color:#d3ecf5}
+
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.how .card{padding:18px;display:flex;flex-direction:column}
+.how h3{margin:0 0 6px;font-size:16px;display:flex;align-items:center;gap:9px}
+.how .n{width:24px;height:24px;border-radius:8px;display:grid;place-content:center;font:800 12px/1 var(--mono);background:linear-gradient(135deg,var(--cyan),var(--teal));color:#06121a;flex:none}
+.how p{margin:0 0 10px;font-size:13.5px;color:#cfe2e9}
+.how ol{margin:0 0 12px;padding-left:19px;font-size:13.5px;color:#cfe2e9}
+.how ol li{margin-bottom:5px}
+pre{margin:0;font:11.5px/1.6 var(--mono);color:#bfe9f5;background:rgba(6,18,26,.8);border:1px solid var(--line);border-radius:11px;padding:12px;overflow:auto;max-height:230px;white-space:pre}
+.cmd{display:flex;gap:8px;align-items:center;background:rgba(6,18,26,.8);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:auto}
+.cmd code{flex:1;font:11.5px/1.4 var(--mono);color:var(--cyan);overflow-x:auto;white-space:nowrap}
+
+.scrim{position:fixed;inset:0;background:rgba(3,10,15,.72);backdrop-filter:blur(4px);z-index:80;opacity:0;pointer-events:none;transition:.28s}
+.scrim.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);z-index:90;background:linear-gradient(180deg,#0f2b36,#08191f);border-left:1px solid var(--line2);box-shadow:-30px 0 70px -30px #000;transform:translateX(102%);transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer.show{transform:none}
+.dhead{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.dhead h3{margin:0;font-size:18px;line-height:1.25;flex:1}
+.dbody{padding:18px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px}
+.drow{display:flex;flex-direction:column;gap:5px}
+.drow i{font:600 9.5px/1 var(--mono);letter-spacing:.14em;color:var(--dim);font-style:normal;text-transform:uppercase}
+.drow div{font-size:14px;color:#dbe9ef}
+.dfoot{padding:14px 18px;border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap}
+.iconbtn{width:32px;height:32px;border-radius:9px;background:rgba(57,224,255,.1);border:1px solid var(--line2);color:var(--cyan);font-size:15px;line-height:1;display:grid;place-content:center;flex:none}
+.iconbtn:hover{background:rgba(57,224,255,.24)}
+
+footer{max-width:1300px;margin:0 auto;padding:20px 18px 44px;border-top:1px solid var(--line);display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center;font:11.5px/1.6 var(--mono);color:var(--dim)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,22px);z-index:100;padding:10px 18px;border-radius:12px;background:rgba(15,43,54,.97);border:1px solid var(--line2);color:var(--sand);font:600 13px/1 var(--sans);box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:1000px){.hero,.checkwrap{grid-template-columns:1fr}}
+@media(max-width:860px){main{padding-top:128px}.nav{order:3;width:100%;flex:1 0 100%}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.acts .lbl{display:none}.grid{grid-template-columns:1fr}.search kbd{display:none}.drawer{width:100%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.reveal{opacity:1;transform:none}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🔬 Механические колебания</h1>
-            <p>Интерактивный урок физики для подготовки к ЕГЭ</p>
-        </header>
-        
-        <div class="content">
-            <!-- ВСТУПЛЕНИЕ -->
-            <section>
-                <h2>📚 Введение</h2>
-                <div class="intro">
-                    <p><strong>Колебания</strong> — это процессы, точно или приближённо повторяющиеся во времени. Они встречаются повсюду: от качания маятника часов до колебаний атомов в кристаллической решётке.</p>
-                </div>
-                
-                <h3>Примеры колебаний в природе и технике:</h3>
-                <ul>
-                    <li>🌊 Морские волны</li>
-                    <li>🎸 Колебания струны музыкального инструмента</li>
-                    <li>⏰ Маятник настенных часов</li>
-                    <li>💓 Сердцебиение</li>
-                    <li>🌳 Качание веток деревьев на ветру</li>
-                </ul>
-            </section>
-            
-            <!-- ТЕОРИЯ -->
-            <section>
-                <h2>📖 Основные понятия</h2>
-                
-                <h3>1. Характеристики колебаний</h3>
-                <ul>
-                    <li><strong>Смещение (x)</strong> — отклонение тела от положения равновесия (измеряется в метрах)</li>
-                    <li><strong>Амплитуда (A)</strong> — максимальное смещение от положения равновесия</li>
-                    <li><strong>Период (T)</strong> — время одного полного колебания (измеряется в секундах)</li>
-                    <li><strong>Частота (ν)</strong> — число колебаний в единицу времени (измеряется в герцах, Гц)</li>
-                    <li><strong>Циклическая частота (ω)</strong> — число колебаний за \(2\pi\) секунд (рад/с)</li>
-                </ul>
-                
-                <div class="formula-box">
-                    <h4>🔑 Связь между характеристиками:</h4>
-                    <p>$$T = \frac{1}{\nu}$$</p>
-                    <p>$$\omega = 2\pi\nu = \frac{2\pi}{T}$$</p>
-                </div>
-                
-                <h3>2. Уравнение гармонических колебаний</h3>
-                <p>Если колебания происходят по закону синуса или косинуса, они называются <strong>гармоническими</strong>:</p>
-                
-                <div class="formula-box">
-                    <h4>📐 Уравнение колебаний:</h4>
-                    <p>$$x(t) = A \cos(\omega t + \varphi_0)$$</p>
-                    <p>где:</p>
-                    <ul>
-                        <li>\(A\) — амплитуда</li>
-                        <li>\(\omega\) — циклическая частота</li>
-                        <li>\(\varphi_0\) — начальная фаза</li>
-                        <li>\(\omega t + \varphi_0\) — фаза колебаний</li>
-                    </ul>
-                </div>
-                
-                <h3>3. Математический маятник</h3>
-                <p><strong>Математический маятник</strong> — это материальная точка, подвешенная на невесомой и нерастяжимой нити.</p>
-                
-                <div class="formula-box">
-                    <h4>⏱️ Период колебаний математического маятника:</h4>
-                    <p>$$T = 2\pi\sqrt{\frac{L}{g}}$$</p>
-                    <p>где:</p>
-                    <ul>
-                        <li>\(L\) — длина нити (м)</li>
-                        <li>\(g\) — ускорение свободного падения (\(9.8\) м/с²)</li>
-                    </ul>
-                </div>
-                
-                <div class="info-box">
-                    <strong>💡 Важно:</strong> Период колебаний математического маятника <strong>не зависит</strong> от массы груза! Он зависит только от длины нити и ускорения свободного падения.
-                </div>
-                
-                <h3>4. Пружинный маятник</h3>
-                <p><strong>Пружинный маятник</strong> — это груз, прикреплённый к пружине, совершающий колебания под действием силы упругости.</p>
-                
-                <div class="formula-box">
-                    <h4>⏱️ Период колебаний пружинного маятника:</h4>
-                    <p>$$T = 2\pi\sqrt{\frac{m}{k}}$$</p>
-                    <p>где:</p>
-                    <ul>
-                        <li>\(m\) — масса груза (кг)</li>
-                        <li>\(k\) — жёсткость пружины (Н/м)</li>
-                    </ul>
-                </div>
-                
-                <div class="info-box">
-                    <strong>💡 Важно:</strong> Период колебаний пружинного маятника <strong>не зависит</strong> от ускорения свободного падения! Он зависит только от массы груза и жёсткости пружины.
-                </div>
-            </section>
-            
-            <!-- ИНТЕРАКТИВНАЯ МОДЕЛЬ -->
-            <section>
-                <h2>🎮 Интерактивная модель: Математический маятник</h2>
-                <p>Поэкспериментируйте с маятником! Хватайте груз мышкой, оттяните и отпустите. Меняйте параметры и наблюдайте, как они влияют на колебания.</p>
-                
-                <div class="simulation-container">
-                    <div class="controls">
-                        <div class="control-group">
-                            <label>Длина нити (м): <span class="value" id="lengthVal">2.0</span></label>
-                            <input type="range" id="length" min="1" max="4" step="0.1" value="2.0">
-                        </div>
-                        <div class="control-group">
-                            <label>Масса груза (кг): <span class="value" id="massVal">1.0</span></label>
-                            <input type="range" id="mass" min="0.5" max="3" step="0.1" value="1.0">
-                        </div>
-                        <div class="control-group">
-                            <label>Затухание: <span class="value" id="dampingVal">0.01</span></label>
-                            <input type="range" id="damping" min="0" max="0.1" step="0.005" value="0.01">
-                        </div>
-                        <div class="control-group">
-                            <button onclick="resetSimulation()">🔄 Сбросить</button>
-                        </div>
-                    </div>
-                    
-                    <div id="canvas-container"></div>
-                    
-                    <div class="chart-container">
-                        <canvas id="oscillationChart"></canvas>
-                    </div>
-                    
-                    <div class="info-box">
-                        <strong>📊 Наблюдайте:</strong> График показывает зависимость смещения от времени. Обратите внимание, что при изменении массы период не меняется, а при изменении длины — меняется!
-                    </div>
-                </div>
-            </section>
-            
-            <!-- ЗАДАЧИ -->
-            <section>
-                <h2>✏️ Задачи для проверки знаний</h2>
-                
-                <div class="task">
-                    <h4>Задача 1. Период математического маятника</h4>
-                    <p>Математический маятник имеет длину нити \(L = 1\) м. Найдите период его колебаний. Ускорение свободного падения \(g = 9.8\) м/с².</p>
-                    <p><em>Подсказка: используйте формулу \(T = 2\pi\sqrt{\frac{L}{g}}\)</em></p>
-                    <input type="number" id="answer1" step="0.01" placeholder="Ваш ответ (с)">
-                    <button onclick="checkAnswer(1, 2.01)">Проверить</button>
-                    <div id="feedback1" class="feedback" style="display:none;"></div>
-                </div>
-                
-                <div class="task">
-                    <h4>Задача 2. Частота колебаний</h4>
-                    <p>Маятник совершает 20 колебаний за 10 секунд. Найдите частоту колебаний.</p>
-                    <p><em>Подсказка: \(\nu = \frac{N}{t}\)</em></p>
-                    <input type="number" id="answer2" step="0.01" placeholder="Ваш ответ (Гц)">
-                    <button onclick="checkAnswer(2, 2)">Проверить</button>
-                    <div id="feedback2" class="feedback" style="display:none;"></div>
-                </div>
-                
-                <div class="task">
-                    <h4>Задача 3. Пружинный маятник</h4>
-                    <p>Груз массой \(m = 0.5\) кг подвешен на пружине жёсткостью \(k = 200\) Н/м. Найдите период колебаний.</p>
-                    <p><em>Подсказка: используйте формулу \(T = 2\pi\sqrt{\frac{m}{k}}\)</em></p>
-                    <input type="number" id="answer3" step="0.01" placeholder="Ваш ответ (с)">
-                    <button onclick="checkAnswer(3, 0.31)">Проверить</button>
-                    <div id="feedback3" class="feedback" style="display:none;"></div>
-                </div>
-                
-                <div class="task">
-                    <h4>Задача 4. Влияние длины на период</h4>
-                    <p>Во сколько раз увеличится период колебаний математического маятника, если длину нити увеличить в 4 раза?</p>
-                    <p><em>Подсказка: период пропорционален корню из длины</em></p>
-                    <input type="number" id="answer4" step="0.01" placeholder="Ваш ответ">
-                    <button onclick="checkAnswer(4, 2)">Проверить</button>
-                    <div id="feedback4" class="feedback" style="display:none;"></div>
-                </div>
-                
-                <div class="task">
-                    <h4>Задача 5. Уравнение колебаний</h4>
-                    <p>Дано уравнение колебаний: \(x(t) = 0.1\cos(2\pi t)\). Найдите амплитуду колебаний (в метрах).</p>
-                    <p><em>Подсказка: амплитуда — это коэффициент перед косинусом</em></p>
-                    <input type="number" id="answer5" step="0.01" placeholder="Ваш ответ (м)">
-                    <button onclick="checkAnswer(5, 0.1)">Проверить</button>
-                    <div id="feedback5" class="feedback" style="display:none;"></div>
-                </div>
-            </section>
-            
-            <!-- ЗАКЛЮЧЕНИЕ -->
-            <section>
-                <h2>🎯 Итоги урока</h2>
-                <div class="intro">
-                    <h3>Что мы узнали:</h3>
-                    <ul>
-                        <li>✅ Колебания — это повторяющиеся процессы</li>
-                        <li>✅ Основные характеристики: амплитуда, период, частота</li>
-                        <li>✅ Уравнение гармонических колебаний: \(x(t) = A\cos(\omega t + \varphi_0)\)</li>
-                        <li>✅ Период математического маятника: \(T = 2\pi\sqrt{\frac{L}{g}}\) (не зависит от массы!)</li>
-                        <li>✅ Период пружинного маятника: \(T = 2\pi\sqrt{\frac{m}{k}}\) (не зависит от g!)</li>
-                    </ul>
-                </div>
-                
-                <div class="info-box">
-                    <strong>📝 Для ЕГЭ важно помнить:</strong>
-                    <ul>
-                        <li>Период математического маятника зависит только от длины и g</li>
-                        <li>Период пружинного маятника зависит только от массы и жёсткости</li>
-                        <li>Частота и период обратно пропорциональны: \(T = \frac{1}{\nu}\)</li>
-                        <li>Циклическая частота: \(\omega = 2\pi\nu = \frac{2\pi}{T}\)</li>
-                    </ul>
-                </div>
-            </section>
+<div class="bg"><div class="mesh"></div><div class="gridbg"></div><div class="grain"></div></div>
+
+<header class="top">
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0f2b36" stroke="#39e0ff" stroke-opacity=".45"/><rect x="6" y="7" width="8" height="8" rx="2" fill="#39e0ff"/><rect x="18" y="7" width="8" height="8" rx="2" fill="#7ef29d"/><rect x="6" y="18" width="8" height="8" rx="2" fill="#a78bfa"/><rect x="18" y="18" width="8" height="8" rx="2" fill="#ffb020"/></svg>
+    <div>Каталог уроков<small>LESSON FACTORY · SCHOOL-LESSONS</small></div>
+  </div>
+  <nav class="nav" id="nav">
+    <a href="#catalog" class="on">Каталог</a>
+    <a href="#program">Программа</a>
+    <a href="#check">Проверка ссылок</a>
+    <a href="#how">Как добавить</a>
+  </nav>
+  <div class="acts">
+    <span class="pill" id="linkPill">ссылки: не проверены</span>
+    <button class="btn s" id="sndBtn" aria-pressed="true" title="Звук включён"><span id="sndIco">🔊</span><span class="lbl">Звук</span></button>
+    <button class="btn p s" id="checkBtn">↻<span class="lbl">Проверить ссылки</span></button>
+  </div>
+</header>
+
+<main>
+  <section id="top">
+    <div class="hero reveal">
+      <div class="card pad">
+        <div class="kicker">ОНЛАЙН-ШКОЛА · ФИЗИКА · БИОЛОГИЯ · ХИМИЯ · МАТЕМАТИКА</div>
+        <h1>Интерактивные уроки,<br><em>собранные фабрикой</em></h1>
+        <p class="lead">Каждый урок — отдельная страница с симуляцией, теорией и задачами с автопроверкой. Оболочка и ответы делаются кодом, уникальная сцена — моделью. Здесь весь учебный план и ссылки на готовые уроки.</p>
+        <div class="stats">
+          <div class="stat a"><i>Готово</i><b id="stReady">0</b></div>
+          <div class="stat b"><i>В очереди</i><b id="stQueue">0</b></div>
+          <div class="stat c"><i>Предметов</i><b id="stSubj">0</b></div>
+          <div class="stat d"><i>Часов ФРП</i><b id="stHours">0</b></div>
         </div>
+      </div>
+      <div class="card pad">
+        <div class="flow">
+          <div class="ft">КОНВЕЙЕР ФАБРИКИ</div>
+          <div class="step"><span class="dot"></span><b>Тема из плана</b><span>topics.csv</span></div>
+          <div class="step"><span class="dot"></span><b>Менеджер</b><span>spec.json</span></div>
+          <div class="step"><span class="dot"></span><b>Генератор</b><span>widget.html</span></div>
+          <div class="step"><span class="dot"></span><b>Автопроверки</b><span>A–E</span></div>
+          <div class="step"><span class="dot"></span><b>Публикация</b><span>ready/</span></div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <script>
-        // ==================== ФИЗИЧЕСКАЯ СИМУЛЯЦИЯ ====================
-        const Engine = Matter.Engine,
-              Render = Matter.Render,
-              Runner = Matter.Runner,
-              Bodies = Matter.Bodies,
-              Composite = Matter.Composite,
-              Constraint = Matter.Constraint,
-              Mouse = Matter.Mouse,
-              MouseConstraint = Matter.MouseConstraint,
-              Events = Matter.Events;
+  <section id="catalog">
+    <div class="shead"><span class="snum">01</span><h2>Каталог уроков</h2><span class="rule"></span><span class="tag">поиск · фильтры · сортировка</span></div>
+    <div class="toolbar reveal">
+      <div class="search">
+        <span class="ico">⌕</span>
+        <input type="text" id="q" placeholder="Поиск по теме, цели или коду урока…" aria-label="Поиск уроков">
+        <kbd>/</kbd>
+      </div>
+      <select id="grade" aria-label="Класс"><option value="all">Все классы</option></select>
+      <select id="type" aria-label="Тип занятия">
+        <option value="all">Все типы</option><option value="theory">Теория</option><option value="lab">Лабораторная</option>
+        <option value="practice">Задачи</option><option value="test">Контрольная</option><option value="reserve">Резерв</option>
+      </select>
+      <select id="sort" aria-label="Сортировка">
+        <option value="program">По программе</option><option value="ready">Сначала готовые</option>
+        <option value="alpha">По алфавиту</option><option value="grade">По классу</option>
+      </select>
+      <div class="viewtog"><button id="vGrid" class="on">Сетка</button><button id="vList">Список</button></div>
+    </div>
+    <div class="toolbar reveal" style="margin-top:-4px">
+      <div class="chips" id="subjChips"></div>
+      <div class="chips" id="statusChips"></div>
+      <button class="btn s" id="resetFilters">Сбросить фильтры</button>
+    </div>
+    <div class="resline reveal"><span>Найдено: <b id="resCount">0</b></span><span id="secFilterNote"></span></div>
+    <div id="results" class="reveal"></div>
+  </section>
 
-        const engine = Engine.create();
-        const world = engine.world;
+  <section id="program">
+    <div class="shead"><span class="snum">02</span><h2>Программа · физика 7 класс</h2><span class="rule"></span><span class="tag">ФРП · 68 часов</span></div>
+    <div class="card pad reveal" style="margin-bottom:14px">
+      <div style="font:600 10px/1 var(--mono);letter-spacing:.16em;color:var(--dim);margin-bottom:4px">СОСТАВ ПРОГРАММЫ ПО ТИПАМ ЗАНЯТИЙ</div>
+      <div class="mix" id="mixBar"></div>
+      <div class="mixleg" id="mixLeg"></div>
+    </div>
+    <div class="prog-grid reveal" id="sections"></div>
+  </section>
 
-        const width = 800;
-        const height = 400;
-        const render = Render.create({
-            element: document.getElementById('canvas-container'),
-            engine: engine,
-            options: {
-                width: width,
-                height: height,
-                wireframes: false,
-                background: '#ffffff'
-            }
-        });
+  <section id="check">
+    <div class="shead"><span class="snum">03</span><h2>Проверка ссылок</h2><span class="rule"></span><span class="tag">автопоиск файлов</span></div>
+    <div class="checkwrap reveal">
+      <div class="card pad">
+        <h3 style="margin:0 0 8px;font-size:16px">Где лежит урок</h3>
+        <p style="margin:0 0 12px;font-size:13.5px;color:#cfe2e9">Каталог сам проверяет несколько типовых путей и подставляет тот, который отвечает. Если урок переехал — ссылка починится автоматически.</p>
+        <div class="note i" id="checkEnv">Проверка выполняется в браузере запросом к тому же сайту.</div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn p s" id="checkBtn2">Запустить проверку</button>
+          <button class="btn s" id="copyBase">Скопировать адрес каталога</button>
+        </div>
+      </div>
+      <div class="card pad">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+          <h3 style="margin:0;font-size:16px;flex:1">Результаты</h3>
+          <span class="pill" id="checkSummary">ещё не запускалась</span>
+        </div>
+        <div class="clist" id="checkList"></div>
+      </div>
+    </div>
+  </section>
 
-        let pivot, bob, string;
-        let chart;
-        let chartData = [];
-        let maxDataPoints = 200;
+  <section id="how">
+    <div class="shead"><span class="snum">04</span><h2>Как добавить урок</h2><span class="rule"></span><span class="tag">три шага</span></div>
+    <div class="how reveal">
+      <div class="card">
+        <h3><span class="n">1</span>Положить файл</h3>
+        <p>Урок кладётся отдельной папкой, тогда ссылка короткая и красивая.</p>
+        <pre>school-lessons/
+├── index.html          ← этот каталог
+├── lessons/
+│   ├── phys-7-019/
+│   │   └── index.html  ← урок
+│   └── phys-7-047/
+│       └── index.html
+└── vendor/             ← общие библиотеки</pre>
+        <div class="cmd"><code id="c1">lessons/phys-7-019/index.html</code><button class="btn s" data-copy="c1">копия</button></div>
+      </div>
+      <div class="card">
+        <h3><span class="n">2</span>Отметить готовым</h3>
+        <p>В этом файле есть объект <b>READY</b>. Добавьте туда запись с кодом урока — карточка станет зелёной и получит кнопку «Открыть».</p>
+        <pre>'phys-7-047': {
+  href: 'lessons/phys-7-047/',
+  candidates: [
+    'lessons/phys-7-047/',
+    'lessons/phys-7-047/index.html',
+    'phys-7-047.html'
+  ],
+  interactive: 'Ванна с водой, стрелки сил',
+  primitives: ['slider','vector','plot'],
+  tasks: 4
+}</pre>
+        <div class="cmd"><code id="c2">const READY = { … }</code><button class="btn s" data-copy="c2">копия</button></div>
+      </div>
+      <div class="card">
+        <h3><span class="n">3</span>Опубликовать</h3>
+        <ol>
+          <li>GitHub → <b>Add file → Upload files</b>, перетащить папку урока.</li>
+          <li>Заменить корневой <b>index.html</b> этим каталогом.</li>
+          <li><b>Commit changes</b>, подождать минуту.</li>
+          <li>Открыть каталог и нажать «Проверить ссылки».</li>
+        </ol>
+        <div class="note">Регистр важен: <b>Index.html</b> и <b>index.html</b> — разные файлы. Пути внутри уроков делайте относительными.</div>
+      </div>
+    </div>
+  </section>
+</main>
 
-        // Инициализация графика
-        function initChart() {
-            const ctx = document.getElementById('oscillationChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Смещение (м)',
-                        data: [],
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            title: { display: true, text: 'Время (с)' }
-                        },
-                        y: {
-                            title: { display: true, text: 'Смещение (м)' },
-                            min: -0.5,
-                            max: 0.5
-                        }
-                    },
-                    animation: false
-                }
-            });
-        }
+<footer>
+  <span id="footInfo">—</span>
+  <span style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn s" id="csvBtn">↓ topics.csv</button>
+    <button class="btn s" id="jsonBtn">↓ catalog.json</button>
+  </span>
+</footer>
 
-        function createPendulum(lengthM, massKg, damping) {
-            Composite.clear(world);
-            Engine.clear(engine);
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" tabindex="-1">
+  <div class="dhead">
+    <div style="flex:1">
+      <div class="lid" id="dId" style="margin-bottom:6px">—</div>
+      <h3 id="dTitle">—</h3>
+    </div>
+    <button class="iconbtn" id="dClose" aria-label="Закрыть">✕</button>
+  </div>
+  <div class="dbody" id="dBody"></div>
+  <div class="dfoot" id="dFoot"></div>
+</aside>
+<div class="toast" id="toast"></div>
+<noscript><div style="padding:110px 20px;text-align:center">Для работы каталога нужен включённый JavaScript.</div></noscript>
 
-            const scale = 80;
-            const centerX = width / 2;
-            const topY = 50;
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s);};
 
-            pivot = Bodies.circle(centerX, topY, 5, { 
-                isStatic: true,
-                render: { fillStyle: '#333' }
-            });
+/* ===== ДАННЫЕ ===== */
+var SECTIONS=[
+ {id:1,name:'Физика и её роль в познании окружающего мира',hours:6,from:1,to:6},
+ {id:2,name:'Первоначальные сведения о строении вещества',hours:5,from:7,to:11},
+ {id:3,name:'Движение и взаимодействие тел',hours:21,from:12,to:32},
+ {id:4,name:'Давление твёрдых тел, жидкостей и газов',hours:21,from:33,to:53},
+ {id:5,name:'Работа и мощность. Энергия',hours:12,from:54,to:65},
+ {id:6,name:'Резервное время',hours:3,from:66,to:68}
+];
+/* [номер урока, тема, тип, учебная цель] — поурочное планирование ФРП, 7 класс */
+var PHYS7=[
+ [1,'Физика — наука о природе. Явления природы','theory','Объяснять, что изучает физика, приводить примеры явлений'],
+ [2,'Физические явления','theory','Различать механические, тепловые, электрические и световые явления'],
+ [3,'Физические величины и их измерение','theory','Измерять величины и учитывать цену деления и погрешность'],
+ [4,'Измерение температуры термометром и датчиком','lab','Проводить прямое измерение температуры двумя приборами'],
+ [5,'Методы научного познания. Модели явлений','theory','Описывать цикл наблюдения, гипотезы и эксперимента'],
+ [6,'Проверка гипотезы: дальность полёта шарика','lab','Проверять зависимость дальности полёта от высоты пуска'],
+ [7,'Строение вещества. Дискретность вещества','theory','Объяснять опыты, доказывающие существование молекул'],
+ [8,'Движение частиц вещества. Диффузия','theory','Связывать скорость частиц с температурой'],
+ [9,'Наблюдение теплового расширения газов','lab','Объяснять расширение газа нагреванием через движение частиц'],
+ [10,'Агрегатные состояния вещества','theory','Связывать свойства трёх состояний со строением вещества'],
+ [11,'Агрегатные состояния воды. Обобщение','theory','Объяснять особенности воды в трёх состояниях'],
+ [12,'Механическое движение. Равномерное и неравномерное','theory','Различать виды движения и строить траекторию'],
+ [13,'Скорость. Единицы скорости','theory','Считать скорость и переводить км/ч в м/с'],
+ [14,'Расчёт пути и времени движения','practice','Находить путь и время по формуле равномерного движения'],
+ [15,'Инерция. Масса — мера инертности','theory','Объяснять явление инерции и роль массы'],
+ [16,'Плотность вещества. Расчёт массы и объёма','theory','Считать плотность, массу и объём тела'],
+ [17,'Определение плотности твёрдого тела','lab','Измерять массу и объём и вычислять плотность'],
+ [18,'Решение задач по теме «Плотность вещества»','practice','Решать расчётные задачи на плотность в 1–2 действия'],
+ [19,'Сила упругости. Закон Гука','theory','Считать силу упругости по формуле F = k·x'],
+ [20,'Растяжение пружины и приложенная сила','lab','Исследовать линейную зависимость удлинения от силы'],
+ [21,'Явление тяготения. Сила тяжести','theory','Объяснять тяготение и направление силы тяжести'],
+ [22,'Сила тяжести и масса. Вес тела. Задачи','practice','Считать силу тяжести по формуле F = mg'],
+ [23,'Сила тяжести на других планетах','theory','Сравнивать силу тяжести на планетах Солнечной системы'],
+ [24,'Измерение сил. Динамометр','theory','Объяснять устройство динамометра и снимать показания'],
+ [25,'Вес тела. Невесомость','theory','Различать вес тела и силу тяжести, объяснять невесомость'],
+ [26,'Сложение сил по одной прямой. Равнодействующая','theory','Находить равнодействующую сонаправленных и противоположных сил'],
+ [27,'Решение задач на равнодействующую','practice','Строить силы графически и считать равнодействующую'],
+ [28,'Сила трения и её виды','theory','Различать трение покоя, скольжения и качения'],
+ [29,'Сила трения и характер поверхностей','lab','Исследовать зависимость трения от веса и поверхности'],
+ [30,'Решение задач на определение равнодействующей','practice','Решать задачи на сложение сил с учётом направления'],
+ [31,'Задачи: вес тела и графическое изображение сил','practice','Изображать силы векторами и решать задачи на вес'],
+ [32,'Контрольная: движение, масса, плотность, силы','test','Проверить освоение раздела «Движение и взаимодействие тел»'],
+ [33,'Давление. Способы изменения давления','theory','Считать давление по формуле p = F/S'],
+ [34,'Давление газа. Зависимость от объёма и температуры','theory','Объяснять давление газа ударами молекул'],
+ [35,'Передача давления. Закон Паскаля','theory','Формулировать закон Паскаля и приводить примеры'],
+ [36,'Давление жидкости и газа от силы тяжести','theory','Считать давление жидкости по формуле p = ρgh'],
+ [37,'Задачи: давление жидкости и закон Паскаля','practice','Решать расчётные задачи на давление жидкости'],
+ [38,'Сообщающиеся сосуды','theory','Объяснять равный уровень жидкости в сообщающихся сосудах'],
+ [39,'Гидравлический пресс','theory','Считать выигрыш в силе гидравлической машины'],
+ [40,'Манометры. Поршневой жидкостный насос','theory','Объяснять принцип действия манометра и насоса'],
+ [41,'Атмосфера Земли и причины её существования','theory','Объяснять, почему Земля удерживает воздушную оболочку'],
+ [42,'Вес воздуха. Атмосферное давление','theory','Объяснять опыты, подтверждающие атмосферное давление'],
+ [43,'Опыт Торричелли. Измерение атмосферного давления','theory','Связывать высоту ртутного столба с атмосферным давлением'],
+ [44,'Зависимость давления от высоты','theory','Объяснять падение давления с подъёмом над уровнем моря'],
+ [45,'Барометр-анероид. Давление на высотах','theory','Снимать показания барометра и оценивать высоту'],
+ [46,'Решение задач по теме «Атмосферное давление»','practice','Решать задачи на атмосферное давление и высоту'],
+ [47,'Архимедова сила. Действие жидкости и газа на тело','theory','Считать выталкивающую силу по формуле F = ρgV'],
+ [48,'Определение выталкивающей силы','lab','Измерять архимедову силу динамометром'],
+ [49,'Вес тела в воде и объём погружённой части','lab','Исследовать зависимость веса в воде от объёма погружения'],
+ [50,'Плавание тел','theory','Сравнивать плотности и предсказывать плавание тела'],
+ [51,'Конструирование ареометра или лодки','lab','Строить модель и определять её грузоподъёмность'],
+ [52,'Задачи: плавание судов и воздухоплавание','practice','Решать задачи на плавание и подъёмную силу'],
+ [53,'Контрольная: давление твёрдых тел, жидкостей и газов','test','Проверить освоение раздела о давлении'],
+ [54,'Механическая работа','theory','Считать работу по формуле A = F·s'],
+ [55,'Мощность. Единицы мощности','theory','Считать мощность и переводить единицы'],
+ [56,'Расчёт мощности при подъёме по лестнице','lab','Измерять мощность, развиваемую при подъёме'],
+ [57,'Простые механизмы. Рычаг. Равновесие сил','theory','Применять правило равновесия рычага'],
+ [58,'Рычаги в технике и природе. Равновесие рычага','lab','Исследовать условия равновесия рычага'],
+ [59,'Решение задач на равновесие рычага','practice','Считать плечи и силы в равновесном рычаге'],
+ [60,'КПД механизма. КПД наклонной плоскости','lab','Измерять КПД наклонной плоскости'],
+ [61,'Задачи: работа, мощность, КПД','practice','Решать задачи на работу, мощность и КПД'],
+ [62,'Кинетическая и потенциальная энергия','theory','Различать виды механической энергии и считать их'],
+ [63,'Закон сохранения механической энергии','theory','Объяснять превращения энергии в механических процессах'],
+ [64,'Превращение энергии на наклонной плоскости','lab','Сравнивать изменение кинетической и потенциальной энергии'],
+ [65,'Контрольная: работа и мощность. Энергия','test','Проверить освоение раздела «Работа и энергия»'],
+ [66,'Резерв: работа с текстами «Механическое движение»','reserve','Извлекать информацию из научно-популярного текста'],
+ [67,'Резерв: работа с текстами «Давление»','reserve','Анализировать текст и делать выводы по данным'],
+ [68,'Резерв: работа с текстами «Работа. Мощность. Энергия»','reserve','Систематизировать материал раздела по тексту']
+];
+/* Очередь фабрики по другим предметам */
+var OTHER=[
+ {id:'phys-8-014',subject:'физика',grade:8,title:'Закон Ома для участка цепи',type:'theory',goal:'Связывать силу тока, напряжение и сопротивление',hint:'Цепь с ползунками U и R, амперметр'},
+ {id:'bio-9-031',subject:'биология',grade:9,title:'Митоз',type:'theory',goal:'Называть фазы митоза и связывать их с числом хромосом',hint:'Фазы последовательно, счётчик хромосом'},
+ {id:'bio-7-008',subject:'биология',grade:7,title:'Строение клетки',type:'theory',goal:'Называть органоиды клетки и их функции',hint:'Разбор клетки по слоям'},
+ {id:'bio-8-021',subject:'биология',grade:8,title:'Круги кровообращения',type:'theory',goal:'Описывать большой и малый круги кровообращения',hint:'Путь крови по кругам, пульс'},
+ {id:'chem-8-004',subject:'химия',grade:8,title:'Физические и химические явления',type:'theory',goal:'Различать признаки химических реакций',hint:'Смешивание реагентов, признаки реакции'},
+ {id:'chem-8-019',subject:'химия',grade:8,title:'Закон сохранения массы',type:'practice',goal:'Считать массу реагентов и продуктов реакции',hint:'Весы и уравнение реакции'},
+ {id:'math-6-012',subject:'математика',grade:6,title:'Проценты',type:'practice',goal:'Находить процент от числа и число по проценту',hint:'Полоса-целое и выделяемая доля'},
+ {id:'math-5-020',subject:'математика',grade:5,title:'Обыкновенные дроби',type:'theory',goal:'Сравнивать и складывать дроби с разными знаменателями',hint:'Деление круга на доли'}
+];
+/* Готовые уроки: код → путь и описание интерактива */
+var READY={
+ 'phys-7-019':{
+  href:'lessons/phys-7-019/',
+  candidates:['lessons/phys-7-019/','lessons/phys-7-019/index.html','phys-7-019.html','phys-7-019/index.html','19.html'],
+  interactive:'Пружина с перетаскиванием бруска, режим динамометра, живой график F(x), предел упругости',
+  primitives:['slider','vector','plot'],
+  tasks:4
+ }
+};
 
-            bob = Bodies.circle(centerX, topY + lengthM * scale, 20 + massKg * 10, { 
-                mass: massKg,
-                frictionAir: damping,
-                restitution: 0.9,
-                render: { fillStyle: '#e74c3c', strokeStyle: '#c0392b', lineWidth: 3 }
-            });
+var TYPE_RU={theory:'теория',lab:'лабораторная',practice:'задачи',test:'контрольная',reserve:'резерв'};
+var TYPE_COL={theory:'#39e0ff',lab:'#ffb020',practice:'#a78bfa',test:'#d9a441',reserve:'#5f8494'};
+var SUBJ_COL={'физика':'#39e0ff','биология':'#7ef29d','химия':'#ff5f6d','математика':'#a78bfa'};
+var SUBJ_ORDER=['физика','биология','химия','математика'];
 
-            string = Constraint.create({
-                pointA: { x: centerX, y: topY },
-                bodyB: bob,
-                length: lengthM * scale,
-                stiffness: 1,
-                render: { strokeStyle: '#333', lineWidth: 2 }
-            });
+var LESSONS=PHYS7.map(function(r){
+  var num=r[0],sec=null;
+  for(var i=0;i<SECTIONS.length;i++){if(num>=SECTIONS[i].from&&num<=SECTIONS[i].to){sec=SECTIONS[i];break;}}
+  var id='phys-7-'+String(num).padStart(3,'0');
+  return {id:id,num:num,subject:'физика',grade:7,section:sec.id,sectionName:sec.name,title:r[1],type:r[2],goal:r[3],
+    hint:'',status:'planned',href:null,link:'none'};
+});
+OTHER.forEach(function(o){
+  LESSONS.push({id:o.id,num:parseInt(o.id.split('-')[2],10),subject:o.subject,grade:o.grade,section:0,
+    sectionName:'Очередь фабрики',title:o.title,type:o.type,goal:o.goal,hint:o.hint,status:'planned',href:null,link:'none'});
+});
+LESSONS.forEach(function(l){
+  var r=READY[l.id];
+  if(r){l.status='ready';l.href=r.href;l.candidates=r.candidates;l.interactive=r.interactive;l.primitives=r.primitives;l.tasks=r.tasks;l.link='unknown';}
+});
 
-            Composite.add(world, [pivot, bob, string]);
+/* ===== СОСТОЯНИЕ ===== */
+var S={q:'',subject:'all',grade:'all',type:'all',status:'all',sort:'program',view:'grid',section:'all'};
+try{var saved=JSON.parse(localStorage.getItem('catalog-state')||'null');if(saved&&typeof saved==='object'){for(var k in S){if(k in saved)S[k]=saved[k];}}}catch(e){}
+function persist(){try{localStorage.setItem('catalog-state',JSON.stringify(S));}catch(e){}}
 
-            const mouse = Mouse.create(render.canvas);
-            const mouseConstraint = MouseConstraint.create(engine, {
-                mouse: mouse,
-                constraint: {
-                    stiffness: 0.2,
-                    render: { visible: false }
-                }
-            });
-            Composite.add(world, mouseConstraint);
-            render.mouse = mouse;
-        }
+/* ===== ЗВУК ===== */
+var sound=true,ac=null,lastBlip=0;
+function initAudio(){if(ac)return;try{var C=window.AudioContext||window.webkitAudioContext;if(C)ac=new C();}catch(e){}}
+function tone(f,dur,type,vol,slide){
+  if(!sound||!ac)return;if(ac.state==='suspended')ac.resume();
+  var o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,n);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,slide),n+dur);
+  g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(vol||.04,n+.012);
+  g.gain.exponentialRampToValueAtTime(.0001,n+dur);
+  o.connect(g);g.connect(ac.destination);o.start(n);o.stop(n+dur+.03);
+}
+function sfx(kind){
+  if(!sound||!ac)return;
+  if(kind==='blip'){var n=performance.now();if(n-lastBlip<70)return;lastBlip=n;tone(880,.05,'triangle',.02);}
+  else if(kind==='open'){tone(520,.1,'sine',.03);setTimeout(function(){tone(780,.12,'sine',.03);},70);}
+  else if(kind==='close'){tone(520,.1,'sine',.025,320);}
+  else if(kind==='ok'){[523,659,784].forEach(function(f,i){setTimeout(function(){tone(f,.2,'sine',.04);},i*70);});}
+  else if(kind==='bad'){tone(200,.18,'square',.03,120);}
+}
+document.addEventListener('pointerdown',initAudio,{once:true});
+document.addEventListener('keydown',initAudio,{once:true});
+$('#sndBtn').addEventListener('click',function(){
+  sound=!sound;initAudio();this.setAttribute('aria-pressed',String(sound));
+  $('#sndIco').textContent=sound?'🔊':'🔇';this.title=sound?'Звук включён':'Звук выключен';
+  this.style.opacity=sound?'1':'.6';if(sound)sfx('blip');toast(sound?'Звук включён':'Звук выключен');
+});
 
-        function updatePhysics() {
-            const length = parseFloat(document.getElementById('length').value);
-            const mass = parseFloat(document.getElementById('mass').value);
-            const damping = parseFloat(document.getElementById('damping').value);
+/* ===== УТИЛИТЫ ===== */
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function toast(t){var el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},1900);}
+function copy(txt){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('Скопировано');},fb);}else fb();
+  function fb(){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');toast('Скопировано');}catch(e){toast('Не удалось скопировать');}document.body.removeChild(ta);}
+}
+function download(name,blob){var u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},1500);}
+function absUrl(p){try{return new URL(p,location.href).href;}catch(e){return p;}}
 
-            document.getElementById('lengthVal').textContent = length.toFixed(1);
-            document.getElementById('massVal').textContent = mass.toFixed(1);
-            document.getElementById('dampingVal').textContent = damping.toFixed(3);
+/* ===== МИНИАТЮРЫ ===== */
+function thumb(subject){
+  var c=SUBJ_COL[subject]||'#39e0ff';
+  if(subject==='физика')return '<svg class="thumb" viewBox="0 0 100 100" aria-hidden="true"><path d="M8 50h8l6-18 9 36 9-36 9 36 6-18h10" fill="none" stroke="'+c+'" stroke-width="4" stroke-linejoin="round"/><rect x="72" y="34" width="22" height="32" rx="5" fill="'+c+'"/></svg>';
+  if(subject==='биология')return '<svg class="thumb" viewBox="0 0 100 100" aria-hidden="true"><circle cx="52" cy="50" r="34" fill="none" stroke="'+c+'" stroke-width="4"/><circle cx="52" cy="50" r="13" fill="'+c+'"/><circle cx="30" cy="34" r="5" fill="'+c+'"/><circle cx="74" cy="66" r="6" fill="'+c+'"/></svg>';
+  if(subject==='химия')return '<svg class="thumb" viewBox="0 0 100 100" aria-hidden="true"><path d="M42 14v26L22 78a8 8 0 0 0 7 12h46a8 8 0 0 0 7-12L62 40V14" fill="none" stroke="'+c+'" stroke-width="4" stroke-linejoin="round"/><path d="M31 62h42l10 18a6 6 0 0 1-5 8H26a6 6 0 0 1-5-8z" fill="'+c+'"/><rect x="36" y="8" width="32" height="7" rx="3" fill="'+c+'"/></svg>';
+  return '<svg class="thumb" viewBox="0 0 100 100" aria-hidden="true"><path d="M12 84V16M12 84h76" stroke="'+c+'" stroke-width="4" fill="none"/><path d="M14 76C36 76 40 26 88 22" fill="none" stroke="'+c+'" stroke-width="4"/><circle cx="60" cy="40" r="7" fill="'+c+'"/></svg>';
+}
 
-            createPendulum(length, mass, damping);
-            chartData = [];
-        }
+/* ===== ФИЛЬТРЫ ===== */
+function buildControls(){
+  var grades=[];LESSONS.forEach(function(l){if(grades.indexOf(l.grade)<0)grades.push(l.grade);});
+  grades.sort(function(a,b){return a-b;});
+  $('#grade').innerHTML='<option value="all">Все классы</option>'+grades.map(function(g){return '<option value="'+g+'">'+g+' класс</option>';}).join('');
+  var counts={};SUBJ_ORDER.forEach(function(s){counts[s]=LESSONS.filter(function(l){l.subject===s;return l.subject===s;}).length;});
+  $('#subjChips').innerHTML='<button class="chip'+(S.subject==='all'?' on':'')+'" data-subj="all">Все предметы <span class="n">'+LESSONS.length+'</span></button>'+
+    SUBJ_ORDER.map(function(s){return '<button class="chip'+(S.subject===s?' on':'')+'" data-subj="'+s+'"><span class="sw" style="background:'+SUBJ_COL[s]+'"></span>'+s+' <span class="n">'+counts[s]+'</span></button>';}).join('');
+  var nr=LESSONS.filter(function(l){return l.status==='ready';}).length;
+  $('#statusChips').innerHTML='<button class="chip'+(S.status==='all'?' on':'')+'" data-status="all">Любой статус</button>'+
+    '<button class="chip'+(S.status==='ready'?' on':'')+'" data-status="ready"><span class="sw" style="background:#7ef29d"></span>Готово <span class="n">'+nr+'</span></button>'+
+    '<button class="chip'+(S.status==='planned'?' on':'')+'" data-status="planned"><span class="sw" style="background:#5f8494"></span>В очереди <span class="n">'+(LESSONS.length-nr)+'</span></button>';
+  $('#q').value=S.q;$('#grade').value=S.grade;$('#type').value=S.type;$('#sort').value=S.sort;
+  $('#vGrid').classList.toggle('on',S.view==='grid');$('#vList').classList.toggle('on',S.view==='list');
+}
+function filtered(){
+  var q=S.q.trim().toLowerCase();
+  var out=LESSONS.filter(function(l){
+    if(S.subject!=='all'&&l.subject!==S.subject)return false;
+    if(S.grade!=='all'&&String(l.grade)!==String(S.grade))return false;
+    if(S.type!=='all'&&l.type!==S.type)return false;
+    if(S.status!=='all'&&l.status!==S.status)return false;
+    if(S.section!=='all'&&String(l.section)!==String(S.section))return false;
+    if(q&&(l.title+' '+l.goal+' '+l.id+' '+l.subject).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  });
+  var so=SUBJ_ORDER;
+  out.sort(function(a,b){
+    if(S.sort==='alpha')return a.title.localeCompare(b.title,'ru');
+    if(S.sort==='grade')return a.grade-b.grade||so.indexOf(a.subject)-so.indexOf(b.subject)||a.num-b.num;
+    if(S.sort==='ready')return (b.status==='ready')-(a.status==='ready')||so.indexOf(a.subject)-so.indexOf(b.subject)||a.num-b.num;
+    return so.indexOf(a.subject)-so.indexOf(b.subject)||a.grade-b.grade||a.num-b.num;
+  });
+  return out;
+}
+function cardHTML(l){
+  var ready=l.status==='ready';
+  var warn=ready&&l.link==='missing'?'<span class="linkwarn">файл не найден</span>':'';
+  var open=ready?'<a class="btn g s" href="'+esc(l.href)+'" data-open="'+l.id+'" target="_self">Открыть урок →</a>':'<span class="btn s" style="opacity:.5;cursor:default">В очереди</span>';
+  return '<article class="lc t-'+l.type+(ready?' ready':'')+'" data-id="'+l.id+'" tabindex="0" role="button" aria-label="Подробнее: '+esc(l.title)+'">'+
+    thumb(l.subject)+
+    '<div class="top-row"><span class="lid">'+esc(l.id)+'</span><span class="badge b-'+l.subject+'">'+l.subject+'</span><span class="tb '+l.type+'">'+TYPE_RU[l.type]+'</span></div>'+
+    '<h3>'+esc(l.title)+'</h3>'+
+    '<p class="goal">'+esc(l.goal)+'</p>'+
+    '<div class="foot"><span class="status '+(ready?'ready':'planned')+'"><span class="d"></span>'+(ready?'ГОТОВО':'В ОЧЕРЕДИ')+'</span>'+
+    '<span class="lid">'+l.grade+' класс</span>'+warn+'</div>'+
+    '<div class="foot">'+open+'<button class="btn s" data-detail="'+l.id+'">Подробнее</button></div>'+
+    '</article>';
+}
+function listHTML(rows){
+  return '<div class="tablewrap"><table><thead><tr><th>Код</th><th>Тема</th><th>Предмет</th><th>Класс</th><th>Тип</th><th>Статус</th><th></th></tr></thead><tbody>'+
+    rows.map(function(l){
+      var ready=l.status==='ready';
+      return '<tr data-id="'+l.id+'" class="'+(ready?'ready':'')+'">'+
+        '<td class="mono">'+esc(l.id)+'</td>'+
+        '<td>'+esc(l.title)+'</td>'+
+        '<td><span class="badge b-'+l.subject+'">'+l.subject+'</span></td>'+
+        '<td class="mono">'+l.grade+'</td>'+
+        '<td><span class="tb '+l.type+'">'+TYPE_RU[l.type]+'</span></td>'+
+        '<td><span class="status '+(ready?'ready':'planned')+'"><span class="d"></span>'+(ready?'ГОТОВО':'ОЧЕРЕДЬ')+'</span></td>'+
+        '<td>'+(ready?'<a class="btn g s" href="'+esc(l.href)+'" data-open="'+l.id+'">Открыть</a>':'<span class="lid">—</span>')+'</td>'+
+        '</tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function render(){
+  var rows=filtered();
+  $('#resCount').textContent=String(rows.length);
+  var note='';
+  if(S.section!=='all'){var sec=SECTIONS.filter(function(s){return String(s.id)===String(S.section);})[0];if(sec)note='Раздел '+sec.id+': '+sec.name+' · сбросить — кнопка «Сбросить фильтры»';}
+  $('#secFilterNote').textContent=note;
+  if(!rows.length){
+    $('#results').innerHTML='<div class="empty"><h3>Ничего не найдено</h3><p>Под такие условия в каталоге пока нет уроков. Смягчите фильтры или очистите поиск.</p><button class="btn p" id="emptyReset">Сбросить фильтры</button></div>';
+    var er=$('#emptyReset');if(er)er.addEventListener('click',resetFilters);
+  }else{
+    $('#results').innerHTML=S.view==='grid'?'<div class="grid">'+rows.map(cardHTML).join('')+'</div>':listHTML(rows);
+  }
+  buildControls();persist();
+}
+function resetFilters(){S.q='';S.subject='all';S.grade='all';S.type='all';S.status='all';S.section='all';S.sort='program';render();sfx('blip');toast('Фильтры сброшены');}
+$('#q').addEventListener('input',function(){S.q=this.value;render();});
+$('#grade').addEventListener('change',function(){S.grade=this.value;render();sfx('blip');});
+$('#type').addEventListener('change',function(){S.type=this.value;render();sfx('blip');});
+$('#sort').addEventListener('change',function(){S.sort=this.value;render();sfx('blip');});
+$('#subjChips').addEventListener('click',function(e){var b=e.target.closest('[data-subj]');if(!b)return;S.subject=b.dataset.subj;S.section='all';render();sfx('blip');});
+$('#statusChips').addEventListener('click',function(e){var b=e.target.closest('[data-status]');if(!b)return;S.status=b.dataset.status;render();sfx('blip');});
+$('#vGrid').addEventListener('click',function(){S.view='grid';render();sfx('blip');});
+$('#vList').addEventListener('click',function(){S.view='list';render();sfx('blip');});
+$('#resetFilters').addEventListener('click',resetFilters);
+$('#results').addEventListener('click',function(e){
+  var a=e.target.closest('[data-open]');if(a){sfx('open');return;}
+  var d=e.target.closest('[data-detail]');if(d){openDrawer(d.dataset.detail);return;}
+  var c=e.target.closest('[data-id]');if(c)openDrawer(c.dataset.id);
+});
+$('#results').addEventListener('keydown',function(e){
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  var c=e.target.closest('.lc');if(c){e.preventDefault();openDrawer(c.dataset.id);}
+});
 
-        function resetSimulation() {
-            updatePhysics();
-        }
+/* ===== ПРОГРАММА ===== */
+function renderProgram(){
+  var mix=$('#mixBar'),leg=$('#mixLeg'),types=['theory','lab','practice','test','reserve'];
+  var total=PHYS7.length;
+  mix.innerHTML=types.map(function(t){
+    var n=PHYS7.filter(function(r){return r[2]===t;}).length;
+    return '<div style="width:'+(n/total*100)+'%;background:'+TYPE_COL[t]+'" title="'+TYPE_RU[t]+': '+n+'">'+(n/total>0.07?n:'')+'</div>';
+  }).join('');
+  leg.innerHTML=types.map(function(t){
+    var n=PHYS7.filter(function(r){return r[2]===t;}).length;
+    return '<span><i style="background:'+TYPE_COL[t]+'"></i>'+TYPE_RU[t]+' — '+n+'</span>';
+  }).join('');
+  $('#sections').innerHTML=SECTIONS.map(function(s){
+    var all=LESSONS.filter(function(l){return l.subject==='физика'&&l.grade===7&&l.section===s.id;});
+    var done=all.filter(function(l){return l.status==='ready';}).length;
+    var pct=all.length?Math.round(done/all.length*100):0;
+    return '<div class="card sec" data-sec="'+s.id+'" tabindex="0" role="button" aria-label="Показать раздел '+s.id+'">'+
+      '<div class="sh"><span class="sn">'+s.id+'</span><h3>'+esc(s.name)+'</h3></div>'+
+      '<div class="meta">'+s.hours+' ч · уроки '+s.from+'–'+s.to+'</div>'+
+      '<div class="pbar"><i style="width:'+pct+'%"></i></div>'+
+      '<div class="pn"><span>готово '+done+' из '+all.length+'</span><span>'+pct+'%</span></div>'+
+      '</div>';
+  }).join('');
+}
+$('#sections').addEventListener('click',function(e){
+  var c=e.target.closest('[data-sec]');if(!c)return;
+  S.section=c.dataset.sec;S.subject='физика';S.grade='7';S.status='all';S.type='all';S.q='';
+  render();sfx('blip');document.getElementById('catalog').scrollIntoView({behavior:'smooth'});
+});
+$('#sections').addEventListener('keydown',function(e){
+  if(e.key!=='Enter'&&e.key!==' ')return;var c=e.target.closest('[data-sec]');if(c){e.preventDefault();c.click();}
+});
 
-        // Обновление графика
-        Events.on(engine, 'afterUpdate', function() {
-            if (bob) {
-                const centerX = width / 2;
-                const displacement = (bob.position.x - centerX) / 80;
-                
-                chartData.push(displacement);
-                if (chartData.length > maxDataPoints) {
-                    chartData.shift();
-                }
+/* ===== ПРОВЕРКА ССЫЛОК ===== */
+var checking=false;
+function renderCheck(){
+  var ready=LESSONS.filter(function(l){return l.status==='ready';});
+  if(!ready.length){$('#checkList').innerHTML='<div class="crow"><span class="cp">Готовых уроков пока нет — проверять нечего.</span></div>';return;}
+  $('#checkList').innerHTML=ready.map(function(l){
+    var cls=l.link==='ok'?'ok':(l.link==='missing'?'bad':(l.link==='local'?'local':''));
+    var label=l.link==='ok'?'НАЙДЕН':(l.link==='missing'?'НЕ НАЙДЕН':(l.link==='local'?'ЛОКАЛЬНО':'НЕ ПРОВЕРЕН'));
+    return '<div class="crow '+cls+'"><span class="cid">'+esc(l.id)+'</span><span class="cp">'+esc(l.href||'—')+'</span><span class="pill '+(l.link==='ok'?'ok':(l.link==='missing'?'bad':'warn'))+'">'+label+'</span></div>';
+  }).join('');
+  var ok=ready.filter(function(l){return l.link==='ok';}).length;
+  var bad=ready.filter(function(l){return l.link==='missing';}).length;
+  var loc=ready.filter(function(l){return l.link==='local';}).length;
+  var pill=$('#linkPill'),sum=$('#checkSummary');
+  if(loc){pill.className='pill warn';pill.textContent='ссылки: локально';sum.className='pill warn';sum.textContent='проверка недоступна офлайн';}
+  else if(bad){pill.className='pill bad';pill.textContent='ссылки: '+bad+' битых';sum.className='pill bad';sum.textContent=ok+' найдено · '+bad+' не найдено';}
+  else if(ok){pill.className='pill ok';pill.textContent='ссылки: '+ok+' ок';sum.className='pill ok';sum.textContent='все '+ok+' ссылок работают';}
+  else{pill.className='pill';pill.textContent='ссылки: не проверены';sum.className='pill';sum.textContent='ещё не запускалась';}
+}
+async function checkLinks(){
+  if(checking)return;checking=true;
+  $('#checkBtn').disabled=true;$('#checkBtn2').disabled=true;
+  var ready=LESSONS.filter(function(l){return l.status==='ready';});
+  if(location.protocol==='file:'){
+    ready.forEach(function(l){l.link='local';});
+    $('#checkEnv').innerHTML='Каталог открыт с диска (<b>file://</b>) — браузер не даёт проверять файлы запросом. Откройте каталог по https-ссылке на GitHub Pages, и проверка заработает. Сами ссылки при этом кликабельны.';
+    renderCheck();render();checking=false;$('#checkBtn').disabled=false;$('#checkBtn2').disabled=false;
+    toast('Локально проверка недоступна');sfx('bad');return;
+  }
+  $('#checkEnv').innerHTML='Проверяем пути на <b>'+esc(location.host)+'</b>. Для каждого урока перебираются типовые варианты размещения, первый ответивший становится ссылкой карточки.';
+  var found=0,miss=0;
+  for(var i=0;i<ready.length;i++){
+    var l=ready[i],cands=l.candidates||[l.href],hit=null;
+    for(var j=0;j<cands.length;j++){
+      try{
+        var r=await fetch(cands[j],{method:'HEAD',cache:'no-store'});
+        if(r.ok){hit=cands[j];break;}
+      }catch(e){}
+    }
+    if(hit){l.href=hit;l.link='ok';found++;}else{l.link='missing';miss++;}
+    renderCheck();render();
+  }
+  checking=false;$('#checkBtn').disabled=false;$('#checkBtn2').disabled=false;
+  if(miss){sfx('bad');toast('Не найдено файлов: '+miss);}else{sfx('ok');toast('Все ссылки работают: '+found);}
+}
+$('#checkBtn').addEventListener('click',function(){initAudio();checkLinks();});
+$('#checkBtn2').addEventListener('click',function(){initAudio();checkLinks();});
+$('#copyBase').addEventListener('click',function(){copy(location.href);});
 
-                const labels = chartData.map((_, i) => (i * 0.016).toFixed(2));
-                
-                chart.data.labels = labels;
-                chart.data.datasets[0].data = chartData;
-                chart.update('none');
-            }
-        });
+/* ===== DRAWER ===== */
+var lastFocus=null,drawerId=null;
+function openDrawer(id){
+  var l=LESSONS.filter(function(x){return x.id===id;})[0];if(!l)return;
+  drawerId=id;lastFocus=document.activeElement;
+  $('#dId').textContent=l.id+' · '+l.subject+' · '+l.grade+' класс';
+  $('#dTitle').textContent=l.title;
+  var ready=l.status==='ready';
+  var rows=[
+    ['Статус',ready?'<span class="status ready"><span class="d"></span>ОПУБЛИКОВАН</span>':'<span class="status planned"><span class="d"></span>В ОЧЕРЕДИ ФАБРИКИ</span>'],
+    ['Тип занятия','<span class="tb '+l.type+'">'+TYPE_RU[l.type]+'</span>'],
+    ['Учебная цель',esc(l.goal)],
+    ['Раздел программы',esc(l.sectionName)]
+  ];
+  if(ready){
+    rows.push(['Интерактив',esc(l.interactive||'Симуляция с управлением параметрами')]);
+    rows.push(['Примитивы','<span style="font-family:var(--mono);font-size:12.5px;color:var(--cyan)">'+(l.primitives||[]).join(' · ')+'</span>']);
+    rows.push(['Задач с автопроверкой',String(l.tasks||0)+' · ответы посчитаны кодом']);
+    rows.push(['Адрес урока','<span style="font-family:var(--mono);font-size:12px;word-break:break-all;color:var(--cyan)">'+esc(absUrl(l.href))+'</span>']);
+    rows.push(['Проверка файла',l.link==='ok'?'<span style="color:var(--acid)">файл найден, ссылка рабочая</span>':(l.link==='missing'?'<span style="color:var(--coral)">файл не найден ни по одному из типовых путей</span>':'не проверялась')]);
+  }else{
+    var plan=l.type==='lab'?'Виртуальная лаборатория: установка, измерения, протокол':
+      l.type==='practice'?'Тренажёр задач с генерацией вариантов и разбором':
+      l.type==='test'?'Контрольная с автопроверкой и итоговой сводкой':
+      l.type==='reserve'?'Работа с текстом: поиск данных и выводы':'Симуляция с ползунками, векторами и графиком';
+    rows.push(['Что будет собрано',esc(plan)]);
+    if(l.hint)rows.push(['Идея интерактива',esc(l.hint)]);
+    rows.push(['Как ускорить','Урок появится здесь после генерации, проверок A–E и публикации. Затем добавьте запись в объект READY.']);
+  }
+  $('#dBody').innerHTML=rows.map(function(r){return '<div class="drow"><i>'+r[0]+'</i><div>'+r[1]+'</div></div>';}).join('');
+  $('#dFoot').innerHTML=(ready?'<a class="btn g" href="'+esc(l.href)+'" data-open="'+l.id+'">Открыть урок →</a><button class="btn" id="dCopy">Копировать ссылку</button>':'<span class="btn" style="opacity:.55;cursor:default">Урок ещё не собран</span>')+
+    '<button class="btn" id="dCloseB">Закрыть</button>';
+  var dc=$('#dCopy');if(dc)dc.addEventListener('click',function(){copy(absUrl(l.href));});
+  $('#dCloseB').addEventListener('click',closeDrawer);
+  $('#dFoot').querySelectorAll('[data-open]').forEach(function(a){a.addEventListener('click',function(){sfx('open');});});
+  $('#scrim').classList.add('show');$('#drawer').classList.add('show');
+  document.body.style.overflow='hidden';
+  $('#dClose').focus();sfx('open');
+}
+function closeDrawer(){
+  $('#scrim').classList.remove('show');$('#drawer').classList.remove('show');
+  document.body.style.overflow='';drawerId=null;
+  if(lastFocus&&lastFocus.focus)lastFocus.focus();
+  sfx('close');
+}
+$('#dClose').addEventListener('click',closeDrawer);
+$('#scrim').addEventListener('click',closeDrawer);
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&drawerId){closeDrawer();return;}
+  if(e.key==='/'&&!/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){e.preventDefault();$('#q').focus();$('#q').select();}
+});
 
-        document.getElementById('length').addEventListener('input', updatePhysics);
-        document.getElementById('mass').addEventListener('input', updatePhysics);
-        document.getElementById('damping').addEventListener('input', updatePhysics);
+/* ===== ЭКСПОРТ ===== */
+function csvCell(v){return '"'+String(v).replace(/"/g,'""')+'"';}
+$('#csvBtn').addEventListener('click',function(){
+  var head=['id','subject','grade','topic','learning_goals','difficulty','interactive_hint'];
+  var lines=[head.join(';')];
+  LESSONS.forEach(function(l){
+    var diff=l.type==='lab'||l.type==='test'?3:(l.type==='reserve'?1:2);
+    var hint=l.hint||(l.status==='ready'?l.interactive:'');
+    lines.push([l.id,l.subject,l.grade,l.title,l.goal,diff,hint].map(csvCell).join(';'));
+  });
+  download('topics.csv',new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'}));
+  toast('topics.csv сохранён');sfx('blip');
+});
+$('#jsonBtn').addEventListener('click',function(){
+  var data={generated:new Date().toISOString(),base:location.href,total:LESSONS.length,
+    ready:LESSONS.filter(function(l){return l.status==='ready';}).length,
+    sections:SECTIONS,lessons:LESSONS.map(function(l){
+      return {id:l.id,subject:l.subject,grade:l.grade,section:l.section,title:l.title,type:l.type,goal:l.goal,status:l.status,href:l.href,link:l.link};
+    })};
+  download('catalog.json',new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  toast('catalog.json сохранён');sfx('blip');
+});
+document.querySelectorAll('[data-copy]').forEach(function(b){
+  b.addEventListener('click',function(){copy(document.getElementById(this.dataset.copy).textContent);});
+});
 
-        // ==================== ПРОВЕРКА ЗАДАЧ ====================
-        function checkAnswer(taskNum, correctAnswer) {
-            const userAnswer = parseFloat(document.getElementById(`answer${taskNum}`).value);
-            const feedback = document.getElementById(`feedback${taskNum}`);
-            
-            if (isNaN(userAnswer)) {
-                feedback.textContent = '⚠️ Пожалуйста, введите числовой ответ';
-                feedback.className = 'feedback incorrect';
-                feedback.style.display = 'block';
-                return;
-            }
-            
-            const tolerance = 0.05;
-            if (Math.abs(userAnswer - correctAnswer) <= tolerance) {
-                feedback.textContent = '✅ Правильно! Отличная работа!';
-                feedback.className = 'feedback correct';
-            } else {
-                feedback.textContent = `❌ Неправильно. Правильный ответ: ${correctAnswer.toFixed(2)}`;
-                feedback.className = 'feedback incorrect';
-            }
-            feedback.style.display = 'block';
-        }
+/* ===== СЧЁТЧИКИ, НАВИГАЦИЯ, РЕВИЛЫ ===== */
+function animateTo(el,val){
+  var t0=performance.now(),dur=900;
+  function f(now){
+    var p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3);
+    el.textContent=String(Math.round(val*e));
+    if(p<1)requestAnimationFrame(f);
+  }
+  requestAnimationFrame(f);
+}
+var navLinks=Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting)en.target.classList.add('in');});},{threshold:.06});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+  var so=new IntersectionObserver(function(es){es.forEach(function(en){
+    if(en.isIntersecting){var id=en.target.id==='top'?'catalog':en.target.id;
+      navLinks.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+id);});}
+  });},{rootMargin:'-130px 0px -65% 0px'});
+  document.querySelectorAll('main section').forEach(function(s){so.observe(s);});
+}else{document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});}
 
-        // Запуск
-        initChart();
-        createPendulum(2.0, 1.0, 0.01);
-        Render.run(render);
-        const runner = Runner.create();
-        Runner.run(runner, engine);
-    </script>
+/* ===== СТАРТ ===== */
+renderProgram();render();renderCheck();
+var nReady=LESSONS.filter(function(l){return l.status==='ready';}).length;
+var subjCount=SUBJ_ORDER.filter(function(s){return LESSONS.some(function(l){return l.subject===s;});}).length;
+var hours=SECTIONS.reduce(function(a,s){return a+s.hours;},0);
+animateTo($('#stReady'),nReady);animateTo($('#stQueue'),LESSONS.length-nReady);
+animateTo($('#stSubj'),subjCount);animateTo($('#stHours'),hours);
+var kb=(new Blob([document.documentElement.outerHTML]).size/1024).toFixed(0);
+$('#footInfo').textContent=LESSONS.length+' УРОКОВ В ПЛАНЕ · '+nReady+' ГОТОВО · '+kb+' КБ · ОДИН ФАЙЛ, БЕЗ CDN';
+if(location.protocol!=='file:'){setTimeout(checkLinks,600);}
+else{LESSONS.forEach(function(l){if(l.status==='ready')l.link='local';});renderCheck();
+  $('#checkEnv').innerHTML='Каталог открыт с диска (<b>file://</b>). Ссылки кликабельны, но автоматическая проверка файлов доступна только на сайте по https.';}
+})();
+</script>
 </body>
 </html>
