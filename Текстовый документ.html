@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок физики: Механические колебания</title>
+    
+    <!-- MathJax для красивых формул -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Matter.js для физики -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    
+    <!-- Chart.js для графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        section {
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 20px 0 15px 0;
+        }
+        
+        .intro {
+            background: #f8f9fa;
+            padding: 20px;
+            border-left: 5px solid #667eea;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .formula-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .formula-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .simulation-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .control-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        .control-group .value {
+            font-size: 0.9em;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        #canvas-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: grab;
+        }
+        
+        canvas:active {
+            cursor: grabbing;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 300px;
+        }
+        
+        .task {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .task h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .task input[type="number"] {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            width: 150px;
+            margin: 10px 0;
+        }
+        
+        .task button {
+            margin-left: 10px;
+        }
+        
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .info-box {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .info-box strong {
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔬 Механические колебания</h1>
+            <p>Интерактивный урок физики для подготовки к ЕГЭ</p>
+        </header>
+        
+        <div class="content">
+            <!-- ВСТУПЛЕНИЕ -->
+            <section>
+                <h2>📚 Введение</h2>
+                <div class="intro">
+                    <p><strong>Колебания</strong> — это процессы, точно или приближённо повторяющиеся во времени. Они встречаются повсюду: от качания маятника часов до колебаний атомов в кристаллической решётке.</p>
+                </div>
+                
+                <h3>Примеры колебаний в природе и технике:</h3>
+                <ul>
+                    <li>🌊 Морские волны</li>
+                    <li>🎸 Колебания струны музыкального инструмента</li>
+                    <li>⏰ Маятник настенных часов</li>
+                    <li>💓 Сердцебиение</li>
+                    <li>🌳 Качание веток деревьев на ветру</li>
+                </ul>
+            </section>
+            
+            <!-- ТЕОРИЯ -->
+            <section>
+                <h2>📖 Основные понятия</h2>
+                
+                <h3>1. Характеристики колебаний</h3>
+                <ul>
+                    <li><strong>Смещение (x)</strong> — отклонение тела от положения равновесия (измеряется в метрах)</li>
+                    <li><strong>Амплитуда (A)</strong> — максимальное смещение от положения равновесия</li>
+                    <li><strong>Период (T)</strong> — время одного полного колебания (измеряется в секундах)</li>
+                    <li><strong>Частота (ν)</strong> — число колебаний в единицу времени (измеряется в герцах, Гц)</li>
+                    <li><strong>Циклическая частота (ω)</strong> — число колебаний за \(2\pi\) секунд (рад/с)</li>
+                </ul>
+                
+                <div class="formula-box">
+                    <h4>🔑 Связь между характеристиками:</h4>
+                    <p>$$T = \frac{1}{\nu}$$</p>
+                    <p>$$\omega = 2\pi\nu = \frac{2\pi}{T}$$</p>
+                </div>
+                
+                <h3>2. Уравнение гармонических колебаний</h3>
+                <p>Если колебания происходят по закону синуса или косинуса, они называются <strong>гармоническими</strong>:</p>
+                
+                <div class="formula-box">
+                    <h4>📐 Уравнение колебаний:</h4>
+                    <p>$$x(t) = A \cos(\omega t + \varphi_0)$$</p>
+                    <p>где:</p>
+                    <ul>
+                        <li>\(A\) — амплитуда</li>
+                        <li>\(\omega\) — циклическая частота</li>
+                        <li>\(\varphi_0\) — начальная фаза</li>
+                        <li>\(\omega t + \varphi_0\) — фаза колебаний</li>
+                    </ul>
+                </div>
+                
+                <h3>3. Математический маятник</h3>
+                <p><strong>Математический маятник</strong> — это материальная точка, подвешенная на невесомой и нерастяжимой нити.</p>
+                
+                <div class="formula-box">
+                    <h4>⏱️ Период колебаний математического маятника:</h4>
+                    <p>$$T = 2\pi\sqrt{\frac{L}{g}}$$</p>
+                    <p>где:</p>
+                    <ul>
+                        <li>\(L\) — длина нити (м)</li>
+                        <li>\(g\) — ускорение свободного падения (\(9.8\) м/с²)</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <strong>💡 Важно:</strong> Период колебаний математического маятника <strong>не зависит</strong> от массы груза! Он зависит только от длины нити и ускорения свободного падения.
+                </div>
+                
+                <h3>4. Пружинный маятник</h3>
+                <p><strong>Пружинный маятник</strong> — это груз, прикреплённый к пружине, совершающий колебания под действием силы упругости.</p>
+                
+                <div class="formula-box">
+                    <h4>⏱️ Период колебаний пружинного маятника:</h4>
+                    <p>$$T = 2\pi\sqrt{\frac{m}{k}}$$</p>
+                    <p>где:</p>
+                    <ul>
+                        <li>\(m\) — масса груза (кг)</li>
+                        <li>\(k\) — жёсткость пружины (Н/м)</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <strong>💡 Важно:</strong> Период колебаний пружинного маятника <strong>не зависит</strong> от ускорения свободного падения! Он зависит только от массы груза и жёсткости пружины.
+                </div>
+            </section>
+            
+            <!-- ИНТЕРАКТИВНАЯ МОДЕЛЬ -->
+            <section>
+                <h2>🎮 Интерактивная модель: Математический маятник</h2>
+                <p>Поэкспериментируйте с маятником! Хватайте груз мышкой, оттяните и отпустите. Меняйте параметры и наблюдайте, как они влияют на колебания.</p>
+                
+                <div class="simulation-container">
+                    <div class="controls">
+                        <div class="control-group">
+                            <label>Длина нити (м): <span class="value" id="lengthVal">2.0</span></label>
+                            <input type="range" id="length" min="1" max="4" step="0.1" value="2.0">
+                        </div>
+                        <div class="control-group">
+                            <label>Масса груза (кг): <span class="value" id="massVal">1.0</span></label>
+                            <input type="range" id="mass" min="0.5" max="3" step="0.1" value="1.0">
+                        </div>
+                        <div class="control-group">
+                            <label>Затухание: <span class="value" id="dampingVal">0.01</span></label>
+                            <input type="range" id="damping" min="0" max="0.1" step="0.005" value="0.01">
+                        </div>
+                        <div class="control-group">
+                            <button onclick="resetSimulation()">🔄 Сбросить</button>
+                        </div>
+                    </div>
+                    
+                    <div id="canvas-container"></div>
+                    
+                    <div class="chart-container">
+                        <canvas id="oscillationChart"></canvas>
+                    </div>
+                    
+                    <div class="info-box">
+                        <strong>📊 Наблюдайте:</strong> График показывает зависимость смещения от времени. Обратите внимание, что при изменении массы период не меняется, а при изменении длины — меняется!
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ЗАДАЧИ -->
+            <section>
+                <h2>✏️ Задачи для проверки знаний</h2>
+                
+                <div class="task">
+                    <h4>Задача 1. Период математического маятника</h4>
+                    <p>Математический маятник имеет длину нити \(L = 1\) м. Найдите период его колебаний. Ускорение свободного падения \(g = 9.8\) м/с².</p>
+                    <p><em>Подсказка: используйте формулу \(T = 2\pi\sqrt{\frac{L}{g}}\)</em></p>
+                    <input type="number" id="answer1" step="0.01" placeholder="Ваш ответ (с)">
+                    <button onclick="checkAnswer(1, 2.01)">Проверить</button>
+                    <div id="feedback1" class="feedback" style="display:none;"></div>
+                </div>
+                
+                <div class="task">
+                    <h4>Задача 2. Частота колебаний</h4>
+                    <p>Маятник совершает 20 колебаний за 10 секунд. Найдите частоту колебаний.</p>
+                    <p><em>Подсказка: \(\nu = \frac{N}{t}\)</em></p>
+                    <input type="number" id="answer2" step="0.01" placeholder="Ваш ответ (Гц)">
+                    <button onclick="checkAnswer(2, 2)">Проверить</button>
+                    <div id="feedback2" class="feedback" style="display:none;"></div>
+                </div>
+                
+                <div class="task">
+                    <h4>Задача 3. Пружинный маятник</h4>
+                    <p>Груз массой \(m = 0.5\) кг подвешен на пружине жёсткостью \(k = 200\) Н/м. Найдите период колебаний.</p>
+                    <p><em>Подсказка: используйте формулу \(T = 2\pi\sqrt{\frac{m}{k}}\)</em></p>
+                    <input type="number" id="answer3" step="0.01" placeholder="Ваш ответ (с)">
+                    <button onclick="checkAnswer(3, 0.31)">Проверить</button>
+                    <div id="feedback3" class="feedback" style="display:none;"></div>
+                </div>
+                
+                <div class="task">
+                    <h4>Задача 4. Влияние длины на период</h4>
+                    <p>Во сколько раз увеличится период колебаний математического маятника, если длину нити увеличить в 4 раза?</p>
+                    <p><em>Подсказка: период пропорционален корню из длины</em></p>
+                    <input type="number" id="answer4" step="0.01" placeholder="Ваш ответ">
+                    <button onclick="checkAnswer(4, 2)">Проверить</button>
+                    <div id="feedback4" class="feedback" style="display:none;"></div>
+                </div>
+                
+                <div class="task">
+                    <h4>Задача 5. Уравнение колебаний</h4>
+                    <p>Дано уравнение колебаний: \(x(t) = 0.1\cos(2\pi t)\). Найдите амплитуду колебаний (в метрах).</p>
+                    <p><em>Подсказка: амплитуда — это коэффициент перед косинусом</em></p>
+                    <input type="number" id="answer5" step="0.01" placeholder="Ваш ответ (м)">
+                    <button onclick="checkAnswer(5, 0.1)">Проверить</button>
+                    <div id="feedback5" class="feedback" style="display:none;"></div>
+                </div>
+            </section>
+            
+            <!-- ЗАКЛЮЧЕНИЕ -->
+            <section>
+                <h2>🎯 Итоги урока</h2>
+                <div class="intro">
+                    <h3>Что мы узнали:</h3>
+                    <ul>
+                        <li>✅ Колебания — это повторяющиеся процессы</li>
+                        <li>✅ Основные характеристики: амплитуда, период, частота</li>
+                        <li>✅ Уравнение гармонических колебаний: \(x(t) = A\cos(\omega t + \varphi_0)\)</li>
+                        <li>✅ Период математического маятника: \(T = 2\pi\sqrt{\frac{L}{g}}\) (не зависит от массы!)</li>
+                        <li>✅ Период пружинного маятника: \(T = 2\pi\sqrt{\frac{m}{k}}\) (не зависит от g!)</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <strong>📝 Для ЕГЭ важно помнить:</strong>
+                    <ul>
+                        <li>Период математического маятника зависит только от длины и g</li>
+                        <li>Период пружинного маятника зависит только от массы и жёсткости</li>
+                        <li>Частота и период обратно пропорциональны: \(T = \frac{1}{\nu}\)</li>
+                        <li>Циклическая частота: \(\omega = 2\pi\nu = \frac{2\pi}{T}\)</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // ==================== ФИЗИЧЕСКАЯ СИМУЛЯЦИЯ ====================
+        const Engine = Matter.Engine,
+              Render = Matter.Render,
+              Runner = Matter.Runner,
+              Bodies = Matter.Bodies,
+              Composite = Matter.Composite,
+              Constraint = Matter.Constraint,
+              Mouse = Matter.Mouse,
+              MouseConstraint = Matter.MouseConstraint,
+              Events = Matter.Events;
+
+        const engine = Engine.create();
+        const world = engine.world;
+
+        const width = 800;
+        const height = 400;
+        const render = Render.create({
+            element: document.getElementById('canvas-container'),
+            engine: engine,
+            options: {
+                width: width,
+                height: height,
+                wireframes: false,
+                background: '#ffffff'
+            }
+        });
+
+        let pivot, bob, string;
+        let chart;
+        let chartData = [];
+        let maxDataPoints = 200;
+
+        // Инициализация графика
+        function initChart() {
+            const ctx = document.getElementById('oscillationChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Смещение (м)',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Время (с)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Смещение (м)' },
+                            min: -0.5,
+                            max: 0.5
+                        }
+                    },
+                    animation: false
+                }
+            });
+        }
+
+        function createPendulum(lengthM, massKg, damping) {
+            Composite.clear(world);
+            Engine.clear(engine);
+
+            const scale = 80;
+            const centerX = width / 2;
+            const topY = 50;
+
+            pivot = Bodies.circle(centerX, topY, 5, { 
+                isStatic: true,
+                render: { fillStyle: '#333' }
+            });
+
+            bob = Bodies.circle(centerX, topY + lengthM * scale, 20 + massKg * 10, { 
+                mass: massKg,
+                frictionAir: damping,
+                restitution: 0.9,
+                render: { fillStyle: '#e74c3c', strokeStyle: '#c0392b', lineWidth: 3 }
+            });
+
+            string = Constraint.create({
+                pointA: { x: centerX, y: topY },
+                bodyB: bob,
+                length: lengthM * scale,
+                stiffness: 1,
+                render: { strokeStyle: '#333', lineWidth: 2 }
+            });
+
+            Composite.add(world, [pivot, bob, string]);
+
+            const mouse = Mouse.create(render.canvas);
+            const mouseConstraint = MouseConstraint.create(engine, {
+                mouse: mouse,
+                constraint: {
+                    stiffness: 0.2,
+                    render: { visible: false }
+                }
+            });
+            Composite.add(world, mouseConstraint);
+            render.mouse = mouse;
+        }
+
+        function updatePhysics() {
+            const length = parseFloat(document.getElementById('length').value);
+            const mass = parseFloat(document.getElementById('mass').value);
+            const damping = parseFloat(document.getElementById('damping').value);
+
+            document.getElementById('lengthVal').textContent = length.toFixed(1);
+            document.getElementById('massVal').textContent = mass.toFixed(1);
+            document.getElementById('dampingVal').textContent = damping.toFixed(3);
+
+            createPendulum(length, mass, damping);
+            chartData = [];
+        }
+
+        function resetSimulation() {
+            updatePhysics();
+        }
+
+        // Обновление графика
+        Events.on(engine, 'afterUpdate', function() {
+            if (bob) {
+                const centerX = width / 2;
+                const displacement = (bob.position.x - centerX) / 80;
+                
+                chartData.push(displacement);
+                if (chartData.length > maxDataPoints) {
+                    chartData.shift();
+                }
+
+                const labels = chartData.map((_, i) => (i * 0.016).toFixed(2));
+                
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = chartData;
+                chart.update('none');
+            }
+        });
+
+        document.getElementById('length').addEventListener('input', updatePhysics);
+        document.getElementById('mass').addEventListener('input', updatePhysics);
+        document.getElementById('damping').addEventListener('input', updatePhysics);
+
+        // ==================== ПРОВЕРКА ЗАДАЧ ====================
+        function checkAnswer(taskNum, correctAnswer) {
+            const userAnswer = parseFloat(document.getElementById(`answer${taskNum}`).value);
+            const feedback = document.getElementById(`feedback${taskNum}`);
+            
+            if (isNaN(userAnswer)) {
+                feedback.textContent = '⚠️ Пожалуйста, введите числовой ответ';
+                feedback.className = 'feedback incorrect';
+                feedback.style.display = 'block';
+                return;
+            }
+            
+            const tolerance = 0.05;
+            if (Math.abs(userAnswer - correctAnswer) <= tolerance) {
+                feedback.textContent = '✅ Правильно! Отличная работа!';
+                feedback.className = 'feedback correct';
+            } else {
+                feedback.textContent = `❌ Неправильно. Правильный ответ: ${correctAnswer.toFixed(2)}`;
+                feedback.className = 'feedback incorrect';
+            }
+            feedback.style.display = 'block';
+        }
+
+        // Запуск
+        initChart();
+        createPendulum(2.0, 1.0, 0.01);
+        Render.run(render);
+        const runner = Runner.create();
+        Runner.run(runner, engine);
+    </script>
+</body>
+</html>
