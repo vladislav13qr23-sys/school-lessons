@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Урок 19 · Сила упругости. Закон Гука — физика 7 класс</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230b1116'/><path d='M5 16h3l2-6 3 12 3-12 3 12 2-6h4' stroke='%2346e08a' stroke-width='2.2' fill='none' stroke-linejoin='round'/></svg>">
+<style>
+:root{
+  --bg:#0b1116;--bg2:#0f171e;--surface:#141f28;--surface2:#1a2933;
+  --line:rgba(122,168,196,.16);--line2:rgba(122,168,196,.34);
+  --steel:#8fb3c7;--blue:#4da3ff;--green:#46e08a;--amber:#ffb020;--red:#ff5468;--violet:#a78bfa;--brass:#d9a441;
+  --text:#ece5d8;--muted:#9db2bf;--dim:#64798a;
+  --mono:"Cascadia Mono",Consolas,"SF Mono",ui-monospace,monospace;
+  --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --math:"Cambria Math","Times New Roman",serif;
+  --r:16px;--shadow:0 22px 60px -26px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(70,224,138,.3);color:#fff}
+*{scrollbar-width:thin;scrollbar-color:var(--steel) rgba(15,23,30,.8)}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:rgba(15,23,30,.8);border-radius:9px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--steel),#4a7186);border-radius:9px;border:2px solid rgba(15,23,30,.9)}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#b6d4e4,var(--steel))}
+::-webkit-scrollbar-corner{background:transparent}
+
+.bg{position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden}
+.mesh{position:absolute;inset:-20%;background:
+  radial-gradient(46% 38% at 12% 8%,rgba(77,163,255,.22),transparent 62%),
+  radial-gradient(40% 34% at 88% 4%,rgba(70,224,138,.16),transparent 60%),
+  radial-gradient(52% 44% at 74% 78%,rgba(217,164,65,.12),transparent 64%),
+  radial-gradient(38% 30% at 22% 92%,rgba(167,139,250,.12),transparent 62%);
+  animation:drift 34s ease-in-out infinite alternate;filter:blur(6px)}
+@keyframes drift{0%{transform:translate3d(-2%,-1%,0) scale(1.02)}100%{transform:translate3d(3%,2%,0) scale(1.08)}}
+.gridbg{position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(122,168,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,168,196,.05) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(70% 60% at 50% 30%,#000,transparent 80%);-webkit-mask-image:radial-gradient(70% 60% at 50% 30%,#000,transparent 80%)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.top{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;gap:14px;padding:9px 18px;flex-wrap:wrap;background:rgba(11,17,22,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);box-shadow:0 10px 34px -22px #000}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+.brand svg{filter:drop-shadow(0 0 8px rgba(70,224,138,.5))}
+.brand small{display:block;font:600 9.5px/1 var(--mono);letter-spacing:.2em;color:var(--dim);margin-top:3px}
+.nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;padding-bottom:2px}
+.nav::-webkit-scrollbar{height:5px}
+.nav a{font:600 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:8px 11px;border-radius:9px;white-space:nowrap;border:1px solid transparent;transition:.2s}
+.nav a:hover{color:var(--text);background:rgba(70,224,138,.09);border-color:var(--line)}
+.nav a.on{color:#0b1116;background:linear-gradient(135deg,var(--green),#2aa866);border-color:transparent}
+.acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.progress-chip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:99px;font:700 12px/1 var(--mono);border:1px solid rgba(70,224,138,.4);background:rgba(70,224,138,.1);color:var(--green)}
+
+button,.btn{font-family:var(--sans);cursor:pointer;border:none;transition:transform .16s,box-shadow .2s,background .2s,border-color .2s}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:11px;font-size:13px;font-weight:600;background:rgba(70,224,138,.08);color:var(--text);border:1px solid var(--line2)}
+.btn:hover{background:rgba(70,224,138,.18);transform:translateY(-1px);box-shadow:0 8px 20px -12px var(--green)}
+.btn:active{transform:translateY(0)}
+.btn.p{background:linear-gradient(135deg,var(--green),#2aa866);color:#0b1116;border-color:transparent;font-weight:700}
+.btn.p:hover{box-shadow:0 10px 26px -10px var(--green)}
+.btn.s{padding:6px 10px;font-size:12px;border-radius:9px}
+.btn:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+
+main{max-width:1240px;margin:0 auto;padding:96px 18px 40px}
+section{scroll-margin-top:118px;margin-bottom:52px}
+.shead{display:flex;align-items:baseline;gap:12px;margin:0 0 16px}
+.snum{font:700 11px/1 var(--mono);letter-spacing:.2em;color:var(--green)}
+.shead h2{margin:0;font-size:clamp(20px,2.6vw,27px);letter-spacing:-.015em;font-weight:700}
+.shead .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.shead .tag{font:600 10.5px/1 var(--mono);letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+
+.card{background:linear-gradient(180deg,rgba(26,41,51,.55),rgba(15,23,30,.72));border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,rgba(143,179,199,.5),transparent)}
+.pad{padding:18px}
+
+.intro{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.kicker{font:700 11px/1 var(--mono);letter-spacing:.22em;color:var(--brass);margin-bottom:12px}
+.intro h1{margin:0 0 12px;font-size:clamp(28px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em;font-weight:800}
+.intro h1 em{font-style:normal;color:var(--green)}
+.lead{color:#d7e2e8;font-size:16px;margin:0 0 14px}
+.goals{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.goals li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#cfe0e8}
+.goals li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);flex:none;margin-top:6px;box-shadow:0 0 8px var(--green)}
+.spring-anim{width:100%;height:auto;display:block;margin:6px 0 10px}
+.spring-anim .coil{animation:sq 2.6s ease-in-out infinite}
+.spring-anim .blk{animation:bl 2.6s ease-in-out infinite}
+@keyframes sq{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.62)}}
+@keyframes bl{0%,100%{transform:translateX(0)}50%{transform:translateX(-52px)}}
+.mini-note{font-size:12.5px;color:var(--dim);border-left:2px solid var(--line2);padding-left:11px}
+
+.theory-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.theory-grid h3{margin:0 0 8px;font-size:17px}
+.theory-grid p{margin:0 0 10px;color:#d7e2e8;font-size:14px}
+.formula{font-family:var(--math);font-size:26px;text-align:center;padding:16px 10px;background:radial-gradient(70% 120% at 50% 0%,rgba(70,224,138,.14),rgba(11,17,22,.5));border:1px solid var(--line2);border-radius:12px;color:#eafff2;margin:10px 0}
+.formula sub{font-size:.62em}
+.formula.big{font-size:34px}
+.defs{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.defs div{display:flex;gap:9px;font-size:13px;color:var(--muted)}
+.defs b{color:var(--green);font-family:var(--math);font-size:16px;min-width:26px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line)}
+th{font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+td b{font-family:var(--mono);color:var(--brass)}
+.note{border-left:3px solid var(--amber);background:rgba(255,176,32,.08);padding:11px 13px;border-radius:0 11px 11px 0;font-size:13px;color:#f0dfc0;margin-top:10px}
+
+.wframe{margin-top:14px;border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;background:#0a1015;box-shadow:var(--shadow)}
+.wbar{display:flex;align-items:center;gap:10px;padding:8px 13px;background:rgba(11,17,22,.85);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.wbar .t{font:600 10.5px/1 var(--mono);letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:99px;font:600 11px/1 var(--mono);border:1px solid var(--line2);background:rgba(70,224,138,.08);color:var(--green)}
+.pill.ok{color:var(--green);border-color:rgba(70,224,138,.4);background:rgba(70,224,138,.1)}
+.pill.bad{color:var(--red);border-color:rgba(255,84,104,.4);background:rgba(255,84,104,.1)}
+iframe{display:block;width:100%;height:640px;border:0;background:#0a1015}
+.readouts{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line)}
+.ro{background:rgba(15,23,30,.9);padding:10px 13px}
+.ro .l{font:600 9.5px/1 var(--mono);letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.ro .n{font:700 19px/1.2 var(--mono);margin-top:5px}
+.ro.a .n{color:var(--green)}.ro.b .n{color:var(--blue)}.ro.c .n{color:var(--brass)}.ro.d .n{color:var(--violet)}.ro.e .n{color:var(--text);font-size:13px}
+.simnote{font-size:12.5px;color:var(--dim);margin-top:10px;border-left:2px solid var(--line2);padding-left:11px}
+
+.prog{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.bar{flex:1;min-width:160px;height:8px;border-radius:99px;background:rgba(11,17,22,.8);border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2aa866,var(--green));transition:width .5s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 14px rgba(70,224,138,.6)}
+.task{margin-bottom:12px}
+.thead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px}
+.badge{font:700 9.5px/1 var(--mono);letter-spacing:.14em;padding:5px 8px;border-radius:6px;text-transform:uppercase}
+.badge.numeric{background:rgba(77,163,255,.16);color:var(--blue)}
+.badge.choice{background:rgba(167,139,250,.18);color:var(--violet)}
+.badge.text{background:rgba(70,224,138,.16);color:var(--green)}
+.thead h4{margin:0;font-size:15.5px;flex:1;min-width:150px}
+.solved-mark{font:700 11px/1 var(--mono);color:var(--green);opacity:0;transition:.3s}
+.task.solved .solved-mark{opacity:1}
+.task.solved{border-color:rgba(70,224,138,.42)}
+.q{color:#dbe6ec;margin:0 0 12px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+input[type=text]{background:rgba(11,17,22,.8);border:1px solid var(--line2);color:var(--text);padding:9px 12px;border-radius:10px;font:600 15px/1 var(--mono);width:170px}
+input[type=text]::placeholder{color:var(--dim);font-weight:400}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.opt{display:flex;gap:10px;align-items:center;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(11,17,22,.45);cursor:pointer;transition:.16s;font-size:14px}
+.opt:hover{border-color:var(--line2);background:rgba(70,224,138,.07)}
+.opt input{accent-color:var(--green);width:16px;height:16px;flex:none}
+.fb{margin-top:11px;font-size:13.5px;padding:9px 12px;border-radius:10px;display:none}
+.fb.show{display:block}
+.fb.ok{background:rgba(70,224,138,.12);border:1px solid rgba(70,224,138,.4);color:#c9f7d6}
+.fb.no{background:rgba(255,84,104,.1);border:1px solid rgba(255,84,104,.38);color:#ffd0d3}
+.fb.hint{background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.36);color:#f5e2bd}
+.disclose{margin-top:9px;font-size:13px;color:var(--muted);border-left:2px solid var(--line2);padding-left:11px;display:none}
+.disclose.show{display:block}
+.shake{animation:shk .34s}
+@keyframes shk{0%,100%{transform:translateX(0)}22%{transform:translateX(-6px)}44%{transform:translateX(5px)}66%{transform:translateX(-3px)}}
+
+.results{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stat{background:rgba(15,23,30,.7);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat i{display:block;font:600 10px/1 var(--mono);letter-spacing:.14em;color:var(--dim);font-style:normal;text-transform:uppercase}
+.stat b{display:block;font:800 26px/1.1 var(--mono);margin-top:7px;color:var(--green)}
+.done-banner{display:none;padding:14px 16px;border-radius:12px;background:rgba(70,224,138,.12);border:1px solid rgba(70,224,138,.45);color:#c9f7d6;font-size:15px;font-weight:600;margin-bottom:14px}
+.done-banner.show{display:block}
+.formulas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.formulas .formula{margin:0}
+.formulas p{font-size:12.5px;color:var(--dim);margin:8px 0 0;text-align:center}
+
+footer{max-width:1240px;margin:0 auto;padding:20px 18px 44px;border-top:1px solid var(--line);display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center;font:11.5px/1.6 var(--mono);color:var(--dim)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,22px);z-index:90;padding:10px 18px;border-radius:12px;background:rgba(20,31,40,.96);border:1px solid var(--line2);color:var(--text);font:600 13px/1 var(--sans);box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:980px){.intro,.theory-grid,.formulas{grid-template-columns:1fr}.results{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){main{padding-top:126px}iframe{height:900px}.nav{order:3;width:100%;flex:1 0 100%}.readouts{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){iframe{height:1000px}.readouts{grid-template-columns:repeat(2,1fr)}.acts .lbl{display:none}input[type=text]{width:100%}.results{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="mesh"></div><div class="gridbg"></div><div class="grain"></div></div>
+
+<header class="top">
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#141f28" stroke="#46e08a" stroke-opacity=".45"/><path d="M5 16h3l2-6 3 12 3-12 3 12 2-6h4" stroke="#46e08a" stroke-width="2" fill="none" stroke-linejoin="round"/></svg>
+    <div>Физика · 7 класс<small>УРОК 19 · PHYS-7-019</small></div>
+  </div>
+  <nav class="nav" id="nav">
+    <a href="#intro" class="on">Вступление</a>
+    <a href="#theory">Теория</a>
+    <a href="#sim">Симуляция</a>
+    <a href="#tasks">Задачи</a>
+    <a href="#results">Итог</a>
+  </nav>
+  <div class="acts">
+    <span class="progress-chip" id="hdrProg">0 / 4</span>
+    <button class="btn s" id="sndBtn" aria-pressed="true" title="Звук включён"><span id="sndIco">🔊</span><span class="lbl" id="sndLbl">Звук</span></button>
+  </div>
+</header>
+
+<main>
+<section id="intro">
+  <div class="intro reveal">
+    <div class="card pad">
+      <div class="kicker">РАЗДЕЛ 3 · ДВИЖЕНИЕ И ВЗАИМОДЕЙСТВИЕ ТЕЛ</div>
+      <h1>Сила упругости.<br><em>Закон Гука</em></h1>
+      <p class="lead">Сожми пружину — и она толкнёт руку обратно. Растяни — потянет к себе. Эта сила называется упругой, и у неё есть точное правило: чем сильнее деформация, тем больше сила. В этом уроке ты увидишь это руками и научишься считать.</p>
+      <ul class="goals">
+        <li>Понять, откуда берётся сила упругости и куда она направлена</li>
+        <li>Записать закон Гука и объяснить смысл каждой величины</li>
+        <li>Считать силу упругости, деформацию и жёсткость</li>
+        <li>Увидеть предел, за которым закон перестаёт работать</li>
+      </ul>
+    </div>
+    <div class="card pad">
+      <svg class="spring-anim" viewBox="0 0 320 120" aria-hidden="true">
+        <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#46e08a"/><stop offset="1" stop-color="#4da3ff"/></linearGradient></defs>
+        <rect x="8" y="20" width="12" height="80" rx="3" fill="#1a2933" stroke="#8fb3c7" stroke-opacity=".4"/>
+        <g class="coil" style="transform-origin:20px 60px"><path d="M20 60 L34 40 L48 80 L62 40 L76 80 L90 40 L104 80 L118 40 L132 80 L146 40 L160 60" fill="none" stroke="url(#sg)" stroke-width="4" stroke-linejoin="round"/></g>
+        <g class="blk"><rect x="160" y="38" width="46" height="44" rx="8" fill="#d9a441"/><rect x="160" y="38" width="46" height="44" rx="8" fill="none" stroke="#fff" stroke-opacity=".3"/><path d="M172 52v16M183 52v16M194 52v16" stroke="#0b1116" stroke-opacity=".4" stroke-width="2"/></g>
+        <path d="M250 60h40" stroke="#46e08a" stroke-width="3"/><path d="M290 60l-10-6v12z" fill="#46e08a"/>
+        <text x="252" y="48" fill="#46e08a" font-family="Consolas,monospace" font-size="12">F упр</text>
+      </svg>
+      <div class="mini-note">Пружина слева сжимается и отпускает брусок — сила упругости всегда стремится вернуть тело в исходное положение. Ниже ты сможешь управлять этим сам.</div>
+    </div>
+  </div>
+</section>
+
+<section id="theory">
+  <div class="shead"><span class="snum">01</span><h2>Теория</h2><span class="rule"></span><span class="tag">три опоры урока</span></div>
+  <div class="theory-grid reveal">
+    <div class="card pad">
+      <h3>Деформация и упругость</h3>
+      <p>Когда тело меняет форму или размеры, говорят о <b>деформации</b>. Если после снятия нагрузки тело возвращает прежнюю форму — деформация <b>упругая</b>. Если форма остаётся изменённой — <b>пластическая</b>.</p>
+      <p>Причина упругости — взаимодействие частиц вещества. При сжатии или растяжении расстояния между частицами меняются, и они стремятся вернуться на свои места.</p>
+      <div class="note">Сила упругости направлена <b>против</b> деформации: сжатую пружину она толкает наружу, растянутую — тянет назад.</div>
+    </div>
+    <div class="card pad">
+      <h3>Закон Гука</h3>
+      <p>При малых упругих деформациях сила упругости прямо пропорциональна удлинению:</p>
+      <div class="formula big">F<sub>упр</sub> = k · |x|</div>
+      <div class="defs">
+        <div><b>F</b><span>сила упругости, Н</span></div>
+        <div><b>k</b><span>жёсткость пружины, Н/м</span></div>
+        <div><b>x</b><span>деформация (удлинение или сжатие), м</span></div>
+      </div>
+      <div class="note">В векторной форме пишут со знаком минус: сила направлена противоположно смещению. Жёсткость k зависит от материала, длины, толщины проволоки и числа витков — но не от приложенной силы.</div>
+    </div>
+    <div class="card pad">
+      <h3>Жёсткость и предел</h3>
+      <p>Жёсткость показывает, какую силу нужно приложить, чтобы растянуть пружину на 1 метр. Чем больше k, тем «туже» пружина.</p>
+      <table>
+        <thead><tr><th>Материал</th><th>k, Н/м</th></tr></thead>
+        <tbody>
+          <tr><td>Сталь</td><td><b>≈ 100</b></td></tr>
+          <tr><td>Медь</td><td><b>≈ 40</b></td></tr>
+          <tr><td>Резина</td><td><b>≈ 15</b></td></tr>
+        </tbody>
+      </table>
+      <div class="note">Закон Гука работает только до <b>предела упругости</b>. Дальше деформация становится пластической, и линейная зависимость нарушается — это видно в симуляции.</div>
+    </div>
+  </div>
+</section>
+
+<section id="sim">
+  <div class="shead"><span class="snum">02</span><h2>Симуляция: сожми пружину</h2><span class="rule"></span><span class="tag">интерактив</span></div>
+  <div class="wframe reveal">
+    <div class="wbar">
+      <span class="t">widget · sandbox</span>
+      <span class="pill" id="pillReady">ожидание…</span>
+      <span class="pill" id="pillErr">ошибок: 0</span>
+      <span style="flex:1"></span>
+      <button class="btn s" id="wReset">↺ Сбросить виджет</button>
+    </div>
+    <iframe id="wf" title="Симуляция закона Гука" sandbox="allow-scripts"></iframe>
+    <div class="readouts">
+      <div class="ro a"><div class="l">F упр, Н</div><div class="n" id="rF">—</div></div>
+      <div class="ro b"><div class="l">Деформация, см</div><div class="n" id="rX">—</div></div>
+      <div class="ro c"><div class="l">Жёсткость, Н/м</div><div class="n" id="rK">—</div></div>
+      <div class="ro d"><div class="l">Энергия, Дж</div><div class="n" id="rE">—</div></div>
+      <div class="ro e"><div class="l">Режим</div><div class="n" id="rMode">—</div></div>
+    </div>
+  </div>
+  <p class="simnote">Тяни брусок мышью или пальцем прямо на сцене, либо двигай ползунок деформации. Переключись на вертикальный режим — получишь динамометр: груз растягивает пружину, и по удлинению можно найти силу тяжести. Отпусти брусок кнопкой — увидишь колебания.</p>
+</section>
+
+<section id="tasks">
+  <div class="shead"><span class="snum">03</span><h2>Задачи с автопроверкой</h2><span class="rule"></span><span class="tag">ответы считает код</span></div>
+  <div class="prog reveal">
+    <span style="font:700 12px/1 var(--mono);letter-spacing:.1em;color:var(--muted)">РЕШЕНО <b id="pTxt" style="color:var(--green)">0 / 4</b></span>
+    <div class="bar"><i id="pBar"></i></div>
+    <button class="btn s" id="resetTasks">Сбросить прогресс</button>
+  </div>
+  <div class="note reveal" style="margin-bottom:14px">Ответы вычислены по формуле, а не придуманы. Допуск 1 %, запятая и точка равноправны, единицы можно писать. После двух неверных попыток откроется решение.</div>
+  <div id="taskList" class="reveal"></div>
+</section>
+
+<section id="results">
+  <div class="shead"><span class="snum">04</span><h2>Итог урока</h2><span class="rule"></span><span class="tag">что запомнить</span></div>
+  <div class="done-banner reveal" id="doneBanner">Урок пройден полностью — все 4 задачи решены. Закон Гука у тебя в кармане.</div>
+  <div class="results reveal">
+    <div class="stat"><i>Решено задач</i><b id="stSolved">0 / 4</b></div>
+    <div class="stat"><i>Всего попыток</i><b id="stAttempts">0</b></div>
+    <div class="stat"><i>Время на уроке</i><b id="stTime">0:00</b></div>
+    <div class="stat"><i>Прогресс</i><b id="stPct">0%</b></div>
+  </div>
+  <div class="formulas reveal">
+    <div class="card pad"><div class="formula">F<sub>упр</sub> = k · |x|</div><p>Сила упругости при малой деформации</p></div>
+    <div class="card pad"><div class="formula">x = F / k</div><p>Деформация по известной силе и жёсткости</p></div>
+    <div class="card pad"><div class="formula">E = k · x² / 2</div><p>Энергия упруго деформированной пружины</p></div>
+  </div>
+  <div class="note reveal" style="margin-top:14px">Закон Гука справедлив только для упругих деформаций до предела упругости. За этим пределом тело не возвращает форму, и линейная зависимость силы от деформации нарушается.</div>
+</section>
+</main>
+
+<footer>
+  <span>PHYS-7-019 · ОДИН ФАЙЛ · БЕЗ CDN · РАБОТАЕТ ОФЛАЙН</span>
+  <button class="btn s" id="repBtn">↓ Отчёт JSON</button>
+</footer>
+<div class="toast" id="toast"></div>
+<noscript><div style="padding:100px 20px;text-align:center">Для работы урока нужен включённый JavaScript.</div></noscript>
+
+<template id="widgetSrc">
+<meta charset="utf-8">
+<style>
+:root{--brand-bg:#0a1015;--brand-panel:#101a22;--brand-line:rgba(122,168,196,.2);--brand-text:#ece5d8;--brand-dim:#7fa0b2;
+--brand-green:#46e08a;--brand-blue:#4da3ff;--brand-amber:#ffb020;--brand-red:#ff5468;--brand-violet:#a78bfa;--brand-brass:#d9a441;--brand-steel:#8fb3c7;
+--mono:"Cascadia Mono",Consolas,ui-monospace,monospace;--sans:"Segoe UI",system-ui,Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--brand-bg);color:var(--brand-text);font-family:var(--sans);font-size:14px;overflow:hidden}
+*{scrollbar-width:thin;scrollbar-color:var(--brand-steel) rgba(10,16,21,.8)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:rgba(10,16,21,.8)}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--brand-steel),#4a7186);border-radius:9px;border:2px solid var(--brand-bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--brand-steel)}
+.w{display:grid;grid-template-columns:1fr 280px;height:100%}
+.stage{position:relative;min-width:0;background:radial-gradient(80% 70% at 50% 20%,#10202b,#070d12)}
+canvas#cv{position:absolute;inset:0;display:block;touch-action:none;cursor:grab}
+canvas#cv:active{cursor:grabbing}
+.hud{position:absolute;left:12px;top:11px;display:flex;gap:7px;flex-wrap:wrap;pointer-events:none}
+.chip{font:700 10.5px/1 var(--mono);letter-spacing:.1em;padding:6px 9px;border-radius:8px;background:rgba(7,13,18,.85);border:1px solid var(--brand-line);color:var(--brand-green)}
+.chip.warn{color:var(--brand-red);border-color:rgba(255,84,104,.5)}
+.panel{background:linear-gradient(180deg,#101a22,#0b141b);border-left:1px solid var(--brand-line);padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.pt{font:700 9.5px/1 var(--mono);letter-spacing:.2em;color:var(--brand-dim)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.seg button{font:700 11px/1 var(--sans);padding:8px 4px;border-radius:8px;background:rgba(122,168,196,.08);border:1px solid var(--brand-line);color:var(--brand-text);cursor:pointer}
+.seg button.on{background:linear-gradient(135deg,var(--brand-green),#2aa866);color:#0a1015;border-color:transparent}
+.ctl{display:flex;flex-direction:column;gap:4px}
+.ctl .lb{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:#c9dde5}
+.ctl .lb b{font:700 12px/1 var(--mono);color:var(--brand-green)}
+.ctl.off{opacity:.45}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:9px;background:linear-gradient(90deg,var(--brand-steel),rgba(122,168,196,.18))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-5.5px;border-radius:50%;background:var(--brand-green);border:2px solid #0a1015;box-shadow:0 0 10px rgba(70,224,138,.8)}
+input[type=range]::-moz-range-track{height:5px;border-radius:9px;background:rgba(122,168,196,.25)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--brand-green);border:2px solid #0a1015}
+input[type=range]:disabled{cursor:not-allowed}
+input[type=range]:focus-visible{outline:2px solid var(--brand-green);outline-offset:3px;border-radius:8px}
+select{width:100%;background:#0a1015;color:var(--brand-text);border:1px solid var(--brand-line);border-radius:9px;padding:7px 9px;font:600 12.5px/1 var(--sans);cursor:pointer}
+select:focus-visible{outline:2px solid var(--brand-green);outline-offset:2px}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#c9dde5;cursor:pointer;padding:4px 0}
+.sw input{position:absolute;opacity:0;width:0;height:0}
+.track{width:34px;height:18px;border-radius:99px;background:rgba(122,168,196,.16);border:1px solid var(--brand-line);position:relative;transition:.2s;flex:none}
+.track::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--brand-dim);transition:.2s}
+.sw input:checked+.track{background:rgba(70,224,138,.28);border-color:rgba(70,224,138,.55)}
+.sw input:checked+.track::after{left:18px;background:var(--brand-green);box-shadow:0 0 9px rgba(70,224,138,.9)}
+.sw input:focus-visible+.track{outline:2px solid var(--brand-green);outline-offset:2px}
+.reads{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.rd{background:rgba(7,13,18,.7);border:1px solid var(--brand-line);border-radius:9px;padding:7px 9px}
+.rd i{display:block;font:600 8.5px/1 var(--mono);letter-spacing:.12em;color:var(--brand-dim);font-style:normal}
+.rd b{display:block;font:700 15px/1.2 var(--mono);margin-top:4px}
+.rd.a b{color:var(--brand-green)}.rd.b b{color:var(--brand-blue)}.rd.c b{color:var(--brand-brass)}.rd.d b{color:var(--brand-violet)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+button{font-family:var(--sans);font-size:12px;font-weight:700;padding:8px 6px;border-radius:9px;cursor:pointer;background:rgba(70,224,138,.1);border:1px solid var(--brand-line);color:var(--brand-text);transition:.16s}
+button:hover{background:rgba(70,224,138,.24);transform:translateY(-1px)}
+button:active{transform:none}
+button.p{background:linear-gradient(135deg,var(--brand-green),#2aa866);color:#0a1015;border-color:transparent}
+button:focus-visible{outline:2px solid var(--brand-green);outline-offset:2px}
+.wide{grid-column:1/-1}
+.hintline{font:11px/1.4 var(--sans);color:var(--brand-dim)}
+@media(max-width:720px){
+ .w{grid-template-columns:1fr;grid-template-rows:320px 1fr}
+ .panel{border-left:0;border-top:1px solid var(--brand-line);display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
+ .pt,.seg,.reads,.btns,.hintline{grid-column:1/-1}
+}
+</style>
+<div class="w">
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+    <div class="hud"><span class="chip" id="hState">УПРУГАЯ</span><span class="chip" id="hF">F = 0.00 Н</span></div>
+  </div>
+  <aside class="panel">
+    <div class="pt">УПРАВЛЕНИЕ ПРУЖИНОЙ</div>
+    <div class="seg"><button id="mH" class="on">Горизонталь</button><button id="mV">Динамометр</button></div>
+    <div class="ctl"><div class="lb"><span>Материал</span></div>
+      <select id="mat"><option value="steel">Сталь</option><option value="copper">Медь</option><option value="rubber">Резина</option></select></div>
+    <div class="ctl"><div class="lb"><span>Жёсткость k</span><b><span id="vK">50</span> Н/м</b></div>
+      <input type="range" id="k" min="10" max="200" step="5" value="50" aria-label="Жёсткость"></div>
+    <div class="ctl" id="ctlX"><div class="lb"><span>Деформация x</span><b><span id="vX">4.0</span> см</b></div>
+      <input type="range" id="x" min="-12" max="12" step="0.5" value="4" aria-label="Деформация"></div>
+    <div class="ctl"><div class="lb"><span>Масса груза</span><b><span id="vM">200</span> г</b></div>
+      <input type="range" id="m" min="50" max="1000" step="10" value="200" aria-label="Масса"></div>
+    <div class="ctl"><div class="lb"><span>Предел упругости</span><b><span id="vL">8</span> см</b></div>
+      <input type="range" id="lim" min="3" max="10" step="0.5" value="8" aria-label="Предел упругости"></div>
+    <div class="ctl"><div class="lb"><span>Скорость времени</span><b>×<span id="vS">1.0</span></b></div>
+      <input type="range" id="spd" min="0.2" max="2" step="0.1" value="1" aria-label="Скорость"></div>
+    <div class="toggles">
+      <label class="sw"><span>Векторы</span><input type="checkbox" id="tVec" checked><span class="track"></span></label>
+      <label class="sw"><span>Сетка</span><input type="checkbox" id="tGrid" checked><span class="track"></span></label>
+      <label class="sw"><span>Контур покоя</span><input type="checkbox" id="tGhost" checked><span class="track"></span></label>
+      <label class="sw"><span>Энергия</span><input type="checkbox" id="tEn" checked><span class="track"></span></label>
+    </div>
+    <div class="reads">
+      <div class="rd a"><i>F упр, Н</i><b id="oF">0.00</b></div>
+      <div class="rd b"><i>x, см</i><b id="oX">0.0</b></div>
+      <div class="rd c"><i>k, Н/м</i><b id="oK">50</b></div>
+      <div class="rd d"><i>E, Дж</i><b id="oE">0.000</b></div>
+    </div>
+    <div class="btns">
+      <button id="bReset" class="p">Сброс</button><button id="bRand">Случайно</button>
+      <button id="bRel" class="wide">Отпустить брусок</button>
+      <button id="bPng" class="wide">Сохранить кадр PNG</button>
+    </div>
+    <div class="hintline">Тяни брусок прямо на сцене. За пределом упругости закон Гука нарушается.</div>
+  </aside>
+</div>
+<script>
+(function(){
+'use strict';
+var seed=20261125>>>0;
+function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function send(m){try{parent.postMessage(m,'*');}catch(e){}}
+window.onerror=function(msg,src,line,col){send({type:'error',message:String(msg),line:line,col:col});return false;};
+var stage=document.getElementById('stage'),cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+var DPR=Math.min(2,window.devicePixelRatio||1),W=320,H=260;
+var MONO='"Cascadia Mono",Consolas,ui-monospace,monospace';
+var G=9.8;
+var MATS={steel:{k:100,col:'#b9c6ce',name:'Сталь'},copper:{k:40,col:'#d98a4a',name:'Медь'},rubber:{k:15,col:'#5a6b74',name:'Резина'}};
+var S={mode:'h',mat:'steel',k:50,mass:200,limit:8,speed:1,vectors:true,grid:true,ghost:true,energy:true};
+var x=4,v=0,osc=false,t=0,last=0,acc=0,fps=0,fr=0,ft=0,uiT=0,sndT=0,drag=false,prevOver=false;
+function clamp(a,b,c){return Math.max(b,Math.min(c,a));}
+function forceLin(xx){return S.k*Math.abs(xx)/100;}
+function forceActual(xx){var a=Math.abs(xx),L=S.limit,Fl=S.k*L/100;if(a<=L)return S.k*a/100;return Fl+(S.k/100)*(a-L)*0.25;}
+function energy(xx){var xm=xx/100;return 0.5*S.k*xm*xm;}
+function curX(){return S.mode==='v'?clamp(S.mass/1000*G/S.k*100,-12,12):x;}
+function resize(){var r=stage.getBoundingClientRect();W=Math.max(220,Math.round(r.width));H=Math.max(180,Math.round(r.height));cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0);}
+if(window.ResizeObserver){new ResizeObserver(resize).observe(stage);}
+window.addEventListener('resize',resize);
+function reset(hard){x=4;v=0;osc=false;if(hard)seed=20261125>>>0;send({type:'system',message:'reset'});}
+function sync(){
+ document.getElementById('k').value=S.k;document.getElementById('vK').textContent=S.k;
+ document.getElementById('x').value=x;document.getElementById('vX').textContent=x.toFixed(1);
+ document.getElementById('m').value=S.mass;document.getElementById('vM').textContent=S.mass;
+ document.getElementById('lim').value=S.limit;document.getElementById('vL').textContent=S.limit;
+ document.getElementById('spd').value=S.speed;document.getElementById('vS').textContent=S.speed.toFixed(1);
+ document.getElementById('mat').value=S.mat;
+ document.getElementById('tVec').checked=S.vectors;document.getElementById('tGrid').checked=S.grid;
+ document.getElementById('tGhost').checked=S.ghost;document.getElementById('tEn').checked=S.energy;
+ document.getElementById('mH').classList.toggle('on',S.mode==='h');
+ document.getElementById('mV').classList.toggle('on',S.mode==='v');
+ var vert=S.mode==='v';
+ document.getElementById('x').disabled=vert;
+ document.getElementById('ctlX').classList.toggle('off',vert);
+ document.getElementById('bRel').disabled=vert;
+ document.getElementById('bRel').style.opacity=vert?'.4':'1';
+}
+function act(id,val){var n=performance.now();if(n-sndT>80){sndT=n;send({type:'interaction',control:id,value:val});}}
+function step(dt){
+ if(osc&&S.mode==='h'){var m=S.mass/1000,om2=S.k/m,c=2*0.12*Math.sqrt(S.k*m);var a=(-S.k*(x/100)-c*v)/m*100;v+=a*dt;x+=v*dt;if(x>12){x=12;v=-v*0.3;}if(x<-12){x=-12;v=-v*0.3;}if(Math.abs(v)<0.05&&Math.abs(x)<0.05){osc=false;v=0;x=0;}}
+ t+=dt;
+}
+function rr(c,xx,yy,w,h,r){c.beginPath();c.moveTo(xx+r,yy);c.arcTo(xx+w,yy,xx+w,yy+h,r);c.arcTo(xx+w,yy+h,xx,yy+h,r);c.arcTo(xx,yy+h,xx,yy,r);c.arcTo(xx,yy,xx+w,yy,r);c.closePath();}
+function arrow(x1,y1,x2,y2,col,label){var dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy);if(L<3)return;var ux=dx/L,uy=dy/L,hl=Math.min(11,L*0.34);ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2-ux*hl*0.7,y2-uy*hl*0.7);ctx.stroke();ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-ux*hl-uy*hl*0.42,y2-uy*hl+ux*hl*0.42);ctx.lineTo(x2-ux*hl+uy*hl*0.42,y2-uy*hl-ux*hl*0.42);ctx.closePath();ctx.fill();if(label){ctx.font='700 11px '+MONO;var tw=ctx.measureText(label).width,tx=x2-tw/2,ty=y2+(dy<0?-10:19);ctx.fillStyle='rgba(7,13,18,.85)';rr(ctx,tx-5,ty-11,tw+10,16,5);ctx.fill();ctx.fillStyle=col;ctx.fillText(label,tx,ty);}}
+function springH(x1,x2,y,amp,col,lw){var n=24;ctx.beginPath();ctx.moveTo(x1,y);for(var i=1;i<n;i++){var px=x1+(x2-x1)*i/n,py=y+(i%2?amp:-amp);ctx.lineTo(px,py);}ctx.lineTo(x2,y);ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.lineJoin='round';ctx.stroke();}
+function springV(y1,y2,xx,amp,col,lw){var n=24;ctx.beginPath();ctx.moveTo(xx,y1);for(var i=1;i<n;i++){var py=y1+(y2-y1)*i/n,px=xx+(i%2?amp:-amp);ctx.lineTo(px,py);}ctx.lineTo(xx,y2);ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.lineJoin='round';ctx.stroke();}
+function draw(){
+ ctx.clearRect(0,0,W,H);
+ var gh=Math.min(170,Math.max(120,H*0.34)),sh=H-gh;
+ var cx=curX(),F=forceActual(cx),over=Math.abs(cx)>S.limit;
+ if(S.mode==='h')drawH(0,0,W,sh,cx,F,over);else drawV(0,0,W,sh,cx,F,over);
+ drawGraph(0,sh,W,gh,cx,F,over);
+ var st=over?'ПЛАСТИЧЕСКАЯ':(osc?'КОЛЕБАНИЯ':(Math.abs(cx)<0.05?'ПОКОЙ':'УПРУГАЯ'));
+ var hs=document.getElementById('hState');hs.textContent=st;hs.classList.toggle('warn',over);
+ document.getElementById('hF').textContent='F = '+F.toFixed(2)+' Н';
+}
+function drawH(ox,oy,w,h,cx,F,over){
+ var worldW=28,worldH=12,sc=Math.min((w-24)/worldW,(h-24)/worldH);
+ var X=function(c){return ox+(w-worldW*sc)/2+c*sc;},Y=function(c){return oy+(h-worldH*sc)/2+c*sc;};
+ var railY=8,blockW=4,blockH=4,natLeft=15,left=natLeft+cx;
+ ctx.fillStyle='#16232c';rr(ctx,X(0),Y(1),1*sc,9*sc,4);ctx.fill();
+ ctx.strokeStyle='rgba(143,179,199,.4)';ctx.lineWidth=1.4;rr(ctx,X(0),Y(1),1*sc,9*sc,4);ctx.stroke();
+ ctx.strokeStyle='rgba(143,179,199,.25)';ctx.lineWidth=1;
+ for(var i=0;i<8;i++){ctx.beginPath();ctx.moveTo(X(0),Y(1.5+i));ctx.lineTo(X(-0.6),Y(2.1+i));ctx.stroke();}
+ ctx.strokeStyle='rgba(143,179,199,.5)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(X(1),Y(railY));ctx.lineTo(X(27),Y(railY));ctx.stroke();
+ if(S.grid){ctx.strokeStyle='rgba(122,168,196,.14)';ctx.lineWidth=1;ctx.font='9px '+MONO;ctx.fillStyle='rgba(127,160,178,.7)';
+  for(var c=0;c<=26;c+=2){ctx.beginPath();ctx.moveTo(X(c),Y(railY));ctx.lineTo(X(c),Y(railY+0.5));ctx.stroke();if(c%4===0)ctx.fillText(String(c-15),X(c)-4,Y(railY+1.4));}}
+ if(S.ghost){ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(143,179,199,.4)';ctx.lineWidth=1.2;rr(ctx,X(natLeft),Y(railY-blockH),blockW*sc,blockH*sc,5);ctx.stroke();ctx.setLineDash([]);}
+ var mat=MATS[S.mat],amp=Math.min(1.6*sc,2.2*sc);
+ ctx.save();ctx.shadowColor=over?'rgba(255,84,104,.7)':'rgba(70,224,138,.5)';ctx.shadowBlur=10;
+ springH(X(1),X(left),Y(railY-blockH/2),amp,over?'#ff5468':mat.col,Math.max(2,0.28*sc));ctx.restore();
+ var bx=X(left),by=Y(railY-blockH);
+ var g=ctx.createLinearGradient(bx,by,bx,by+blockH*sc);g.addColorStop(0,'#e9dfcf');g.addColorStop(1,'#9aa7ad');
+ ctx.save();ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=12;ctx.shadowOffsetY=4;rr(ctx,bx,by,blockW*sc,blockH*sc,6);ctx.fillStyle=g;ctx.fill();ctx.restore();
+ ctx.strokeStyle=over?'#ff5468':'rgba(255,255,255,.4)';ctx.lineWidth=1.4;rr(ctx,bx,by,blockW*sc,blockH*sc,6);ctx.stroke();
+ ctx.strokeStyle='rgba(10,16,21,.4)';ctx.lineWidth=1.5;
+ for(var q=1;q<=3;q++){ctx.beginPath();ctx.moveTo(bx+blockW*sc*q/4,by+6);ctx.lineTo(bx+blockW*sc*q/4,by+blockH*sc-6);ctx.stroke();}
+ if(Math.abs(cx)>0.1){var yb=Y(railY+1.8);ctx.strokeStyle='#4da3ff';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(X(natLeft),yb);ctx.lineTo(X(left),yb);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(X(natLeft),yb-4);ctx.lineTo(X(natLeft),yb+4);ctx.moveTo(X(left),yb-4);ctx.lineTo(X(left),yb+4);ctx.stroke();
+  ctx.font='700 11px '+MONO;ctx.fillStyle='#4da3ff';var lbl='x = '+cx.toFixed(1)+' см';ctx.fillText(lbl,(X(natLeft)+X(left))/2-ctx.measureText(lbl).width/2,yb+16);}
+ if(S.vectors&&F>0.02){var cy=Y(railY-blockH/2),k=sc*0.9,dir=cx>0?-1:1;
+  arrow(X(left+blockW/2),cy,X(left+blockW/2)+dir*Math.min(7*sc,F*k),cy,'#46e08a','F упр '+F.toFixed(2)+' Н');
+  if(!osc)arrow(X(left+blockW/2),cy+14,X(left+blockW/2)-dir*Math.min(7*sc,F*k),cy+14,'#4da3ff','F тяги');}
+ ctx.font='10px '+MONO;ctx.fillStyle='rgba(127,160,178,.8)';ctx.fillText('тяни брусок ←→',X(18),Y(1.2));
+}
+function drawV(ox,oy,w,h,cx,F,over){
+ var worldW=16,worldH=30,sc=Math.min((w-24)/worldW,(h-20)/worldH);
+ var X=function(c){return ox+(w-worldW*sc)/2+c*sc;},Y=function(c){return oy+(h-worldH*sc)/2+c*sc;};
+ var cxp=8,ceilY=1,natEnd=13,loadH=2.5,loadW=5,end=natEnd+cx;
+ ctx.fillStyle='#16232c';rr(ctx,X(2),Y(0),12*sc,1*sc,3);ctx.fill();
+ ctx.strokeStyle='rgba(143,179,199,.4)';ctx.lineWidth=1.2;rr(ctx,X(2),Y(0),12*sc,1*sc,3);ctx.stroke();
+ if(S.grid){ctx.strokeStyle='rgba(122,168,196,.14)';ctx.lineWidth=1;ctx.font='9px '+MONO;ctx.fillStyle='rgba(127,160,178,.7)';
+  for(var c=0;c<=28;c+=2){ctx.beginPath();ctx.moveTo(X(2),Y(c));ctx.lineTo(X(2.6),Y(c));ctx.stroke();if(c%4===0)ctx.fillText(String(c-13),X(0.6),Y(c)+3);}}
+ if(S.ghost){ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(143,179,199,.4)';ctx.lineWidth=1.2;rr(ctx,X(cxp-loadW/2),Y(natEnd),loadW*sc,loadH*sc,5);ctx.stroke();ctx.setLineDash([]);}
+ var mat=MATS[S.mat],amp=Math.min(1.4*sc,2*sc);
+ ctx.save();ctx.shadowColor=over?'rgba(255,84,104,.7)':'rgba(70,224,138,.5)';ctx.shadowBlur=10;
+ springV(Y(ceilY),Y(end),X(cxp),amp,over?'#ff5468':mat.col,Math.max(2,0.26*sc));ctx.restore();
+ var lx=X(cxp-loadW/2),ly=Y(end);
+ var g=ctx.createLinearGradient(lx,ly,lx,ly+loadH*sc);g.addColorStop(0,'#d9a441');g.addColorStop(1,'#8a6420');
+ ctx.save();ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=12;ctx.shadowOffsetY=4;rr(ctx,lx,ly,loadW*sc,loadH*sc,5);ctx.fillStyle=g;ctx.fill();ctx.restore();
+ ctx.strokeStyle=over?'#ff5468':'rgba(255,255,255,.35)';ctx.lineWidth=1.3;rr(ctx,lx,ly,loadW*sc,loadH*sc,5);ctx.stroke();
+ ctx.font='700 10px '+MONO;ctx.fillStyle='rgba(10,16,21,.8)';var ml=S.mass+' г';ctx.fillText(ml,X(cxp)-ctx.measureText(ml).width/2,ly+loadH*sc/2+3);
+ if(S.vectors&&F>0.02){var cy=ly+loadH*sc/2,k=sc*0.9;
+  arrow(X(cxp),cy,X(cxp),cy-Math.min(7*sc,F*k),'#46e08a','F упр '+F.toFixed(2)+' Н');
+  arrow(X(cxp)+14,cy,X(cxp)+14,cy+Math.min(7*sc,(S.mass/1000*G)*k),'#ffb020','mg');}
+ ctx.font='10px '+MONO;ctx.fillStyle='rgba(127,160,178,.8)';ctx.fillText('динамометр: x = mg/k',X(9),Y(1.2));
+}
+function drawGraph(ox,oy,w,h,cx,F,over){
+ ctx.fillStyle='rgba(10,16,21,.6)';ctx.fillRect(ox,oy,w,h);
+ ctx.strokeStyle='rgba(122,168,196,.2)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ox,oy+0.5);ctx.lineTo(ox+w,oy+0.5);ctx.stroke();
+ var padL=40,padR=14,padT=22,padB=24,gw=w-padL-padR,gh=h-padT-padB;
+ var X=function(c){return ox+padL+(c+12)/24*gw;},Y=function(f){return oy+padT+gh-(f/24)*gh;};
+ ctx.font='700 10px '+MONO;ctx.fillStyle='rgba(143,179,199,.9)';ctx.fillText('F(x) = k·|x|',ox+padL,oy+14);
+ ctx.font='9px '+MONO;ctx.fillStyle='rgba(127,160,178,.7)';
+ ctx.strokeStyle='rgba(122,168,196,.12)';ctx.lineWidth=1;
+ for(var f=0;f<=24;f+=6){ctx.beginPath();ctx.moveTo(ox+padL,Y(f));ctx.lineTo(ox+w-padR,Y(f));ctx.stroke();ctx.fillText(String(f),ox+8,Y(f)+3);}
+ for(var c=-12;c<=12;c+=6){ctx.beginPath();ctx.moveTo(X(c),oy+padT);ctx.lineTo(X(c),oy+padT+gh);ctx.stroke();ctx.fillText(String(c),X(c)-4,oy+h-8);}
+ ctx.fillText('x, см',ox+w-padR-26,oy+h-8);ctx.fillText('F, Н',ox+8,oy+padT-6);
+ if(S.energy&&Math.abs(cx)>0.05){ctx.beginPath();ctx.moveTo(X(0),Y(0));var steps=24;for(var i=0;i<=steps;i++){var xx=cx*i/steps;ctx.lineTo(X(xx),Y(forceActual(xx)));}ctx.lineTo(X(cx),Y(0));ctx.closePath();ctx.fillStyle='rgba(167,139,250,.22)';ctx.fill();}
+ ctx.lineWidth=2.4;ctx.strokeStyle='#4da3ff';ctx.beginPath();ctx.moveTo(X(-S.limit),Y(forceActual(-S.limit)));ctx.lineTo(X(0),Y(0));ctx.lineTo(X(S.limit),Y(forceActual(S.limit)));ctx.stroke();
+ ctx.strokeStyle='#ff5468';ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(X(S.limit),Y(forceActual(S.limit)));for(var a=S.limit;a<=12;a+=0.5)ctx.lineTo(X(a),Y(forceActual(a)));ctx.stroke();ctx.beginPath();ctx.moveTo(X(-S.limit),Y(forceActual(-S.limit)));for(var b=-S.limit;b>=-12;b-=0.5)ctx.lineTo(X(b),Y(forceActual(b)));ctx.stroke();ctx.setLineDash([]);
+ ctx.strokeStyle='rgba(255,176,32,.5)';ctx.setLineDash([3,4]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X(S.limit),oy+padT);ctx.lineTo(X(S.limit),oy+padT+gh);ctx.moveTo(X(-S.limit),oy+padT);ctx.lineTo(X(-S.limit),oy+padT+gh);ctx.stroke();ctx.setLineDash([]);
+ var px=X(cx),py=Y(F);
+ ctx.strokeStyle='rgba(70,224,138,.5)';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,Y(0));ctx.stroke();ctx.setLineDash([]);
+ ctx.save();ctx.shadowColor=over?'#ff5468':'#46e08a';ctx.shadowBlur=12;ctx.fillStyle=over?'#ff5468':'#46e08a';ctx.beginPath();ctx.arc(px,py,5,0,6.284);ctx.fill();ctx.restore();
+ ctx.font='700 10px '+MONO;ctx.fillStyle='rgba(217,164,65,.95)';ctx.fillText('k = '+S.k+' Н/м',ox+padL+gw-78,oy+padT+12);
+}
+function loop(now){requestAnimationFrame(loop);if(!last)last=now;var dt=Math.min(0.05,(now-last)/1000);last=now;fr++;ft+=dt;if(ft>=0.5){fps=Math.round(fr/ft);fr=0;ft=0;}acc+=dt*S.speed;var guard=0;while(acc>=1/120&&guard<40){step(1/120);acc-=1/120;guard++;}if(acc>0.5)acc=0;draw();uiT+=dt;if(uiT>=0.1){uiT=0;var cx=curX(),F=forceActual(cx),over=Math.abs(cx)>S.limit;
+ document.getElementById('oF').textContent=F.toFixed(2);document.getElementById('oX').textContent=cx.toFixed(1);document.getElementById('oK').textContent=S.k;document.getElementById('oE').textContent=energy(cx).toFixed(3);
+ if(S.mode==='h'){document.getElementById('x').value=x;document.getElementById('vX').textContent=x.toFixed(1);}
+ send({type:'state',state:{mode:S.mode,k:S.k,x_cm:+cx.toFixed(2),F_N:+F.toFixed(3),E_J:+energy(cx).toFixed(4),mass_g:S.mass,limit_cm:S.limit,regime:over?'plastic':(osc?'oscillating':'elastic'),fps:fps}});}}
+document.getElementById('mH').addEventListener('click',function(){S.mode='h';osc=false;sync();act('mode','h');});
+document.getElementById('mV').addEventListener('click',function(){S.mode='v';osc=false;sync();act('mode','v');});
+document.getElementById('mat').addEventListener('change',function(){S.mat=this.value;S.k=MATS[this.value].k;sync();act('material',this.value);});
+document.getElementById('k').addEventListener('input',function(){S.k=+this.value;document.getElementById('vK').textContent=S.k;act('k',S.k);});
+document.getElementById('x').addEventListener('input',function(){x=+this.value;osc=false;v=0;document.getElementById('vX').textContent=x.toFixed(1);act('x',x);});
+document.getElementById('m').addEventListener('input',function(){S.mass=+this.value;document.getElementById('vM').textContent=S.mass;act('mass',S.mass);});
+document.getElementById('lim').addEventListener('input',function(){S.limit=+this.value;document.getElementById('vL').textContent=S.limit;act('limit',S.limit);});
+document.getElementById('spd').addEventListener('input',function(){S.speed=+this.value;document.getElementById('vS').textContent=S.speed.toFixed(1);act('speed',S.speed);});
+document.getElementById('tVec').addEventListener('change',function(){S.vectors=this.checked;act('vectors',this.checked);});
+document.getElementById('tGrid').addEventListener('change',function(){S.grid=this.checked;act('grid',this.checked);});
+document.getElementById('tGhost').addEventListener('change',function(){S.ghost=this.checked;act('ghost',this.checked);});
+document.getElementById('tEn').addEventListener('change',function(){S.energy=this.checked;act('energy',this.checked);});
+document.getElementById('bReset').addEventListener('click',function(){reset(true);sync();act('reset',true);});
+document.getElementById('bRand').addEventListener('click',function(){var ms=['steel','copper','rubber'];S.mat=ms[Math.floor(rnd()*3)];S.k=MATS[S.mat].k;x=Math.round((rnd()*24-12)*2)/2;S.mass=Math.round((50+rnd()*950)/10)*10;S.limit=Math.round((3+rnd()*7)*2)/2;osc=false;v=0;sync();act('randomize',{k:S.k,x:x,mass:S.mass});});
+document.getElementById('bRel').addEventListener('click',function(){if(S.mode==='h'){osc=true;send({type:'release',x:x});act('release',x);}});
+document.getElementById('bPng').addEventListener('click',function(){try{send({type:'export',dataURL:cv.toDataURL('image/png')});}catch(e){send({type:'error',message:'export: '+e.message});}});
+function cmFromEvent(e){var r=cv.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;var gh=Math.min(170,Math.max(120,H*0.34)),sh=H-gh;
+ if(S.mode==='h'){var sc=Math.min((W-24)/28,(sh-24)/12);return (px-(W-28*sc)/2)/sc-15;}
+ var sc2=Math.min((W-24)/16,(sh-20)/30);return (py-(sh-30*sc2)/2)/sc2-13;}
+cv.addEventListener('pointerdown',function(e){if(S.mode!=='h')return;drag=true;osc=false;v=0;try{cv.setPointerCapture(e.pointerId);}catch(err){}x=clamp(cmFromEvent(e),-12,12);sync();act('drag',x);});
+cv.addEventListener('pointermove',function(e){if(!drag)return;x=clamp(cmFromEvent(e),-12,12);sync();act('drag',x);});
+cv.addEventListener('pointerup',function(){drag=false;});
+cv.addEventListener('pointercancel',function(){drag=false;});
+window.WidgetAPI={seed:20261125,reset:function(){reset(true);sync();return true;},getState:function(){var cx=curX();return{mode:S.mode,k:S.k,x_cm:+cx.toFixed(2),F_N:+forceActual(cx).toFixed(3),E_J:+energy(cx).toFixed(4),mass_g:S.mass,limit_cm:S.limit};},setState:function(o){for(var k in o){if(k in S)S[k]=o[k];}if(typeof o.x_cm==='number')x=o.x_cm;sync();return window.WidgetAPI.getState();}};
+window.addEventListener('message',function(e){var d=e.data||{};if(d.type==='ping'){send({type:'pong',t:d.t});return;}if(d.type==='cmd'){if(d.cmd==='reset'){reset(true);sync();send({type:'cmd_ack',cmd:'reset',ok:true,req:d.req});}else if(d.cmd==='getState'){send({type:'cmd_ack',cmd:'getState',ok:true,req:d.req,state:window.WidgetAPI.getState()});}else if(d.cmd==='setState'){var st=window.WidgetAPI.setState(d.args||{});send({type:'cmd_ack',cmd:'setState',ok:true,req:d.req,state:st});}else if(d.cmd==='export'){try{send({type:'export',dataURL:cv.toDataURL('image/png'),req:d.req});}catch(err){send({type:'error',message:'export: '+err.message});}}}});
+resize();sync();requestAnimationFrame(loop);
+send({type:'ready',seed:20261125,api:['reset','getState','setState']});
+})();
+</script>
+</template>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s);};
+var frame=$('#wf'),tpl=$('#widgetSrc');
+var sound=true,ac=null,lastBlip=0,errCount=0,lastState=null,startTs=Date.now();
+var TASKS=[
+ {id:'t1',kind:'numeric',title:'Найти силу упругости',
+  q:'Пружина жёсткостью {k} Н/м растянута на {x} см. Найдите силу упругости. Ответ в ньютонах, округлите до сотых.',
+  variants:[{k:50,x:4},{k:100,x:6},{k:40,x:5},{k:200,x:3}],
+  solve:function(p){return p.k*p.x/100;},unit:'Н',
+  hint:'Переведи сантиметры в метры: 4 см = 0,04 м. Затем F = k·x.',
+  explain:'F = k·x = {k} · {x}/100 = {A} Н.'},
+ {id:'t2',kind:'numeric',title:'Найти деформацию',
+  q:'К пружине жёсткостью {k} Н/м приложили силу {F} Н. На сколько сантиметров она растянулась? Ответ в сантиметрах, округлите до сотых.',
+  variants:[{k:50,F:2},{k:100,F:5},{k:40,F:1.2},{k:200,F:6}],
+  solve:function(p){return p.F/p.k*100;},unit:'см',
+  hint:'Из F = k·x вырази x = F/k и переведи метры в сантиметры.',
+  explain:'x = F/k = {F}/{k} = {A} см.'},
+ {id:'t3',kind:'choice',title:'От чего зависит жёсткость',
+  q:'Отметьте все факторы, от которых зависит жёсткость пружины.',
+  options:[{k:'mat',t:'Материал проволоки'},{k:'len',t:'Длина пружины'},{k:'thick',t:'Толщина проволоки'},{k:'turns',t:'Число витков'},{k:'force',t:'Приложенная сила'},{k:'x',t:'Величина деформации'}],
+  correct:['mat','len','thick','turns'],
+  hint:'Жёсткость — свойство самой пружины, а не того, как её тянут.',
+  explain:'Жёсткость зависит от материала, длины, толщины проволоки и числа витков. Приложенная сила и деформация на жёсткость не влияют.'},
+ {id:'t4',kind:'text',title:'Название закона',
+  q:'Как называется закон, связывающий силу упругости и деформацию? Впишите фамилию учёного в родительном падеже.',
+  accept:['гука','гук'],placeholder:'например: ньтона',
+  hint:'Английский учёный XVII века, современник Ньютона.',
+  explain:'Закон Гука: F = k·x при малых упругих деформациях.'}
+];
+var TS={};
+function initState(){TASKS.forEach(function(t){TS[t.id]={solved:false,attempts:0,vi:0};});}
+function fmt(n){return n.toFixed(2).replace('.',',');}
+function fill(str,p,A){return str.replace(/\{(\w+)\}/g,function(m,k){if(k==='A')return A;if(p&&p[k]!==undefined)return String(p[k]).replace('.',',');return m;});}
+function initAudio(){if(ac)return;try{var C=window.AudioContext||window.webkitAudioContext;if(C)ac=new C();}catch(e){}}
+function tone(f,dur,type,vol,slide){if(!sound||!ac)return;if(ac.state==='suspended')ac.resume();var o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;o.type=type||'sine';o.frequency.setValueAtTime(f,n);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,slide),n+dur);g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(vol||0.05,n+0.012);g.gain.exponentialRampToValueAtTime(0.0001,n+dur);o.connect(g);g.connect(ac.destination);o.start(n);o.stop(n+dur+0.03);}
+function sfx(kind){if(!sound||!ac)return;
+ if(kind==='blip'){var n=performance.now();if(n-lastBlip<90)return;lastBlip=n;tone(880,0.05,'triangle',0.022);}
+ else if(kind==='boing'){tone(300,0.28,'sine',0.05,120);}
+ else if(kind==='ok'){[523,659,784].forEach(function(f,i){setTimeout(function(){tone(f,0.22,'sine',0.045);},i*70);});}
+ else if(kind==='no'){tone(190,0.16,'square',0.03,120);}
+ else if(kind==='ready'){tone(440,0.12,'sine',0.035);setTimeout(function(){tone(660,0.16,'sine',0.035);},110);}}
+document.addEventListener('pointerdown',initAudio,{once:true});
+document.addEventListener('keydown',initAudio,{once:true});
+$('#sndBtn').addEventListener('click',function(){sound=!sound;initAudio();this.setAttribute('aria-pressed',String(sound));$('#sndIco').textContent=sound?'🔊':'🔇';$('#sndLbl').textContent=sound?'Звук':'Тихо';this.title=sound?'Звук включён':'Звук выключен';this.style.opacity=sound?'1':'.6';if(sound)sfx('blip');toast(sound?'Звук включён':'Звук выключен');});
+function toast(t){var el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},1900);}
+function download(name,blob){var u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},1500);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function send(msg){try{frame.contentWindow.postMessage(msg,'*');}catch(e){}}
+function bootWidget(){errCount=0;$('#pillErr').textContent='ошибок: 0';$('#pillErr').className='pill';$('#pillReady').textContent='ожидание…';$('#pillReady').className='pill';frame.srcdoc='<!DOCTYPE html>'+tpl.innerHTML;}
+window.addEventListener('message',function(e){
+ if(e.source!==frame.contentWindow)return;var d=e.data||{};
+ if(d.type==='ready'){$('#pillReady').textContent='виджет активен';$('#pillReady').className='pill ok';sfx('ready');}
+ else if(d.type==='state'){lastState=d.state;$('#rF').textContent=d.state.F_N.toFixed(2);$('#rX').textContent=d.state.x_cm.toFixed(1);$('#rK').textContent=d.state.k;$('#rE').textContent=d.state.E_J.toFixed(3);$('#rMode').textContent=d.state.regime==='plastic'?'пластическая':(d.state.regime==='oscillating'?'колебания':'упругая');}
+ else if(d.type==='interaction'){sfx('blip');}
+ else if(d.type==='release'){sfx('boing');}
+ else if(d.type==='cmd_ack'){if(d.state)lastState=d.state;}
+ else if(d.type==='export'){try{var b64=d.dataURL.split(',')[1],bin=atob(b64),arr=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);download('hooke-frame.png',new Blob([arr],{type:'image/png'}));toast('Кадр сохранён');}catch(err){toast('Не удалось сохранить кадр');}}
+ else if(d.type==='error'){errCount++;$('#pillErr').textContent='ошибок: '+errCount;$('#pillErr').className='pill bad';}
+});
+$('#wReset').addEventListener('click',function(){initAudio();sfx('blip');send({type:'cmd',cmd:'reset',req:'reset'});});
+function renderTasks(){
+ $('#taskList').innerHTML=TASKS.map(function(t){
+  var s=TS[t.id],p=t.variants?t.variants[s.vi]:null,body='';
+  if(t.kind==='numeric'){body='<div class="row"><input type="text" inputmode="decimal" id="in-'+t.id+'" placeholder="0,00" aria-label="Ответ"><span style="font:600 13px var(--mono);color:var(--dim)">'+esc(t.unit)+'</span><button class="btn p s" data-check="'+t.id+'">Проверить</button><button class="btn s" data-var="'+t.id+'">Другой вариант</button><button class="btn s" data-hint="'+t.id+'">Подсказка</button></div>';}
+  else if(t.kind==='choice'){body='<div class="opts">'+t.options.map(function(o){return '<label class="opt"><input type="checkbox" value="'+o.k+'" data-g="'+t.id+'"><span>'+esc(o.t)+'</span></label>';}).join('')+'</div><div class="row"><button class="btn p s" data-check="'+t.id+'">Проверить</button><button class="btn s" data-hint="'+t.id+'">Подсказка</button></div>';}
+  else{body='<div class="row"><input type="text" id="in-'+t.id+'" placeholder="'+esc(t.placeholder)+'" aria-label="Ответ словом"><button class="btn p s" data-check="'+t.id+'">Проверить</button><button class="btn s" data-hint="'+t.id+'">Подсказка</button></div>';}
+  var A=t.variants?fmt(t.solve(p)):'';
+  return '<div class="card pad task'+(s.solved?' solved':'')+'" id="task-'+t.id+'"><div class="thead"><span class="badge '+t.kind+'">'+t.kind+'</span><h4>'+esc(t.title)+'</h4><span class="solved-mark">✓ ЗАЧТЕНО</span></div><p class="q">'+esc(fill(t.q,p,''))+'</p>'+body+'<div class="fb" id="fb-'+t.id+'"></div><div class="disclose" id="ex-'+t.id+'"><b>Решение.</b> '+esc(fill(t.explain,p,A))+'</div></div>';
+ }).join('');
+ updateProgress();
+}
+function updateProgress(){var n=TASKS.filter(function(t){return TS[t.id].solved;}).length;$('#pTxt').textContent=n+' / '+TASKS.length;$('#pBar').style.width=(n/TASKS.length*100)+'%';$('#hdrProg').textContent=n+' / '+TASKS.length;updateResults();}
+function fb(id,cls,txt){var el=$('#fb-'+id);el.className='fb show '+cls;el.innerHTML=txt;}
+function markSolved(t){TS[t.id].solved=true;$('#task-'+t.id).classList.add('solved');sfx('ok');updateProgress();}
+function parseNum(raw,unit){var s=raw.trim().toLowerCase().replace(/,/g,'.');s=s.replace(/\s*(н|n|ньютон\w*|см|cm|м|m)$/,'').trim();return parseFloat(s);}
+function checkTask(id){
+ var t=TASKS.filter(function(x){return x.id===id;})[0],s=TS[id];initAudio();
+ if(t.kind==='numeric'){
+  var val=parseNum($('#in-'+id).value||'',t.unit);
+  if(!isFinite(val)){fb(id,'no','Введите число. Например: 2,00');sfx('no');return;}
+  var p=t.variants[s.vi],exact=t.solve(p),tol=Math.max(0.005,Math.abs(exact)*0.01);s.attempts++;
+  if(Math.abs(val-exact)<=tol){fb(id,'ok','Верно. Ответ: '+fmt(exact)+' '+t.unit+'. Вычислено по формуле, допуск 1 %.');markSolved(t);$('#ex-'+id).classList.add('show');}
+  else{var card=$('#task-'+id);card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');fb(id,'no','Пока нет. Попытка '+s.attempts+'. Проверь перевод единиц.'+(s.attempts>=2?' Решение открыто ниже.':''));sfx('no');if(s.attempts>=2)$('#ex-'+id).classList.add('show');}
+ }else if(t.kind==='choice'){
+  var got=Array.prototype.slice.call(document.querySelectorAll('[data-g="'+id+'"]:checked')).map(function(x){return x.value;});
+  if(!got.length){fb(id,'no','Отметьте хотя бы один вариант.');sfx('no');return;}
+  s.attempts++;var ok=got.length===t.correct.length&&t.correct.every(function(k){return got.indexOf(k)>=0;});
+  if(ok){fb(id,'ok','Верно: материал, длина, толщина проволоки и число витков.');markSolved(t);$('#ex-'+id).classList.add('show');}
+  else{var hit=got.filter(function(k){return t.correct.indexOf(k)>=0;}).length;fb(id,'no','Не то. Верных отмечено: '+hit+' из '+t.correct.length+', лишних: '+(got.length-hit)+'.');sfx('no');if(s.attempts>=2)$('#ex-'+id).classList.add('show');}
+ }else{
+  var v=($('#in-'+id).value||'').trim().toLowerCase().replace(/ё/g,'е');
+  if(!v){fb(id,'no','Впишите слово.');sfx('no');return;}
+  s.attempts++;
+  if(t.accept.indexOf(v)>=0){fb(id,'ok','Верно — закон Гука.');markSolved(t);$('#ex-'+id).classList.add('show');}
+  else{fb(id,'no','Не то слово. Попытка '+s.attempts+'.');sfx('no');if(s.attempts>=2)$('#ex-'+id).classList.add('show');}
+ }
+}
+$('#taskList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+ if(b.dataset.check)checkTask(b.dataset.check);
+ else if(b.dataset.hint){var t=TASKS.filter(function(x){return x.id===b.dataset.hint;})[0];fb(t.id,'hint','Подсказка: '+t.hint);sfx('blip');}
+ else if(b.dataset.var){var id=b.dataset.var,s=TS[id],t=TASKS.filter(function(x){return x.id===id;})[0];s.vi=(s.vi+1)%t.variants.length;s.solved=false;s.attempts=0;renderTasks();toast('Новый вариант задачи');sfx('blip');}});
+$('#taskList').addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.tagName==='INPUT'&&e.target.type==='text'){var card=e.target.closest('.task');if(card)checkTask(card.id.replace('task-',''));}});
+$('#resetTasks').addEventListener('click',function(){initState();renderTasks();toast('Прогресс сброшен');sfx('blip');});
+function updateResults(){
+ var n=TASKS.filter(function(t){return TS[t.id].solved;}).length;
+ var att=TASKS.reduce(function(a,t){return a+TS[t.id].attempts;},0);
+ var sec=Math.floor((Date.now()-startTs)/1000),mm=Math.floor(sec/60),ss=sec%60;
+ $('#stSolved').textContent=n+' / '+TASKS.length;$('#stAttempts').textContent=String(att);$('#stTime').textContent=mm+':'+(ss<10?'0':'')+ss;$('#stPct').textContent=Math.round(n/TASKS.length*100)+'%';
+ $('#doneBanner').classList.toggle('show',n===TASKS.length);
+}
+setInterval(updateResults,1000);
+$('#repBtn').addEventListener('click',function(){
+ var report={lesson:'phys-7-019',topic:'Сила упругости. Закон Гука',generated:new Date().toISOString(),url:location.href,
+  tasks:TASKS.map(function(t){return{id:t.id,kind:t.kind,solved:TS[t.id].solved,attempts:TS[t.id].attempts};}),
+  widget:lastState,widget_errors:errCount,elapsed_sec:Math.floor((Date.now()-startTs)/1000)};
+ download('phys-7-019-report.json',new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));toast('Отчёт сохранён');sfx('blip');});
+var navLinks=Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+if('IntersectionObserver' in window){
+ var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting)en.target.classList.add('in');});},{threshold:.08});
+ document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+ var so=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){navLinks.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id);});}});},{rootMargin:'-120px 0px -65% 0px'});
+ document.querySelectorAll('main section').forEach(function(s){so.observe(s);});
+}else{document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});}
+initState();renderTasks();bootWidget();updateResults();
+})();
+</script>
+</body>
+</html>
