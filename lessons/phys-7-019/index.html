@@ -129,12 +129,13 @@ iframe{display:block;width:100%;height:660px;border:0;background:#0a1510}
 .rs.warn b{color:var(--danger)}
 .rs.st b{font-size:13px;color:var(--flesh)}
 
-.task{margin-bottom:0}
 .thead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .tb{font:700 9px/1 var(--mono);letter-spacing:.12em;padding:5px 8px;border-radius:6px;text-transform:uppercase}
 .tb.numeric{background:rgba(53,214,192,.16);color:var(--acc)}
 .tb.choice{background:rgba(167,139,250,.18);color:var(--violet)}
-.tb.order{background:rgba(255,176,32,.16);color:var(--amber)}
+.tb.match{background:rgba(255,176,32,.16);color:var(--amber)}
+.tb.life{background:rgba(181,118,58,.2);color:var(--pit)}
+.tb.limit{background:rgba(255,95,95,.16);color:var(--danger)}
 .thead h4{margin:0;font-size:15.5px;flex:1;min-width:140px}
 .solvedmark{font:700 11px/1 var(--mono);color:var(--success);opacity:0;transition:.3s}
 .task.solved .solvedmark{opacity:1}
@@ -149,13 +150,25 @@ input[type=text]::placeholder{color:var(--dim);font-weight:400}
 .opt input{accent-color:var(--acc);width:17px;height:17px;flex:none}
 .opt.right{border-color:rgba(143,224,74,.55);background:rgba(143,224,74,.12)}
 .opt.wrong{border-color:rgba(255,95,95,.5);background:rgba(255,95,95,.1)}
-.ordrow{display:flex;align-items:center;gap:11px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:rgba(13,26,17,.45);margin-bottom:7px}
-.ordrow .idx{font:700 12px/1 var(--mono);color:var(--acc);width:18px;flex:none}
-.ordrow .nm{flex:1;font-size:14px;min-width:0}
-.ordrow .kv{font:11.5px/1 var(--mono);color:var(--dim);white-space:nowrap}
-.arrows{display:flex;gap:4px;flex:none}
-.arrows button{width:28px;height:26px;border-radius:7px;background:rgba(53,214,192,.1);border:1px solid var(--line2);color:var(--acc);font-size:12px;line-height:1}
-.arrows button:hover{background:rgba(53,214,192,.24)}
+
+.match{display:grid;grid-template-columns:1fr 168px;gap:12px;margin-bottom:12px}
+.mcol{display:flex;flex-direction:column;gap:7px;min-width:0}
+.mhint{font:700 9px/1 var(--mono);letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:2px}
+.mobj{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:11px;background:rgba(13,26,17,.5);border:1px solid var(--line);color:var(--cream);cursor:pointer;text-align:left;width:100%;transition:.16s}
+.mobj:hover{border-color:var(--line2);background:rgba(53,214,192,.08)}
+.mobj.sel{border-color:var(--acc);background:rgba(53,214,192,.16);box-shadow:0 0 0 1px var(--acc)}
+.mobj.paired{border-left:3px solid var(--flesh)}
+.mobj.ok{border-color:rgba(143,224,74,.55);background:rgba(143,224,74,.1)}
+.mobj.bad{border-color:rgba(255,95,95,.5);background:rgba(255,95,95,.09)}
+.mobj .nm{flex:1;font-size:13.5px;min-width:0}
+.mobj .slot{font:700 12px/1 var(--mono);color:var(--dim);padding:5px 8px;border-radius:7px;border:1px dashed var(--line2);white-space:nowrap;flex:none}
+.mobj.paired .slot{color:var(--flesh);border-style:solid;border-color:rgba(168,210,74,.5);background:rgba(168,210,74,.1)}
+.mval{padding:10px 8px;border-radius:11px;background:rgba(13,26,17,.5);border:1px solid var(--line2);color:var(--acc);font:700 14px/1 var(--mono);cursor:pointer;text-align:center;transition:.16s;width:100%}
+.mval:hover{background:rgba(53,214,192,.16);transform:translateY(-2px)}
+.mval.used{opacity:.32;cursor:default;text-decoration:line-through}
+.mval.used:hover{transform:none;background:rgba(13,26,17,.5)}
+.mnote{font:11.5px/1.5 var(--sans);color:var(--dim);margin-bottom:10px}
+
 .fb{margin-top:12px;font-size:13.5px;padding:11px 14px;border-radius:11px;display:none}
 .fb.show{display:block}
 .fb.ok{background:rgba(143,224,74,.12);border:1px solid rgba(143,224,74,.42);color:#d3f5bb}
@@ -206,7 +219,7 @@ footer svg{width:24px;height:auto}
 
 @media(max-width:1040px){.lesson{grid-template-columns:1fr}.lside{position:static}}
 @media(max-width:900px){main{padding-top:132px}.tnav{order:3;width:100%;flex:1 0 100%}iframe{height:900px}.lnav{grid-template-columns:1fr}}
-@media(max-width:560px){input[type=text]{width:100%}.ordrow .kv{display:none}.lhead{padding:18px}.pad{padding:16px}}
+@media(max-width:560px){input[type=text]{width:100%}.lhead{padding:18px}.pad{padding:16px}.match{grid-template-columns:1fr}.mcol.vals{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.mcol.vals .mhint{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.reveal{opacity:1;transform:none}}
 </style>
 </head>
@@ -224,7 +237,7 @@ footer svg{width:24px;height:auto}
     <span class="cur">Урок 19 · Закон Гука</span>
   </nav>
   <div class="acts">
-    <span class="pill acc" id="taskPill">0 / 5 задач</span>
+    <span class="pill acc" id="taskPill">задачи</span>
     <button class="iconbtn" id="sndBtn" aria-pressed="true" title="Звук включён"><span id="sndIco">🔊</span></button>
     <a class="btn p s" href="#tasks">К задачам</a>
   </div>
@@ -371,7 +384,6 @@ function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
 function send(m){try{parent.postMessage(m,'*');}catch(e){}}
 window.onerror=function(msg,src,line,col){send({type:'error',message:String(msg),line:line,col:col});return false;};
 var MONO='"Cascadia Mono",Consolas,ui-monospace,monospace';
-var SANS='"Segoe UI",system-ui,Arial,sans-serif';
 var C={acc:'#35d6c0',acc2:'#8bf0e2',flesh:'#a8d24a',lime:'#d8f283',pit:'#b5763a',cream:'#f5f1e3',
  muted:'#a9bfa0',dim:'#6f8a68',amber:'#ffb020',danger:'#ff5f5f',success:'#8fe04a',violet:'#a78bfa',skin:'#3f6b3a'};
 
@@ -432,7 +444,7 @@ function sync(){
   document.getElementById('vX').textContent=fmt(d.v,d.d);
   document.getElementById('pctX').textContent=Math.round(S.x/p.lim*100)+' %';
   document.getElementById('oK').textContent=String(p.k);
-  document.getElementById('oL').textContent=fmt(p.unit==='мм'?p.lim*1000:p.lim*100,p.unit==='мм'?0:0);
+  document.getElementById('oL').textContent=fmt(p.unit==='мм'?p.lim*1000:p.lim*100,0);
   document.getElementById('note').textContent=p.note+' Типичная нагрузка '+p.load+' Н.';
   document.getElementById('vS').textContent=S.speed.toFixed(1);
   document.getElementById('tVec').checked=S.vec;document.getElementById('tRul').checked=S.rul;
@@ -543,7 +555,7 @@ function drawBook(){
     ctx.strokeStyle='rgba(168,210,74,.4)';ctx.lineWidth=1.6;
     ctx.beginPath();ctx.moveTo(rx,topY+natL-10);ctx.lineTo(rx,H-24);ctx.stroke();
     var span=p.unit==='мм'?p.lim*1000*1.3:p.lim*100*1.3;
-    var stepMajor=p.unit==='мм'?2:2;
+    var stepMajor=2;
     for(var v=0;v<=span+0.001;v+=stepMajor/2){
       var yy=topY+natL+(v/span)*maxExt*1.3;
       if(yy>H-20)break;
@@ -728,6 +740,7 @@ function state(){
     over_limit:over(),oscillating:S.osc,speed:S.speed,
     vectors:S.vec,ruler:S.rul,limit_shown:S.lim,graph:S.gr,seed:20261126};
 }
+function p_hud(){var p=P();return 'k = '+p.k+' Н/м';}
 function loop(now){
   requestAnimationFrame(loop);
   if(!last)last=now;
@@ -752,7 +765,6 @@ function loop(now){
     document.getElementById('pctX').textContent=Math.round(S.x/P().lim*100)+' %';
     send({type:'state',state:state()});}
 }
-function p_hud(){var p=P();return 'k = '+p.k+' Н/м';}
 
 window.WidgetAPI={
   seed:20261126,
@@ -794,15 +806,23 @@ send({type:'ready',seed:20261126,api:['reset','getState','setState'],presets:PRE
 'use strict';
 var $=function(s){return document.querySelector(s);};
 
-/* ================= ДАННЫЕ УРОКА ================= */
+/* ================= ПРЕСЕТЫ: единый источник чисел ================= */
 var PRESETS=[
  {id:'dyn', name:'Пружина динамометра',    k:50,    lim:0.080, load:2,    unit:'см', life:'scale', note:'Предел упругости 8 см.'},
  {id:'pen', name:'Пружина шариковой ручки',k:400,   lim:0.010, load:3,    unit:'мм', life:'pen',   note:'Предел упругости 10 мм.'},
- {id:'bat', name:'Пружины батута',         k:2000,  lim:0.600, load:800,  unit:'см', life:'tramp', note:'Предел прогиба 60 см.'},
+ {id:'bat', name:'Пружина батута',         k:2000,  lim:0.600, load:800,  unit:'см', life:'tramp', note:'Предел прогиба 60 см.'},
  {id:'grip',name:'Кистевой эспандер',      k:4000,  lim:0.040, load:120,  unit:'см', life:'grip',  note:'Предел сжатия 4 см.'},
  {id:'car', name:'Пружина подвески авто',  k:25000, lim:0.120, load:2500, unit:'см', life:'car',   note:'Ход подвески 12 см.'}
 ];
+var G=9.8;
+function preset(id){var r=null;PRESETS.forEach(function(p){if(p.id===id)r=p;});return r;}
 
+/* ================= ФОРМАТ ЧИСЕЛ ================= */
+function fmt(v,d){return v.toFixed(d===undefined?2:d).replace('.',',');}
+function nice(v){return Math.abs(v-Math.round(v))<1e-9?String(Math.round(v)):fmt(v,2);}
+function mstr(v){return String(parseFloat(v.toFixed(6))).replace('.',',');}
+
+/* ================= ДАННЫЕ УРОКА ================= */
 var LESSON={
   id:'phys-7-019', num:19, subject:'Физика', grade:7,
   section:'Движение и взаимодействие тел', title:'Сила упругости. Закон Гука', minutes:50,
@@ -837,54 +857,94 @@ var LESSON={
     'Нахожу любую из трёх величин: силу, деформацию, жёсткость',
     'Проверяю, не вышел ли расчёт за предел упругости'
   ],
-  tip:'Выбери реальный объект слева и нажми «Отпустить». Пружина сама найдёт равновесие — а потом переключи режим «Из жизни» и посмотри, где эта пружина живёт.',
+  tip:'Выбери реальный объект и нажми «Отпустить»: пружина сама найдёт равновесие. Потом переключи режим «Из жизни» — увидишь, где эта пружина работает на самом деле.',
   prev:{n:18,t:'Задачи на плотность'},
   next:{n:20,t:'Растяжение пружины и приложенная сила'}
 };
 
+/* ================= ЗАДАНИЯ: 6 штук, ответы считает код ================= */
 var TASKS=[
- {id:'t1',kind:'numeric',title:'Найти силу упругости',
-  text:'Пружина жёсткостью {k} Н/м растянута на {x} см. Найдите силу упругости.',
-  variants:[{k:50,x:4},{k:50,x:6},{k:100,x:5},{k:200,x:3},{k:400,x:2}],
-  solve:function(v){return v.k*v.x/100;},unit:'Н',
-  hint:'Переведи сантиметры в метры: раздели на 100.',
-  explain:'F = k · x. Деформация в метрах: {x} см = {xm} м. F = {k} · {xm} = {a} Н.'},
- {id:'t2',kind:'numeric',title:'Найти деформацию',
-  text:'К пружине жёсткостью {k} Н/м приложили силу {F} Н. Найдите деформацию в сантиметрах.',
-  variants:[{k:50,F:2},{k:100,F:3},{k:200,F:8},{k:400,F:4},{k:2000,F:60}],
-  solve:function(v){return v.F/v.k*100;},unit:'см',
-  hint:'Из F = k·x вырази x = F / k, затем переведи метры в сантиметры.',
-  explain:'x = F / k = {F} / {k} = {xm} м = {a} см.'},
- {id:'t3',kind:'numeric',title:'Найти жёсткость',
-  text:'Пружина растянулась на {x} см под действием силы {F} Н. Найдите жёсткость в Н/м.',
-  variants:[{x:4,F:2},{x:5,F:5},{x:2,F:8},{x:3,F:12},{x:10,F:20}],
-  solve:function(v){return v.F/(v.x/100);},unit:'Н/м',
-  hint:'k = F / x, деформацию предварительно переведи в метры.',
-  explain:'k = F / x = {F} / {xm} = {a} Н/м.'},
- {id:'t4',kind:'choice',title:'От чего зависит жёсткость',
-  text:'От чего зависит жёсткость пружины?',
-  options:['От приложенной силы','От материала, длины и толщины проволоки','От величины деформации','От того, растягивают пружину или сжимают'],
+ {id:'t1',kind:'numeric',tag:'расчёт',tagClass:'numeric',title:'Сила упругости реального объекта',unit:'Н',
+  variants:[
+   {obj:'Пружина динамометра',      k:50,    xd:4,  unit:'см', xm:0.04,  verb:'растянута'},
+   {obj:'Пружина шариковой ручки',  k:400,   xd:5,  unit:'мм', xm:0.005, verb:'сжата'},
+   {obj:'Пружина батута',           k:2000,  xd:30, unit:'см', xm:0.30,  verb:'растянута'},
+   {obj:'Кистевой эспандер',        k:4000,  xd:2,  unit:'см', xm:0.02,  verb:'сжат'},
+   {obj:'Пружина подвески авто',    k:25000, xd:8,  unit:'см', xm:0.08,  verb:'сжата'}
+  ],
+  solve:function(v){return v.k*v.xm;},
+  text:function(v){return v.obj+' жёсткостью '+v.k+' Н/м '+v.verb+' на '+nice(v.xd)+' '+v.unit+'. Найдите силу упругости.';},
+  hint:'Деформацию переведи в метры: сантиметры раздели на 100, миллиметры — на 1000.',
+  explain:function(v,a){return 'x = '+nice(v.xd)+' '+v.unit+' = '+mstr(v.xm)+' м. F = k · x = '+v.k+' · '+mstr(v.xm)+' = '+nice(a)+' Н.';}},
+
+ {id:'t2',kind:'numeric',tag:'расчёт',tagClass:'numeric',title:'Деформация по приложенной силе',unit:'см',
+  variants:[
+   {obj:'Пружина динамометра',     k:50,    F:3,    unit:'см', verb:'растянута'},
+   {obj:'Пружина шариковой ручки', k:400,   F:2,    unit:'мм', verb:'сжата'},
+   {obj:'Пружина батута',          k:2000,  F:600,  unit:'см', verb:'растянута'},
+   {obj:'Кистевой эспандер',       k:4000,  F:100,  unit:'см', verb:'сжат'},
+   {obj:'Пружина подвески авто',   k:25000, F:2000, unit:'см', verb:'сжата'}
+  ],
+  solve:function(v){return v.F/v.k*(v.unit==='мм'?1000:100);},
+  text:function(v){return v.obj+' жёсткостью '+v.k+' Н/м '+v.verb+' силой '+nice(v.F)+' Н. Найдите деформацию в '+v.unit+'.';},
+  hint:'Из F = k · x вырази x = F / k, получишь метры. Потом переведи в нужную единицу.',
+  explain:function(v,a){return 'x = F / k = '+nice(v.F)+' / '+v.k+' = '+mstr(v.F/v.k)+' м = '+nice(a)+' '+v.unit+'.';},
+  unitOf:function(v){return v.unit;}},
+
+ {id:'t3',kind:'numeric',tag:'из жизни',tagClass:'life',title:'Подвеска автомобиля: два шага',unit:'см',
+  variants:[{k:25000,m:250},{k:25000,m:280},{k:30000,m:250},{k:30000,m:350},{k:20000,m:220}],
+  solve:function(v){return v.m*G/v.k*100;},
+  text:function(v){return 'На одну пружину подвески автомобиля жёсткостью '+v.k+' Н/м приходится нагрузка '+v.m+' кг. На сколько сантиметров сжалась пружина? Принять g = 9,8 Н/кг, ответ округлить до сотых.';},
+  hint:'Сначала найди силу: F = m · g. Только потом x = F / k.',
+  explain:function(v,a){return 'F = m · g = '+v.m+' · 9,8 = '+nice(v.m*G)+' Н. x = F / k = '+nice(v.m*G)+' / '+v.k+' = '+mstr(v.m*G/v.k)+' м = '+nice(a)+' см.';}},
+
+ {id:'t4',kind:'choice',tag:'выбор',tagClass:'choice',title:'Что происходит за пределом упругости',
+  text:'Пружину растянули сильнее предела упругости. Что произойдёт?',
+  options:[
+   'Сила упругости вырастет, и закон Гука продолжит работать точно',
+   'Деформация станет пластической: пружина не вернётся к исходной длине, график уйдёт от прямой',
+   'Жёсткость пружины увеличится пропорционально деформации',
+   'Сила упругости исчезнет полностью'
+  ],
   correct:1,
-  hint:'Жёсткость — свойство самой пружины, а не нагрузки.',
-  explain:'Жёсткость задаётся материалом, длиной пружины, толщиной проволоки и числом витков. Сила и деформация на неё не влияют: они связаны между собой через k.'},
- {id:'t5',kind:'order',title:'Объекты по возрастанию жёсткости',
-  text:'Расположи реальные объекты из симуляции по возрастанию жёсткости.',
-  items:PRESETS.map(function(p){return {k:p.id,t:p.name,val:p.k};}),
-  correct:['dyn','pen','bat','grip','car'],
-  start:['bat','car','dyn','grip','pen'],
-  hint:'Сравни числа k в панели симуляции: от 50 до 25000 Н/м.',
-  explain:'Динамометр 50 → ручка 400 → батут 2000 → эспандер 4000 → подвеска автомобиля 25000 Н/м.'}
+  hint:'Вспомни, чем отличается упругая деформация от пластической.',
+  explain:'За пределом упругости деформация необратима, прямая пропорциональность силы и смещения нарушается. Жёсткость — свойство самой пружины, от деформации она не зависит.'},
+
+ {id:'t5',kind:'match',tag:'сопоставление',tagClass:'match',title:'Объект и его жёсткость',
+  text:'Сопоставь каждый объект с его жёсткостью. Нажми объект, затем значение справа.',
+  items:PRESETS.map(function(p){return {k:p.id,t:p.name};}),
+  pool:[4000,50,25000,400,2000],
+  answer:{dyn:50,pen:400,bat:2000,grip:4000,car:25000},
+  hint:'Порядок величин: динамометр — десятки Н/м, подвеска автомобиля — десятки тысяч.',
+  explain:'Динамометр 50 → ручка 400 → батут 2000 → эспандер 4000 → подвеска автомобиля 25000 Н/м. Разброс в 500 раз, и именно поэтому один и тот же закон описывает и кнопку ручки, и колесо машины.'},
+
+ {id:'t6',kind:'numeric',tag:'границы',tagClass:'limit',title:'Выйдет ли деформация за предел',unit:'см',
+  variants:[
+   {obj:'Пружина динамометра', k:50,   lim:8,  F:5},
+   {obj:'Пружина динамометра', k:50,   lim:8,  F:3},
+   {obj:'Кистевой эспандер',   k:4000, lim:4,  F:200},
+   {obj:'Кистевой эспандер',   k:4000, lim:4,  F:120},
+   {obj:'Пружина батута',      k:2000, lim:60, F:1400}
+  ],
+  solve:function(v){return Math.max(0,v.F/v.k*100-v.lim);},
+  text:function(v){return v.obj+' имеет жёсткость '+v.k+' Н/м и предел упругости '+v.lim+' см. К ней приложили силу '+nice(v.F)+' Н. На сколько сантиметров деформация выйдет за предел упругости? Если не выйдет — введи 0.';},
+  hint:'Посчитай x = F / k в сантиметрах и сравни с пределом. Разницу отрицательной не делают: если x меньше предела, ответ 0.',
+  explain:function(v,a){var x=v.F/v.k*100;
+    return 'x = F / k = '+nice(v.F)+' / '+v.k+' = '+mstr(v.F/v.k)+' м = '+nice(x)+' см. Предел '+v.lim+' см. '+
+      (a>0?'Превышение '+nice(a)+' см: за пределом закон Гука уже не работает.'
+          :'Деформация меньше предела, закон применим, ответ 0.');}}
 ];
 
 /* ================= СОСТОЯНИЕ ================= */
-var TS={},sound=true,ac=null,lastTap=0,widgetReady=false,errCount=0,lastState=null;
+var TS={},sound=true,ac=null,lastTap=0,errCount=0;
 var LSKEY='avo-done-'+LESSON.id;
-TASKS.forEach(function(t){TS[t.id]={solved:false,tries:0,vi:0,order:t.start?t.start.slice():null};});
-
+TASKS.forEach(function(t){
+  TS[t.id]={solved:false,tries:0,vi:0,pairs:t.kind==='match'?{}:null,sel:null,checked:false};
+});
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-function fmt(v,d){return v.toFixed(d===undefined?2:d).replace('.',',');}
 function solvedCount(){var n=0;TASKS.forEach(function(t){if(TS[t.id].solved)n++;});return n;}
 function toast(m){var el=$('#toast');el.textContent=m;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},2000);}
+function taskById(id){var r=null;TASKS.forEach(function(t){if(t.id===id)r=t;});return r;}
 
 /* ================= ЗВУК ================= */
 function initAudio(){if(ac)return;try{var C=window.AudioContext||window.webkitAudioContext;if(C)ac=new C();}catch(e){}}
@@ -900,6 +960,7 @@ function tone(f,dur,type,vol,slide){
 function sfx(k){
   if(!sound||!ac)return;
   if(k==='tap'){var n=performance.now();if(n-lastTap<70)return;lastTap=n;tone(760,.05,'triangle',.02);}
+  else if(k==='pair'){tone(620,.07,'triangle',.028);setTimeout(function(){tone(930,.08,'sine',.024);},55);}
   else if(k==='boing'){tone(300,.34,'sine',.05,110);setTimeout(function(){tone(210,.22,'sine',.03,150);},90);}
   else if(k==='ok'){[523,659,784].forEach(function(f,i){setTimeout(function(){tone(f,.2,'sine',.038);},i*65);});}
   else if(k==='no'){tone(196,.17,'square',.028,124);}
@@ -930,21 +991,7 @@ function mascot(){
   '<ellipse cx="33" cy="53" rx="4.6" ry="3" fill="#ff9d8a" opacity=".45"/><ellipse cx="71" cy="53" rx="4.6" ry="3" fill="#ff9d8a" opacity=".45"/></svg>';
 }
 
-/* ================= РЕНДЕР ОБОЛОЧКИ ================= */
-function taskText(t){
-  var s=TS[t.id],v=t.variants?t.variants[s.vi]:null,out=t.text;
-  if(v)Object.keys(v).forEach(function(k){out=out.replace(new RegExp('\\{'+k+'\\}','g'),fmt(v[k],v[k]%1?1:0));});
-  return out;
-}
-function explainText(t){
-  var s=TS[t.id],v=t.variants?t.variants[s.vi]:null,out=t.explain;
-  if(v){
-    Object.keys(v).forEach(function(k){out=out.replace(new RegExp('\\{'+k+'\\}','g'),fmt(v[k],v[k]%1?1:0));});
-    out=out.replace(/\{xm\}/g,fmt((v.x!==undefined?v.x:v.F/v.k*100)/100,4).replace(/,?0+$/,''));
-    out=out.replace(/\{a\}/g,fmt(t.solve(v),2).replace(/,?0+$/,''));
-  }
-  return out;
-}
+/* ================= РЕНДЕР ================= */
 function renderMain(){
   var L=LESSON,h='';
   h+='<div class="card lhead reveal"><div class="lmeta"><span class="badge">'+L.subject+'</span>'+
@@ -986,13 +1033,13 @@ function renderMain(){
   h+='<div class="card pad reveal"><div class="blocktitle"><span class="dot"></span>Типичная ошибка<span class="n">06</span></div>'+
     '<div class="mistake"><div class="tag">САНТИМЕТРЫ ВМЕСТО МЕТРОВ</div><p>'+L.mistake+'</p></div></div>';
 
-  h+='<div id="tasks" style="scroll-margin-top:120px"><div class="blocktitle reveal" style="padding:0 4px"><span class="dot"></span>Проверь себя<span class="n">07</span></div>'+
+  h+='<div id="tasks" style="scroll-margin-top:120px"><div class="blocktitle reveal" style="padding:0 4px"><span class="dot"></span>Проверь себя · '+TASKS.length+' заданий<span class="n">07</span></div>'+
     '<div style="display:flex;flex-direction:column;gap:12px">'+TASKS.map(renderTask).join('')+'</div></div>';
 
   h+='<div class="card pad reveal" id="summaryCard"><div class="blocktitle"><span class="dot"></span>Что теперь умеешь<span class="n">08</span></div>'+
     '<div class="summary">'+L.summary.map(function(s){return '<div class="srow">'+esc(s)+'</div>';}).join('')+'</div>'+
     '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center">'+
-    '<button class="btn g" id="markBtn" disabled>Реши все задачи</button>'+
+    '<button class="btn g" id="markBtn" disabled>Реши все задания</button>'+
     '<a class="btn" href="../../index.html#physics">К списку тем</a></div></div>';
 
   h+='<div class="lnav reveal">'+
@@ -1002,38 +1049,59 @@ function renderMain(){
     '</div>';
   $('#lmain').innerHTML=h;
 }
+
+function matchHTML(t){
+  var s=TS[t.id],used={};
+  Object.keys(s.pairs).forEach(function(k){used[s.pairs[k]]=true;});
+  var left=t.items.map(function(it){
+    var val=s.pairs[it.k],cls='mobj';
+    if(val!==undefined)cls+=' paired';
+    if(s.sel===it.k)cls+=' sel';
+    if(s.checked&&val!==undefined)cls+=(t.answer[it.k]===val?' ok':' bad');
+    return '<button class="'+cls+'" data-obj="'+it.k+'" data-task="'+t.id+'">'+
+      '<span class="nm">'+esc(it.t)+'</span>'+
+      '<span class="slot">'+(val!==undefined?val+' Н/м':'выбрать')+'</span></button>';
+  }).join('');
+  var right=t.pool.map(function(v){
+    return '<button class="mval'+(used[v]?' used':'')+'" data-val="'+v+'" data-task="'+t.id+'"'+(used[v]?' disabled':'')+'>'+v+'</button>';
+  }).join('');
+  return '<div class="mnote">Значения жёсткости не подписаны объектами — вспомни порядок величин или посмотри их в симуляции, выбрав объект.</div>'+
+    '<div class="match"><div class="mcol"><div class="mhint">Объект</div>'+left+'</div>'+
+    '<div class="mcol vals"><div class="mhint">Жёсткость, Н/м</div>'+right+'</div></div>';
+}
 function renderTask(t){
-  var s=TS[t.id],body='';
+  var s=TS[t.id],body='',qtext='';
   if(t.kind==='numeric'){
+    var v=t.variants[s.vi],unit=t.unitOf?t.unitOf(v):t.unit;
+    qtext=t.text(v);
     body='<div class="row"><input type="text" inputmode="decimal" id="in-'+t.id+'" placeholder="0,00" aria-label="Ответ">'+
-      '<span style="font:600 13px var(--mono);color:var(--dim)">'+esc(t.unit)+'</span>'+
+      '<span style="font:600 13px var(--mono);color:var(--dim)">'+esc(unit)+'</span>'+
       '<button class="btn p s" data-check="'+t.id+'">Проверить</button>'+
       '<button class="btn s" data-var="'+t.id+'">Другой вариант</button>'+
       '<button class="btn s" data-hint="'+t.id+'">Подсказка</button></div>';
   }else if(t.kind==='choice'){
+    qtext=t.text;
     body='<div class="opts">'+t.options.map(function(o,i){
       return '<label class="opt"><input type="radio" name="q-'+t.id+'" value="'+i+'"><span>'+esc(o)+'</span></label>';}).join('')+'</div>'+
       '<div class="row"><button class="btn p s" data-check="'+t.id+'">Проверить</button><button class="btn s" data-hint="'+t.id+'">Подсказка</button></div>';
   }else{
-    body='<div id="ord-'+t.id+'">'+orderRows(t)+'</div>'+
-      '<div class="row"><button class="btn p s" data-check="'+t.id+'">Проверить</button><button class="btn s" data-hint="'+t.id+'">Подсказка</button></div>';
+    qtext=t.text;
+    body='<div id="match-'+t.id+'">'+matchHTML(t)+'</div>'+
+      '<div class="row"><button class="btn p s" data-check="'+t.id+'">Проверить</button>'+
+      '<button class="btn s" data-clear="'+t.id+'">Сбросить пары</button>'+
+      '<button class="btn s" data-hint="'+t.id+'">Подсказка</button></div>';
   }
+  var ex=t.kind==='numeric'?t.explain(t.variants[s.vi],t.solve(t.variants[s.vi])):t.explain;
   return '<div class="card pad task'+(s.solved?' solved':'')+'" id="task-'+t.id+'">'+
-    '<div class="thead"><span class="tb '+t.kind+'">'+(t.kind==='numeric'?'расчёт':t.kind==='choice'?'выбор':'порядок')+'</span>'+
+    '<div class="thead"><span class="tb '+t.tagClass+'">'+t.tag+'</span>'+
     '<h4>'+esc(t.title)+'</h4><span class="solvedmark">✓ ЗАЧТЕНО</span></div>'+
-    '<p class="qtext">'+esc(taskText(t))+'</p>'+body+
+    '<p class="qtext">'+esc(qtext)+'</p>'+body+
     '<div class="fb" id="fb-'+t.id+'"></div>'+
-    '<div class="disclose" id="ex-'+t.id+'"><b>Разбор.</b> '+esc(explainText(t))+'</div></div>';
+    '<div class="disclose" id="ex-'+t.id+'"><b>Разбор.</b> '+esc(ex)+'</div></div>';
 }
-function orderRows(t){
-  var s=TS[t.id];
-  return s.order.map(function(k,i){
-    var it=null;t.items.forEach(function(x){if(x.k===k)it=x;});
-    return '<div class="ordrow"><span class="idx">'+(i+1)+'</span><span class="nm">'+esc(it.t)+'</span>'+
-      '<span class="kv">'+it.val+' Н/м</span><span class="arrows">'+
-      '<button data-mv="'+t.id+'" data-i="'+i+'" data-d="-1" aria-label="Выше">↑</button>'+
-      '<button data-mv="'+t.id+'" data-i="'+i+'" data-d="1" aria-label="Ниже">↓</button></span></div>';
-  }).join('');
+function refreshTask(id){
+  var t=taskById(id),old=$('#task-'+id);
+  if(old)old.outerHTML=renderTask(t);
 }
 function renderSide(){
   var L=LESSON;
@@ -1041,14 +1109,17 @@ function renderSide(){
     '<div class="card pad reveal"><div class="blocktitle" style="font-size:14px"><span class="dot"></span>Прогресс урока</div>'+
     '<div class="progwrap"><div class="ring" id="ringBox"></div><div style="flex:1;min-width:0">'+
     '<div style="font:700 13px/1 var(--mono);color:var(--acc)" id="pTxt">0 / '+TASKS.length+'</div>'+
-    '<div style="font-size:12px;color:var(--muted);margin-top:4px">задач решено</div>'+
+    '<div style="font-size:12px;color:var(--muted);margin-top:4px">заданий решено</div>'+
     '<div class="pbar"><i id="pBar"></i></div></div></div>'+
     '<div class="tlist" id="tList"></div></div>'+
     '<div class="card tip reveal">'+mascot()+'<div class="b"><b>АВО ПОДСКАЗЫВАЕТ</b>'+esc(L.tip)+'</div></div>'+
-    '<div class="card pad reveal"><div class="blocktitle" style="font-size:14px"><span class="dot"></span>Пять пружин урока</div>'+
+    '<div class="card pad reveal"><div class="blocktitle" style="font-size:14px"><span class="dot"></span>Пределы упругости</div>'+
     '<div style="display:flex;flex-direction:column;gap:7px">'+
-    PRESETS.map(function(p){return '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px"><span style="color:#cddcc1">'+esc(p.name)+'</span><b style="font-family:var(--mono);color:var(--acc);white-space:nowrap">'+p.k+'</b></div>';}).join('')+
-    '</div><div style="font:11px/1.5 var(--sans);color:var(--dim);margin-top:10px">Значения жёсткости типичные для этих объектов. Все пять доступны в симуляции.</div></div>';
+    PRESETS.map(function(p){
+      var lv=p.unit==='мм'?p.lim*1000:p.lim*100;
+      return '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px"><span style="color:#cddcc1">'+esc(p.name)+'</span><b style="font-family:var(--mono);color:var(--pit);white-space:nowrap">'+nice(lv)+' '+p.unit+'</b></div>';
+    }).join('')+
+    '</div><div style="font:11px/1.5 var(--sans);color:var(--dim);margin-top:10px">За этим значением закон Гука перестаёт работать. Жёсткость каждого объекта видна в симуляции при его выборе.</div></div>';
   updateProgress();
 }
 function ringHTML(pct){
@@ -1061,7 +1132,7 @@ function updateProgress(){
   var rb=$('#ringBox');if(rb)rb.innerHTML=ringHTML(pct);
   var pt=$('#pTxt');if(pt)pt.textContent=n+' / '+tot;
   var pb=$('#pBar');if(pb)pb.style.width=pct+'%';
-  $('#taskPill').textContent=n+' / '+tot+' задач';
+  $('#taskPill').textContent=n+' / '+tot+' заданий';
   $('#taskPill').className='pill'+(n===tot?' ok':' acc');
   var tl=$('#tList');
   if(tl)tl.innerHTML=TASKS.map(function(t,i){
@@ -1071,11 +1142,11 @@ function updateProgress(){
   if(mb){
     var done=false;try{done=localStorage.getItem(LSKEY)==='1';}catch(e){}
     if(n===tot){mb.disabled=false;mb.className='btn '+(done?'done':'g');mb.textContent=done?'✓ Урок пройден':'Отметить урок пройденным';}
-    else{mb.disabled=true;mb.className='btn g';mb.textContent='Реши все задачи ('+n+' / '+tot+')';}
+    else{mb.disabled=true;mb.className='btn g';mb.textContent='Реши все задания ('+n+' / '+tot+')';}
   }
 }
 
-/* ================= ПРОВЕРКА ЗАДАЧ ================= */
+/* ================= ПРОВЕРКА ================= */
 function fb(id,cls,html){var el=$('#fb-'+id);if(el){el.className='fb show '+cls;el.innerHTML=html;}}
 function markSolved(t){
   TS[t.id].solved=true;
@@ -1083,24 +1154,26 @@ function markSolved(t){
   sfx('ok');updateProgress();
   if(solvedCount()===TASKS.length){
     try{localStorage.setItem(LSKEY,'1');}catch(e){}
-    sfx('done');toast('Все задачи решены — урок пройден');
+    sfx('done');toast('Все задания решены — урок пройден');
+    updateProgress();
   }
 }
+function shake(id){var c=$('#task-'+id);if(c){c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');}}
 function check(id){
-  var t=null;TASKS.forEach(function(x){if(x.id===id)t=x;});
-  var s=TS[id];initAudio();
+  var t=taskById(id),s=TS[id];initAudio();
   if(t.kind==='numeric'){
+    var v=t.variants[s.vi];
     var raw=($('#in-'+id).value||'').trim().toLowerCase().replace(/,/g,'.')
       .replace(/\s*(н\/м|н|см|мм|м)\s*$/,'').trim();
     var val=parseFloat(raw);
     if(!isFinite(val)){fb(id,'no','Введи число. Например: 2 или 2,5');sfx('no');return;}
-    var exact=t.solve(t.variants[s.vi]),tol=Math.max(.005,Math.abs(exact)*.01);
+    var exact=t.solve(v),tol=Math.max(.005,Math.abs(exact)*.01);
     s.tries++;
     if(Math.abs(val-exact)<=tol){
-      fb(id,'ok','<b>Верно.</b> '+esc(explainText(t)));markSolved(t);$('#ex-'+id).classList.add('show');
+      fb(id,'ok','<b>Верно.</b> '+esc(t.explain(v,exact)));markSolved(t);$('#ex-'+id).classList.add('show');
     }else{
-      var c=$('#task-'+id);c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');
-      fb(id,'no','Пока нет. Попытка '+s.tries+'. Проверь перевод единиц.'+(s.tries>=2?' Разбор открыт ниже.':''));
+      shake(id);
+      fb(id,'no','Пока нет. Попытка '+s.tries+'. '+(t.id==='t6'?'Сравни деформацию с пределом и не забудь про случай «не выйдет».':'Проверь перевод единиц.')+(s.tries>=2?' Разбор открыт ниже.':''));
       sfx('no');if(s.tries>=2)$('#ex-'+id).classList.add('show');
     }
   }else if(t.kind==='choice'){
@@ -1113,39 +1186,56 @@ function check(id){
       fb(id,'ok','<b>Верно.</b> '+esc(t.explain));markSolved(t);$('#ex-'+id).classList.add('show');
     }else{
       labels[+sel.value].classList.add('wrong');
-      fb(id,'no','Не то. Попытка '+s.tries+'. Подумай, что является свойством самой пружины.');
+      fb(id,'no','Не то. Попытка '+s.tries+'. Подумай, обратима ли такая деформация.');
       sfx('no');if(s.tries>=2)$('#ex-'+id).classList.add('show');
     }
   }else{
-    s.tries++;
-    if(s.order.join('|')===t.correct.join('|')){
-      fb(id,'ok','<b>Верный порядок.</b> '+esc(t.explain));markSolved(t);$('#ex-'+id).classList.add('show');
+    var keys=t.items.map(function(i){return i.k;});
+    var filled=keys.filter(function(k){return s.pairs[k]!==undefined;}).length;
+    if(filled<keys.length){fb(id,'no','Сопоставь все объекты: назначено '+filled+' из '+keys.length+'.');sfx('no');return;}
+    s.tries++;s.checked=true;
+    var good=keys.filter(function(k){return s.pairs[k]===t.answer[k];}).length;
+    $('#match-'+id).innerHTML=matchHTML(t);
+    if(good===keys.length){
+      fb(id,'ok','<b>Все пары верны.</b> '+esc(t.explain));markSolved(t);$('#ex-'+id).classList.add('show');
     }else{
-      var pos=0;s.order.forEach(function(k,i){if(k===t.correct[i])pos++;});
-      fb(id,'no','На своих местах: '+pos+' из '+t.correct.length+'. Сравни значения жёсткости справа.');
+      shake(id);
+      fb(id,'no','Верных пар: '+good+' из '+keys.length+'. Неверные подсвечены красным — нажми объект, чтобы снять пару.');
       sfx('no');if(s.tries>=2)$('#ex-'+id).classList.add('show');
     }
   }
 }
 
-/* ================= СОБЫТИЯ ОБОЛОЧКИ ================= */
+/* ================= СОБЫТИЯ ================= */
 document.addEventListener('click',function(e){
+  var ob=e.target.closest('[data-obj]');
+  if(ob){
+    var id=ob.dataset.task,s=TS[id],k=ob.dataset.obj;initAudio();
+    if(s.pairs[k]!==undefined){delete s.pairs[k];s.sel=null;sfx('tap');}
+    else{s.sel=(s.sel===k?null:k);sfx('tap');}
+    s.checked=false;
+    $('#match-'+id).innerHTML=matchHTML(taskById(id));
+    return;
+  }
+  var vb=e.target.closest('[data-val]');
+  if(vb&&!vb.disabled){
+    var id2=vb.dataset.task,s2=TS[id2];initAudio();
+    if(!s2.sel){fb(id2,'hint','Сначала нажми объект слева, потом значение.');sfx('tap');return;}
+    s2.pairs[s2.sel]=+vb.dataset.val;s2.sel=null;s2.checked=false;
+    $('#match-'+id2).innerHTML=matchHTML(taskById(id2));sfx('pair');
+    return;
+  }
+  var cl=e.target.closest('[data-clear]');
+  if(cl){var id3=cl.dataset.clear;TS[id3].pairs={};TS[id3].sel=null;TS[id3].checked=false;
+    $('#match-'+id3).innerHTML=matchHTML(taskById(id3));
+    var f=$('#fb-'+id3);if(f)f.className='fb';sfx('tap');return;}
   var c=e.target.closest('[data-check]');if(c){check(c.dataset.check);return;}
   var h=e.target.closest('[data-hint]');
-  if(h){var t=null;TASKS.forEach(function(x){if(x.id===h.dataset.hint)t=x;});
-    fb(t.id,'hint','<b>Подсказка.</b> '+esc(t.hint));sfx('tap');return;}
+  if(h){var t=taskById(h.dataset.hint);fb(t.id,'hint','<b>Подсказка.</b> '+esc(t.hint));sfx('tap');return;}
   var v=e.target.closest('[data-var]');
-  if(v){var id=v.dataset.var,t2=null;TASKS.forEach(function(x){if(x.id===id)t2=x;});
-    var s=TS[id];s.vi=(s.vi+1)%t2.variants.length;s.solved=false;s.tries=0;
-    var card=$('#task-'+id);
-    card.outerHTML=renderTask(t2);
-    updateProgress();sfx('tap');toast('Новый вариант задания');return;}
-  var m=e.target.closest('[data-mv]');
-  if(m){var id2=m.dataset.mv,i=+m.dataset.i,d=+m.dataset.d,st=TS[id2],j=i+d;
-    if(j<0||j>=st.order.length)return;
-    var tmp=st.order[i];st.order[i]=st.order[j];st.order[j]=tmp;
-    var t3=null;TASKS.forEach(function(x){if(x.id===id2)t3=x;});
-    $('#ord-'+id2).innerHTML=orderRows(t3);sfx('tap');return;}
+  if(v){var id4=v.dataset.var,t2=taskById(id4),s4=TS[id4];
+    s4.vi=(s4.vi+1)%t2.variants.length;s4.solved=false;s4.tries=0;
+    refreshTask(id4);updateProgress();sfx('tap');toast('Новый вариант задания');return;}
   var mb=e.target.closest('#markBtn');
   if(mb&&!mb.disabled){
     var done=false;try{done=localStorage.getItem(LSKEY)==='1';}catch(e){}
@@ -1168,9 +1258,8 @@ window.addEventListener('message',function(e){
   var frame=$('#wf');if(!frame||e.source!==frame.contentWindow)return;
   var d=e.data||{};
   if(d.type==='ready'){
-    widgetReady=true;$('#wReady').textContent='готово';$('#wReady').className='pill ok';
+    $('#wReady').textContent='готово';$('#wReady').className='pill ok';
   }else if(d.type==='state'){
-    lastState=d.state;
     $('#rF').textContent=fmt(d.state.F_N,2);
     $('#rX').textContent=fmt(d.state.x_display,1)+' '+d.state.unit;
     $('#rK').textContent=String(d.state.k);
@@ -1207,7 +1296,7 @@ function reveal(){
 /* ================= СТАРТ ================= */
 renderMain();renderSide();reveal();bootWidget();
 var kb=(new Blob([document.documentElement.outerHTML]).size/1024).toFixed(0);
-$('#footStat').textContent=TASKS.length+' ЗАДАЧ · '+PRESETS.length+' ПРЕСЕТОВ · 2 РЕЖИМА · '+kb+' КБ';
+$('#footStat').textContent=TASKS.length+' ЗАДАНИЙ · '+PRESETS.length+' ПРЕСЕТОВ · 2 РЕЖИМА · '+kb+' КБ';
 })();
 </script>
 </body>
