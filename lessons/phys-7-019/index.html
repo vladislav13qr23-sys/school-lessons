@@ -18,6 +18,7 @@
   --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
   --math:"Cambria Math","Times New Roman",serif;
   --r:16px;--shadow:0 22px 56px -26px rgba(0,0,0,.9);
+  --head:118px;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -59,10 +60,9 @@ button,.btn{font-family:var(--sans);cursor:pointer;border:none;transition:transf
 .btn:active{transform:translateY(0)}
 .btn.p{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#08201d;border-color:transparent;font-weight:700}
 .btn.p:hover{box-shadow:0 14px 28px -12px var(--acc)}
-.btn.g{background:linear-gradient(135deg,var(--flesh),var(--lime));color:#0d1a11;border-color:transparent;font-weight:700}
 .btn.s{padding:7px 12px;font-size:12.5px;border-radius:10px}
-.btn.done{background:rgba(143,224,74,.16);border-color:rgba(143,224,74,.5);color:var(--success)}
-.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.warn{background:rgba(255,95,95,.1);border-color:rgba(255,95,95,.4);color:#ffb9b9}
+.btn.warn:hover{background:rgba(255,95,95,.2);box-shadow:0 10px 22px -14px var(--danger)}
 .btn:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .iconbtn{width:34px;height:34px;border-radius:10px;background:rgba(168,210,74,.09);border:1px solid var(--line2);color:var(--cream);font-size:15px;display:grid;place-content:center;flex:none}
 .iconbtn:hover{background:rgba(53,214,192,.2)}
@@ -129,6 +129,10 @@ iframe{display:block;width:100%;height:660px;border:0;background:#0a1510}
 .rs.warn b{color:var(--danger)}
 .rs.st b{font-size:13px;color:var(--flesh)}
 
+#tasks{scroll-margin-top:var(--head)}
+.task{scroll-margin-top:var(--head)}
+.task.flash{animation:flash 1.3s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 2px var(--acc),0 0 30px -6px var(--acc)}100%{box-shadow:var(--shadow)}}
 .thead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .tb{font:700 9px/1 var(--mono);letter-spacing:.12em;padding:5px 8px;border-radius:6px;text-transform:uppercase}
 .tb.numeric{background:rgba(53,214,192,.16);color:var(--acc)}
@@ -151,23 +155,27 @@ input[type=text]::placeholder{color:var(--dim);font-weight:400}
 .opt.right{border-color:rgba(143,224,74,.55);background:rgba(143,224,74,.12)}
 .opt.wrong{border-color:rgba(255,95,95,.5);background:rgba(255,95,95,.1)}
 
-.match{display:grid;grid-template-columns:1fr 168px;gap:12px;margin-bottom:12px}
+.mnote{font:11.5px/1.5 var(--sans);color:var(--dim);margin-bottom:10px}
+.match{display:grid;grid-template-columns:1fr 170px;gap:12px;margin-bottom:12px}
 .mcol{display:flex;flex-direction:column;gap:7px;min-width:0}
 .mhint{font:700 9px/1 var(--mono);letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:2px}
-.mobj{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:11px;background:rgba(13,26,17,.5);border:1px solid var(--line);color:var(--cream);cursor:pointer;text-align:left;width:100%;transition:.16s}
-.mobj:hover{border-color:var(--line2);background:rgba(53,214,192,.08)}
-.mobj.sel{border-color:var(--acc);background:rgba(53,214,192,.16);box-shadow:0 0 0 1px var(--acc)}
+.mobj{display:flex;align-items:stretch;gap:7px;border-radius:11px;background:rgba(13,26,17,.5);border:1px solid var(--line);transition:.16s;overflow:hidden}
+.mobj:hover{border-color:var(--line2)}
+.mobj.sel{border-color:var(--acc);background:rgba(53,214,192,.14);box-shadow:0 0 0 1px var(--acc)}
 .mobj.paired{border-left:3px solid var(--flesh)}
 .mobj.ok{border-color:rgba(143,224,74,.55);background:rgba(143,224,74,.1)}
 .mobj.bad{border-color:rgba(255,95,95,.5);background:rgba(255,95,95,.09)}
-.mobj .nm{flex:1;font-size:13.5px;min-width:0}
-.mobj .slot{font:700 12px/1 var(--mono);color:var(--dim);padding:5px 8px;border-radius:7px;border:1px dashed var(--line2);white-space:nowrap;flex:none}
-.mobj.paired .slot{color:var(--flesh);border-style:solid;border-color:rgba(168,210,74,.5);background:rgba(168,210,74,.1)}
-.mval{padding:10px 8px;border-radius:11px;background:rgba(13,26,17,.5);border:1px solid var(--line2);color:var(--acc);font:700 14px/1 var(--mono);cursor:pointer;text-align:center;transition:.16s;width:100%}
-.mval:hover{background:rgba(53,214,192,.16);transform:translateY(-2px)}
-.mval.used{opacity:.32;cursor:default;text-decoration:line-through}
-.mval.used:hover{transform:none;background:rgba(13,26,17,.5)}
-.mnote{font:11.5px/1.5 var(--sans);color:var(--dim);margin-bottom:10px}
+.mobj .pick{flex:1;min-width:0;background:none;border:none;color:var(--cream);text-align:left;padding:10px 12px;font:600 13.5px/1.3 var(--sans);cursor:pointer}
+.mobj .pick:hover{background:rgba(53,214,192,.08)}
+.mobj .slot{flex:none;display:inline-flex;align-items:center;gap:6px;margin:6px 6px 6px 0;padding:0 10px;border-radius:8px;font:700 12px/1 var(--mono);border:1px solid rgba(168,210,74,.5);background:rgba(168,210,74,.12);color:var(--flesh);cursor:pointer}
+.mobj .slot:hover{background:rgba(255,95,95,.18);border-color:rgba(255,95,95,.5);color:#ffb9b9}
+.mobj .slot .x{font-size:11px;opacity:.8}
+.mobj .empty{flex:none;display:inline-flex;align-items:center;margin:6px 6px 6px 0;padding:0 10px;border-radius:8px;font:600 11px/1 var(--mono);border:1px dashed var(--line2);color:var(--dim)}
+.mval{padding:10px 8px;border-radius:11px;background:rgba(13,26,17,.5);border:1px solid var(--line2);color:var(--acc);font:700 14px/1 var(--mono);cursor:pointer;text-align:center;transition:.16s;width:100%;position:relative}
+.mval:hover{background:rgba(53,214,192,.18);transform:translateY(-2px)}
+.mval.used{color:var(--dim);border-style:dashed;background:rgba(13,26,17,.35)}
+.mval.used::after{content:"назначено";display:block;font:600 8px/1 var(--mono);letter-spacing:.08em;margin-top:4px;opacity:.8}
+.mval.used:hover{color:var(--acc);border-style:solid}
 
 .fb{margin-top:12px;font-size:13.5px;padding:11px 14px;border-radius:11px;display:none}
 .fb.show{display:block}
@@ -182,6 +190,13 @@ input[type=text]::placeholder{color:var(--dim);font-weight:400}
 .summary{display:flex;flex-direction:column;gap:10px}
 .summary .srow{display:flex;gap:11px;font-size:14px;color:#d9e6cf}
 .summary .srow::before{content:"✓";color:var(--success);font-weight:700;flex:none}
+.donebox{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:12px;border:1px solid var(--line2);background:rgba(13,26,17,.5);font-size:14px;font-weight:600;color:var(--muted);flex:1;min-width:220px}
+.donebox.complete{border-color:rgba(143,224,74,.5);background:rgba(143,224,74,.12);color:#d3f5bb}
+.donebox .ic{width:26px;height:26px;border-radius:8px;display:grid;place-content:center;background:rgba(168,210,74,.14);font-size:13px;flex:none}
+.donebox.complete .ic{background:rgba(143,224,74,.22);color:var(--success)}
+.donebox small{display:block;font:600 10px/1.4 var(--mono);color:var(--dim);margin-top:3px;letter-spacing:.04em}
+.donebox.complete small{color:rgba(143,224,74,.75)}
+
 .lnav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}
 .nvb{padding:13px 15px;border-radius:13px;background:rgba(20,37,26,.6);border:1px solid var(--line);text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:4px;min-width:0}
 .nvb i{font:600 9px/1 var(--mono);letter-spacing:.14em;color:var(--dim);font-style:normal}
@@ -208,7 +223,7 @@ input[type=text]::placeholder{color:var(--dim);font-weight:400}
 .tlist a .n{font:700 10px/1 var(--mono);color:var(--dim);flex:none}
 .tlist a.ok{color:var(--success)}
 .tlist a.ok .n{color:var(--success)}
-.banner{display:none;padding:11px 14px;border-radius:12px;background:rgba(255,95,95,.12);border:1px solid rgba(255,95,95,.45);color:#ffd2d5;font-size:13.5px}
+.banner{display:none;padding:11px 14px;border-radius:12px;background:rgba(255,95,95,.12);border:1px solid rgba(255,95,95,.45);color:#ffd2d5;font-size:13.5px;margin-bottom:12px}
 .banner.show{display:block}
 
 footer{max-width:1240px;margin:22px auto 0;padding:20px 18px 40px;border-top:1px solid var(--line);display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center;font:11.5px/1.6 var(--mono);color:var(--dim)}
@@ -216,10 +231,16 @@ footer .fl{display:flex;gap:10px;align-items:center}
 footer svg{width:24px;height:auto}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:100;padding:11px 20px;border-radius:13px;background:rgba(27,49,33,.97);border:1px solid var(--line2);color:var(--cream);font:600 13px/1 var(--sans);box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.undo{position:fixed;left:50%;bottom:24px;transform:translate(-50%,26px);z-index:110;display:flex;align-items:center;gap:14px;padding:11px 12px 11px 18px;border-radius:13px;background:rgba(27,49,33,.98);border:1px solid var(--line2);box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s;font-size:13px}
+.undo.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.undo .txt{color:var(--cream);font-weight:600}
+.undo .bar{position:absolute;left:0;bottom:0;height:2px;background:var(--acc);border-radius:0 0 13px 13px;width:100%}
+.undo.show .bar{animation:drain 8s linear forwards}
+@keyframes drain{from{width:100%}to{width:0}}
 
 @media(max-width:1040px){.lesson{grid-template-columns:1fr}.lside{position:static}}
-@media(max-width:900px){main{padding-top:132px}.tnav{order:3;width:100%;flex:1 0 100%}iframe{height:900px}.lnav{grid-template-columns:1fr}}
-@media(max-width:560px){input[type=text]{width:100%}.lhead{padding:18px}.pad{padding:16px}.match{grid-template-columns:1fr}.mcol.vals{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.mcol.vals .mhint{grid-column:1/-1}}
+@media(max-width:900px){:root{--head:136px}main{padding-top:132px}.tnav{order:3;width:100%;flex:1 0 100%}iframe{height:900px}.lnav{grid-template-columns:1fr}}
+@media(max-width:560px){input[type=text]{width:100%}.lhead{padding:18px}.pad{padding:16px}.match{grid-template-columns:1fr}.mcol.vals{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.mcol.vals .mhint{grid-column:1/-1}.undo{left:12px;right:12px;transform:translateY(26px)}.undo.show{transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.reveal{opacity:1;transform:none}}
 </style>
 </head>
@@ -237,9 +258,9 @@ footer svg{width:24px;height:auto}
     <span class="cur">Урок 19 · Закон Гука</span>
   </nav>
   <div class="acts">
-    <span class="pill acc" id="taskPill">задачи</span>
+    <span class="pill acc" id="taskPill">задания</span>
     <button class="iconbtn" id="sndBtn" aria-pressed="true" title="Звук включён"><span id="sndIco">🔊</span></button>
-    <a class="btn p s" href="#tasks">К задачам</a>
+    <a class="btn p s" href="#tasks">К заданиям</a>
   </div>
 </header>
 
@@ -260,6 +281,12 @@ footer svg{width:24px;height:auto}
   <span id="footStat">—</span>
 </footer>
 <div class="toast" id="toast"></div>
+<div class="undo" id="undo" role="status">
+  <span class="txt">Ответы сброшены</span>
+  <button class="btn p s" id="undoBtn">Отменить</button>
+  <button class="iconbtn" id="undoClose" aria-label="Скрыть">✕</button>
+  <span class="bar"></span>
+</div>
 <noscript><div style="padding:120px 20px;text-align:center">Для работы урока нужен включённый JavaScript.</div></noscript>
 
 <template id="widgetSrc">
@@ -282,6 +309,7 @@ html,body{margin:0;height:100%;background:var(--abyss);color:var(--cream);font-f
 .modes button{padding:7px 13px;background:rgba(13,26,17,.6);color:var(--muted);font:700 12px/1 var(--sans);border:none;cursor:pointer;transition:.18s}
 .modes button.on{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#08201d}
 .modes button:hover:not(.on){background:rgba(53,214,192,.14);color:var(--cream)}
+.modes button:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
 .bar .who{font:700 11px/1.3 var(--mono);color:var(--flesh);flex:1;min-width:90px}
 .bar .st{font:700 10px/1 var(--mono);letter-spacing:.08em;padding:5px 8px;border-radius:7px;border:1px solid rgba(143,224,74,.45);background:rgba(143,224,74,.12);color:var(--success);white-space:nowrap}
 .bar .st.bad{border-color:rgba(255,95,95,.5);background:rgba(255,95,95,.12);color:var(--danger)}
@@ -297,6 +325,7 @@ canvas#cv{position:absolute;inset:0;display:block;touch-action:none}
 .pre{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;background:rgba(10,21,16,.7);border:1px solid var(--line);color:var(--cream);cursor:pointer;text-align:left;transition:.16s;width:100%}
 .pre:hover{border-color:var(--line2);background:rgba(53,214,192,.1);transform:translateX(2px)}
 .pre.on{background:linear-gradient(100deg,rgba(53,214,192,.22),rgba(10,21,16,.7));border-color:var(--acc)}
+.pre:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .pre .ic{width:22px;height:22px;flex:none;display:grid;place-content:center}
 .pre .tx{flex:1;min-width:0}
 .pre .nm{font:600 12px/1.25 var(--sans);display:block}
@@ -328,7 +357,7 @@ canvas#gr{width:100%;height:96px;display:block;border:1px solid var(--line);bord
 .panel button.act{font-family:var(--sans);font-size:12px;font-weight:700;padding:8px 6px;border-radius:9px;background:rgba(53,214,192,.1);border:1px solid var(--line);color:var(--cream);cursor:pointer;transition:.16s}
 .panel button.act:hover{background:rgba(53,214,192,.22);transform:translateY(-1px)}
 .panel button.act.p{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#08201d;border-color:transparent}
-.wide{grid-column:1/-1}
+.panel button.act:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .note{font:11px/1.45 var(--sans);color:var(--dim)}
 @media(max-width:760px){
  .sim{grid-template-columns:1fr;grid-template-rows:340px 1fr}
@@ -339,7 +368,7 @@ canvas#gr{width:100%;height:96px;display:block;border:1px solid var(--line);bord
 </style>
 <div class="wrap">
   <div class="bar">
-    <div class="modes"><button id="mBook" class="on">Учебник</button><button id="mLife">Из жизни</button></div>
+    <div class="modes"><button id="mBook" class="on" aria-pressed="true">Учебник</button><button id="mLife" aria-pressed="false">Из жизни</button></div>
     <span class="who" id="who">Пружина динамометра</span>
     <span class="st" id="stChip">УПРУГАЯ</span>
   </div>
@@ -379,7 +408,7 @@ canvas#gr{width:100%;height:96px;display:block;border:1px solid var(--line);bord
 (function(){
 'use strict';
 var PRESETS=__PRESETS__;
-var G=9.8,seed=20261126>>>0;
+var G=9.8,SEED=20261126>>>0,seed=SEED;
 function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
 function send(m){try{parent.postMessage(m,'*');}catch(e){}}
 window.onerror=function(msg,src,line,col){send({type:'error',message:String(msg),line:line,col:col});return false;};
@@ -387,7 +416,8 @@ var MONO='"Cascadia Mono",Consolas,ui-monospace,monospace';
 var C={acc:'#35d6c0',acc2:'#8bf0e2',flesh:'#a8d24a',lime:'#d8f283',pit:'#b5763a',cream:'#f5f1e3',
  muted:'#a9bfa0',dim:'#6f8a68',amber:'#ffb020',danger:'#ff5f5f',success:'#8fe04a',violet:'#a78bfa',skin:'#3f6b3a'};
 
-var S={pi:0,mode:'book',x:0,v:0,osc:false,speed:1,vec:true,rul:true,lim:true,gr:true};
+var DEFAULT={pi:0,mode:'book',x:0,v:0,osc:false,paused:false,speed:1,vec:true,rul:true,lim:true,gr:true};
+var S={};for(var kk in DEFAULT)S[kk]=DEFAULT[kk];
 var t=0,last=0,acc=0,uiT=0,sndT=0;
 var stage=document.getElementById('stage'),cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 var gr=document.getElementById('gr'),gctx=gr.getContext('2d');
@@ -402,10 +432,10 @@ function over(){return S.x>P().lim*1.0005;}
 
 function resize(){
   var r=stage.getBoundingClientRect();
-  W=Math.max(280,Math.round(r.width));H=Math.max(260,Math.round(r.height));
+  W=Math.max(260,Math.round(r.width));H=Math.max(240,Math.round(r.height));
   cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);cv.style.width=W+'px';cv.style.height=H+'px';
   ctx.setTransform(DPR,0,0,DPR,0,0);
-  var q=gr.getBoundingClientRect();GW=Math.max(140,Math.round(q.width));GH=96;
+  var q=gr.getBoundingClientRect();GW=Math.max(140,Math.round(q.width||140));GH=96;
   gr.width=Math.round(GW*DPR);gr.height=Math.round(GH*DPR);gctx.setTransform(DPR,0,0,DPR,0,0);
 }
 if(window.ResizeObserver){var ro=new ResizeObserver(resize);ro.observe(stage);ro.observe(gr);}
@@ -423,19 +453,18 @@ function icons(id){
 }
 function buildPresets(){
   document.getElementById('presets').innerHTML=PRESETS.map(function(p,i){
-    return '<button class="pre'+(i===S.pi?' on':'')+'" data-p="'+i+'"><span class="ic">'+icons(p.id)+'</span>'+
+    return '<button class="pre'+(i===S.pi?' on':'')+'" data-p="'+i+'" aria-pressed="'+(i===S.pi)+'"><span class="ic">'+icons(p.id)+'</span>'+
       '<span class="tx"><span class="nm">'+p.name+'</span><span class="kk">k = '+p.k+' Н/м</span></span></button>';
   }).join('');
   Array.prototype.forEach.call(document.querySelectorAll('[data-p]'),function(b){
     b.addEventListener('click',function(){setPreset(+this.dataset.p);act('preset',PRESETS[S.pi].id);});
   });
 }
-function setPreset(i){
-  S.pi=i;S.x=0;S.v=0;S.osc=false;
-  document.getElementById('sx').value=0;
-  Array.prototype.forEach.call(document.querySelectorAll('[data-p]'),function(b,j){b.classList.toggle('on',j===i);});
-  sync();
+function markPresets(){
+  Array.prototype.forEach.call(document.querySelectorAll('[data-p]'),function(b,j){
+    b.classList.toggle('on',j===S.pi);b.setAttribute('aria-pressed',String(j===S.pi));});
 }
+function setPreset(i){S.pi=i;S.x=0;S.v=0;S.osc=false;document.getElementById('sx').value=0;markPresets();sync();}
 function sync(){
   var p=P(),d=xDisp();
   document.getElementById('who').textContent=p.name;
@@ -447,11 +476,14 @@ function sync(){
   document.getElementById('oL').textContent=fmt(p.unit==='мм'?p.lim*1000:p.lim*100,0);
   document.getElementById('note').textContent=p.note+' Типичная нагрузка '+p.load+' Н.';
   document.getElementById('vS').textContent=S.speed.toFixed(1);
+  document.getElementById('ss').value=S.speed;
   document.getElementById('tVec').checked=S.vec;document.getElementById('tRul').checked=S.rul;
   document.getElementById('tLim').checked=S.lim;document.getElementById('tGr').checked=S.gr;
   document.getElementById('grwrap').style.display=S.gr?'':'none';
   document.getElementById('mBook').classList.toggle('on',S.mode==='book');
   document.getElementById('mLife').classList.toggle('on',S.mode==='life');
+  document.getElementById('mBook').setAttribute('aria-pressed',String(S.mode==='book'));
+  document.getElementById('mLife').setAttribute('aria-pressed',String(S.mode==='life'));
 }
 function act(id,val){var n=performance.now();if(n-sndT>70){sndT=n;send({type:'interaction',control:id,value:val});}}
 
@@ -464,18 +496,23 @@ document.getElementById('tLim').addEventListener('change',function(){S.lim=this.
 document.getElementById('tGr').addEventListener('change',function(){S.gr=this.checked;sync();resize();act('graph',this.checked);});
 document.getElementById('mBook').addEventListener('click',function(){S.mode='book';sync();act('mode','book');});
 document.getElementById('mLife').addEventListener('click',function(){S.mode='life';sync();act('mode','life');});
-document.getElementById('bRel').addEventListener('click',function(){S.osc=true;S.x=0;S.v=0;document.getElementById('sx').value=0;sync();act('release',true);send({type:'release'});});
+document.getElementById('bRel').addEventListener('click',function(){S.osc=true;S.paused=false;S.x=0;S.v=0;document.getElementById('sx').value=0;sync();act('release',true);send({type:'release'});});
 document.getElementById('bReset').addEventListener('click',function(){reset();act('reset',true);});
 document.getElementById('bRand').addEventListener('click',function(){
   S.pi=Math.floor(rnd()*PRESETS.length);S.osc=false;S.v=0;
   S.x=P().lim*(0.15+rnd()*1.05);
   document.getElementById('sx').value=Math.round(S.x/P().lim*100);
-  Array.prototype.forEach.call(document.querySelectorAll('[data-p]'),function(b,j){b.classList.toggle('on',j===S.pi);});
-  sync();act('randomize',{preset:P().id,x:+S.x.toFixed(5)});});
+  markPresets();sync();act('randomize',{preset:P().id,x:+S.x.toFixed(5)});});
 document.getElementById('bPng').addEventListener('click',function(){
   try{send({type:'export',dataURL:cv.toDataURL('image/png')});}catch(e){send({type:'error',message:'export: '+e.message});}});
 
-function reset(){S.x=0;S.v=0;S.osc=false;S.speed=1;document.getElementById('sx').value=0;document.getElementById('ss').value=1;sync();send({type:'system',message:'reset'});}
+function reset(){
+  for(var k in DEFAULT)S[k]=DEFAULT[k];
+  seed=SEED;t=0;acc=0;last=0;
+  document.getElementById('sx').value=0;
+  markPresets();sync();resize();
+  send({type:'system',message:'reset'});
+}
 
 function step(dt){
   var p=P();
@@ -513,7 +550,7 @@ function arrow(c,x1,y1,x2,y2,col,label){
   c.lineTo(x2-ux*hl-uy*hl*.42,y2-uy*hl+ux*hl*.42);
   c.lineTo(x2-ux*hl+uy*hl*.42,y2-uy*hl-ux*hl*.42);c.closePath();c.fill();
   if(label){c.font='700 11px '+MONO;var tw=c.measureText(label).width,tx=x2-tw/2,ty=y2+(dy<0?-9:18);
-    tx=Math.max(4,Math.min(W-tw-4,tx));
+    tx=Math.max(4,Math.min(W-tw-4,tx));ty=Math.max(14,Math.min(H-6,ty));
     c.fillStyle='rgba(7,15,11,.88)';rr(c,tx-5,ty-11,tw+10,16,5);c.fill();
     c.fillStyle=col;c.fillText(label,tx,ty);}
 }
@@ -531,8 +568,11 @@ function person(c,x,y,h,col){
 
 function drawBook(){
   var p=P(),u=S.x/p.lim,F=force();
-  var cx=W*0.52,topY=44;
-  var natL=Math.max(90,H*0.26),maxExt=Math.max(70,H*0.34);
+  var cx=W*0.52,topY=40,pw=64,ph=32;
+  var natL=Math.max(60,H*0.26),maxExt=Math.max(50,H*0.34);
+  var avail=H-topY-ph-30;
+  var need=natL+1.3*maxExt;
+  if(need>avail&&need>0){var f=Math.max(.25,avail/need);natL*=f;maxExt*=f;}
   var ext=u*maxExt,botY=topY+natL+ext;
   ctx.fillStyle='rgba(63,107,58,.5)';ctx.fillRect(cx-90,topY-16,180,12);
   ctx.strokeStyle=C.skin;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx-90,topY-4);ctx.lineTo(cx+90,topY-4);ctx.stroke();
@@ -541,75 +581,75 @@ function drawBook(){
   if(S.lim){
     var limY=topY+natL+maxExt;
     ctx.strokeStyle='rgba(255,95,95,.75)';ctx.lineWidth=1.6;ctx.setLineDash([6,5]);
-    ctx.beginPath();ctx.moveTo(cx-110,limY);ctx.lineTo(cx+120,limY);ctx.stroke();ctx.setLineDash([]);
-    txt(ctx,'предел упругости',cx+124,limY+4,C.danger,10,'700');
-    ctx.fillStyle='rgba(255,95,95,.07)';ctx.fillRect(cx-110,limY,230,Math.max(0,H-limY-10));
+    ctx.beginPath();ctx.moveTo(cx-108,limY);ctx.lineTo(cx+112,limY);ctx.stroke();ctx.setLineDash([]);
+    txt(ctx,'предел',cx+116,limY+4,C.danger,10,'700');
+    ctx.fillStyle='rgba(255,95,95,.07)';ctx.fillRect(cx-108,limY,220,Math.max(0,H-limY-8));
   }
-  spring(ctx,cx,topY-4,cx,botY,10,Math.max(9,20-u*5),over()?C.danger:C.acc,3.2);
-  var pw=64,ph=34;
+  spring(ctx,cx,topY-4,cx,botY,10,Math.max(8,20-u*5),over()?C.danger:C.acc,3.2);
   ctx.fillStyle='rgba(20,37,26,.9)';rr(ctx,cx-pw/2,botY,pw,ph,7);ctx.fill();
   ctx.strokeStyle=C.muted;ctx.lineWidth=1.6;rr(ctx,cx-pw/2,botY,pw,ph,7);ctx.stroke();
   txt(ctx,fmt(p.load,0)+' Н',cx,botY+ph/2+4,C.cream,12,'700','center');
   if(S.rul){
-    var rx=cx-118;
+    var rx=cx-112;
     ctx.strokeStyle='rgba(168,210,74,.4)';ctx.lineWidth=1.6;
-    ctx.beginPath();ctx.moveTo(rx,topY+natL-10);ctx.lineTo(rx,H-24);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(rx,topY+natL-8);ctx.lineTo(rx,Math.min(H-18,topY+natL+maxExt*1.3+6));ctx.stroke();
     var span=p.unit==='мм'?p.lim*1000*1.3:p.lim*100*1.3;
-    var stepMajor=2;
-    for(var v=0;v<=span+0.001;v+=stepMajor/2){
+    for(var v=0;v<=span+0.001;v+=1){
       var yy=topY+natL+(v/span)*maxExt*1.3;
-      if(yy>H-20)break;
-      var major=Math.abs(v/stepMajor-Math.round(v/stepMajor))<0.01;
+      if(yy>H-14)break;
+      var major=(v%2===0);
       ctx.strokeStyle=major?'rgba(168,210,74,.55)':'rgba(168,210,74,.25)';
       ctx.beginPath();ctx.moveTo(rx,yy);ctx.lineTo(rx+(major?10:6),yy);ctx.stroke();
       if(major)txt(ctx,String(Math.round(v)),rx-6,yy+4,C.muted,9,'600','right');
     }
-    txt(ctx,p.unit,rx-6,topY+natL-16,C.dim,9,'700','right');
+    txt(ctx,p.unit,rx-6,topY+natL-14,C.dim,9,'700','right');
     var d=xDisp();
     ctx.strokeStyle=C.flesh;ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(rx,topY+natL);ctx.lineTo(rx,botY);ctx.stroke();
     ctx.fillStyle=C.flesh;ctx.beginPath();ctx.arc(rx,botY,3.4,0,6.284);ctx.fill();
-    txt(ctx,'x = '+fmt(d.v,d.d)+' '+p.unit,rx+14,(topY+natL+botY)/2+4,C.flesh,11,'700');
+    txt(ctx,'x = '+fmt(d.v,d.d)+' '+p.unit,rx+13,(topY+natL+botY)/2+4,C.flesh,11,'700');
   }
   if(S.vec){
-    var sc=Math.min(70,H*0.13)/Math.max(1,p.k*p.lim);
-    arrow(ctx,cx-52,botY+ph/2,cx-52,botY+ph/2-Math.max(6,F*sc),C.success,'F упр '+fmt(F,2));
-    arrow(ctx,cx+52,botY+ph/2,cx+52,botY+ph/2+Math.max(6,p.load*sc),C.amber,'нагрузка '+fmt(p.load,0));
+    var sc=Math.min(64,H*0.12)/Math.max(1,p.k*p.lim);
+    arrow(ctx,cx-50,botY+ph/2,cx-50,botY+ph/2-Math.max(6,F*sc),C.success,'F упр '+fmt(F,2));
+    arrow(ctx,cx+50,botY+ph/2,cx+50,botY+ph/2+Math.max(6,p.load*sc),C.amber,'нагрузка '+fmt(p.load,0));
   }
-  txt(ctx,'Учебник: пружина и груз',14,H-14,C.dim,10,'700');
+  txt(ctx,'Учебник: пружина и груз',14,H-12,C.dim,10,'700');
 }
 
 function drawLife(){
   var p=P(),u=Math.min(1.3,S.x/p.lim),F=force(),cx=W/2,cy=H/2;
   var kind=p.life;
   if(kind==='scale'){
-    var topY=40,travel=Math.max(60,H*0.24),ext=u*travel;
+    var topY=36,ext=u*Math.max(46,H*0.2);
+    var tubeH=Math.max(90,H*0.32);
     ctx.strokeStyle=C.muted;ctx.lineWidth=3;
-    ctx.beginPath();ctx.arc(cx,topY-14,12,Math.PI,0);ctx.stroke();
-    ctx.fillStyle='rgba(20,37,26,.92)';rr(ctx,cx-30,topY,60,H*0.34,10);ctx.fill();
-    ctx.strokeStyle=C.skin;ctx.lineWidth=2;rr(ctx,cx-30,topY,60,H*0.34,10);ctx.stroke();
-    ctx.fillStyle='rgba(7,15,11,.9)';rr(ctx,cx-16,topY+10,32,H*0.34-20,6);ctx.fill();
-    spring(ctx,cx,topY+12,cx,topY+12+Math.max(30,H*0.16)+ext*0.5,8,9,over()?C.danger:C.acc,2.6);
-    for(var i=0;i<=5;i++){var yy=topY+14+i*(H*0.34-26)/5;
+    ctx.beginPath();ctx.arc(cx,topY-12,11,Math.PI,0);ctx.stroke();
+    ctx.fillStyle='rgba(20,37,26,.92)';rr(ctx,cx-30,topY,60,tubeH,10);ctx.fill();
+    ctx.strokeStyle=C.skin;ctx.lineWidth=2;rr(ctx,cx-30,topY,60,tubeH,10);ctx.stroke();
+    ctx.fillStyle='rgba(7,15,11,.9)';rr(ctx,cx-16,topY+10,32,tubeH-20,6);ctx.fill();
+    spring(ctx,cx,topY+12,cx,topY+12+Math.max(26,tubeH*0.4)+ext*0.4,8,9,over()?C.danger:C.acc,2.6);
+    for(var i=0;i<=5;i++){var yy=topY+14+i*(tubeH-26)/5;
       ctx.strokeStyle='rgba(168,210,74,.4)';ctx.lineWidth=1;
       ctx.beginPath();ctx.moveTo(cx+18,yy);ctx.lineTo(cx+26,yy);ctx.stroke();
       txt(ctx,String(i),cx+30,yy+3,C.dim,8,'600');}
-    var hy=topY+H*0.34+ext;
+    var hy=topY+tubeH+ext;
     ctx.strokeStyle=C.muted;ctx.lineWidth=2.6;
-    ctx.beginPath();ctx.moveTo(cx,topY+H*0.34);ctx.lineTo(cx,hy);ctx.stroke();
-    ctx.beginPath();ctx.arc(cx,hy+9,9,Math.PI*0.15,Math.PI*1.5);ctx.stroke();
-    var bw=76,bh=52,by=hy+18;
+    ctx.beginPath();ctx.moveTo(cx,topY+tubeH);ctx.lineTo(cx,hy);ctx.stroke();
+    ctx.beginPath();ctx.arc(cx,hy+8,8,Math.PI*0.15,Math.PI*1.5);ctx.stroke();
+    var bw=72,bh=Math.min(48,H*0.14),by=hy+16;
+    if(by+bh>H-26){by=H-26-bh;}
     ctx.fillStyle='rgba(181,118,58,.35)';rr(ctx,cx-bw/2,by,bw,bh,6);ctx.fill();
     ctx.strokeStyle=C.pit;ctx.lineWidth=2;rr(ctx,cx-bw/2,by,bw,bh,6);ctx.stroke();
     ctx.strokeStyle='rgba(181,118,58,.6)';ctx.lineWidth=1.4;
     ctx.beginPath();ctx.moveTo(cx-bw/2,by+bh/2);ctx.lineTo(cx+bw/2,by+bh/2);
     ctx.moveTo(cx,by);ctx.lineTo(cx,by+bh);ctx.stroke();
-    txt(ctx,'ящик '+fmt(p.load,0)+' Н',cx,by+bh+16,C.pit,11,'700','center');
-    if(S.vec)arrow(ctx,cx-58,by+bh/2,cx-58,by+bh/2-Math.max(8,Math.min(70,F*0.06)),C.success,'F '+fmt(F,1));
-    txt(ctx,'Безмен на рынке',14,H-14,C.dim,10,'700');
+    txt(ctx,'ящик '+fmt(p.load,0)+' Н',cx,by+bh+15,C.pit,11,'700','center');
+    if(S.vec)arrow(ctx,cx-56,by+bh/2,cx-56,by+bh/2-Math.max(8,Math.min(60,F*0.05)),C.success,'F '+fmt(F,1));
+    txt(ctx,'Безмен на рынке',14,H-12,C.dim,10,'700');
   }else if(kind==='pen'){
-    var bx=W*0.14,bw2=W*0.62,by2=cy-26,bh2=52;
-    var press=u*Math.min(30,W*0.06);
+    var bx=W*0.13,bw2=W*0.6,by2=cy-26,bh2=52;
+    var press=u*Math.min(28,W*0.055);
     ctx.fillStyle='rgba(20,37,26,.92)';rr(ctx,bx,by2,bw2,bh2,12);ctx.fill();
     ctx.strokeStyle=C.flesh;ctx.lineWidth=2;rr(ctx,bx,by2,bw2,bh2,12);ctx.stroke();
     ctx.fillStyle='rgba(7,15,11,.85)';rr(ctx,bx+16,by2+10,bw2-70,bh2-20,7);ctx.fill();
@@ -617,52 +657,49 @@ function drawLife(){
     ctx.fillStyle=C.skin;rr(ctx,bx+bw2-56-press,by2+8,44,bh2-16,8);ctx.fill();
     ctx.strokeStyle=C.flesh;ctx.lineWidth=1.6;rr(ctx,bx+bw2-56-press,by2+8,44,bh2-16,8);ctx.stroke();
     ctx.fillStyle=C.muted;ctx.beginPath();
-    ctx.moveTo(bx,by2+8);ctx.lineTo(bx-30,cy);ctx.lineTo(bx,by2+bh2-8);ctx.closePath();ctx.fill();
-    ctx.fillStyle=C.dim;ctx.beginPath();ctx.arc(bx-30,cy,3,0,6.284);ctx.fill();
-    var fx=bx+bw2-12-press;
+    ctx.moveTo(bx,by2+8);ctx.lineTo(bx-26,cy);ctx.lineTo(bx,by2+bh2-8);ctx.closePath();ctx.fill();
+    ctx.fillStyle=C.dim;ctx.beginPath();ctx.arc(bx-26,cy,3,0,6.284);ctx.fill();
+    var fx=Math.min(W-30,bx+bw2-12-press);
     ctx.fillStyle='rgba(245,241,227,.22)';
-    ctx.beginPath();ctx.ellipse(fx+22,cy,24,20,0,0,6.284);ctx.fill();
+    ctx.beginPath();ctx.ellipse(fx+20,cy,20,18,0,0,6.284);ctx.fill();
     ctx.strokeStyle=C.cream;ctx.lineWidth=1.6;
-    ctx.beginPath();ctx.ellipse(fx+22,cy,24,20,0,0,6.284);ctx.stroke();
-    txt(ctx,'палец',fx+22,cy+34,C.muted,10,'600','center');
-    if(S.vec)arrow(ctx,fx+46,cy-40,fx+46-press-14,cy-40,C.amber,'F '+fmt(F,1)+' Н');
+    ctx.beginPath();ctx.ellipse(fx+20,cy,20,18,0,0,6.284);ctx.stroke();
+    txt(ctx,'палец',fx+20,cy+32,C.muted,10,'600','center');
+    if(S.vec)arrow(ctx,fx+40,cy-38,fx+40-press-12,cy-38,C.amber,'F '+fmt(F,1)+' Н');
     var d=xDisp();
-    txt(ctx,'ход кнопки '+fmt(d.v,d.d)+' '+p.unit,bx,by2-16,C.flesh,11,'700');
-    txt(ctx,'Щелчок кнопкой ручки',14,H-14,C.dim,10,'700');
+    txt(ctx,'ход кнопки '+fmt(d.v,d.d)+' '+p.unit,bx,by2-14,C.flesh,11,'700');
+    txt(ctx,'Щелчок кнопкой ручки',14,H-12,C.dim,10,'700');
   }else if(kind==='grip'){
-    var gapMax=Math.min(150,W*0.34),gap=gapMax*(1-u*0.62);
-    var gy=cy,hh=Math.min(180,H*0.42);
+    var gapMax=Math.min(140,W*0.32),gap=gapMax*(1-u*0.6);
+    var gy=cy,hh=Math.min(160,H*0.4);
     ctx.strokeStyle=C.muted;ctx.lineWidth=9;ctx.lineCap='round';
     ctx.beginPath();ctx.moveTo(cx-gap/2,gy-hh/2);ctx.lineTo(cx-gap/2,gy+hh/2);ctx.stroke();
     ctx.beginPath();ctx.moveTo(cx+gap/2,gy-hh/2);ctx.lineTo(cx+gap/2,gy+hh/2);ctx.stroke();
     ctx.strokeStyle='rgba(168,210,74,.35)';ctx.lineWidth=3;
     for(var s2=-1;s2<=1;s2+=2){for(var j=0;j<4;j++){
       var yy=gy-hh/2+16+j*(hh-32)/3;
-      ctx.beginPath();ctx.moveTo(cx+s2*gap/2,yy);ctx.lineTo(cx+s2*(gap/2+10),yy);ctx.stroke();}}
-    spring(ctx,cx-gap/2,gy,cx+gap/2,gy,7,Math.min(20,gap*0.14),over()?C.danger:C.acc,3.4);
+      ctx.beginPath();ctx.moveTo(cx+s2*gap/2,yy);ctx.lineTo(cx+s2*(gap/2+9),yy);ctx.stroke();}}
+    spring(ctx,cx-gap/2,gy,cx+gap/2,gy,7,Math.min(18,gap*0.14),over()?C.danger:C.acc,3.4);
     ctx.fillStyle='rgba(245,241,227,.16)';
-    ctx.beginPath();ctx.ellipse(cx-gap/2-24,gy,20,hh*0.36,0,0,6.284);ctx.fill();
-    ctx.beginPath();ctx.ellipse(cx+gap/2+24,gy,20,hh*0.36,0,0,6.284);ctx.fill();
-    if(S.vec){
-      arrow(ctx,cx-gap/2-46,gy-hh/2-14,cx-gap/2-46+Math.min(46,F*0.22),gy-hh/2-14,C.amber,'');
-      arrow(ctx,cx+gap/2+46,gy-hh/2-14,cx+gap/2+46-Math.min(46,F*0.22),gy-hh/2-14,C.amber,'F '+fmt(F,0)+' Н');
-    }
+    ctx.beginPath();ctx.ellipse(cx-gap/2-22,gy,18,hh*0.34,0,0,6.284);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx+gap/2+22,gy,18,hh*0.34,0,0,6.284);ctx.fill();
+    if(S.vec)arrow(ctx,cx+gap/2+44,gy-hh/2-12,cx+gap/2+44-Math.min(42,F*0.2),gy-hh/2-12,C.amber,'F '+fmt(F,0)+' Н');
     var d2=xDisp();
-    txt(ctx,'сжатие '+fmt(d2.v,d2.d)+' '+p.unit,cx,gy+hh/2+30,C.flesh,11,'700','center');
-    txt(ctx,'Тренировка хвата',14,H-14,C.dim,10,'700');
+    txt(ctx,'сжатие '+fmt(d2.v,d2.d)+' '+p.unit,cx,Math.min(H-30,gy+hh/2+28),C.flesh,11,'700','center');
+    txt(ctx,'Тренировка хвата',14,H-12,C.dim,10,'700');
   }else if(kind==='car'){
-    var roadY=H-58,travel2=Math.max(50,H*0.18),comp=u*travel2;
+    var roadY=H-52,comp=u*Math.max(40,H*0.16);
     ctx.strokeStyle=C.skin;ctx.lineWidth=3;
     ctx.beginPath();ctx.moveTo(0,roadY);ctx.lineTo(W*0.42,roadY);
-    ctx.quadraticCurveTo(W*0.5,roadY-Math.min(26,H*0.05),W*0.58,roadY);
+    ctx.quadraticCurveTo(W*0.5,roadY-Math.min(22,H*0.045),W*0.58,roadY);
     ctx.lineTo(W,roadY);ctx.stroke();
     ctx.fillStyle='rgba(63,107,58,.2)';ctx.fillRect(0,roadY,W,H-roadY);
-    var wr=Math.min(38,W*0.09),wy=roadY-wr-Math.min(20,H*0.04)*(u>0.02?1:0);
-    var bodyY=wy-wr-Math.max(60,H*0.2)+comp;
-    ctx.fillStyle='rgba(167,139,250,.22)';rr(ctx,cx-W*0.28,bodyY-46,W*0.56,50,10);ctx.fill();
-    ctx.strokeStyle=C.violet;ctx.lineWidth=2;rr(ctx,cx-W*0.28,bodyY-46,W*0.56,50,10);ctx.stroke();
+    var wr=Math.min(34,W*0.085),wy=roadY-wr-Math.min(16,H*0.035)*(u>0.02?1:0);
+    var bodyY=Math.max(58,wy-wr-Math.max(52,H*0.18)+comp);
+    ctx.fillStyle='rgba(167,139,250,.22)';rr(ctx,cx-W*0.27,bodyY-44,W*0.54,46,10);ctx.fill();
+    ctx.strokeStyle=C.violet;ctx.lineWidth=2;rr(ctx,cx-W*0.27,bodyY-44,W*0.54,46,10);ctx.stroke();
     txt(ctx,'кузов',cx,bodyY-16,C.violet,11,'700','center');
-    spring(ctx,cx,bodyY+4,cx,wy-wr*0.2,7,Math.min(18,W*0.045),over()?C.danger:C.acc,3.4);
+    spring(ctx,cx,bodyY+2,cx,wy-wr*0.2,7,Math.min(16,W*0.04),over()?C.danger:C.acc,3.4);
     ctx.fillStyle='rgba(20,37,26,.95)';ctx.beginPath();ctx.arc(cx,wy,wr,0,6.284);ctx.fill();
     ctx.strokeStyle=C.muted;ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,wy,wr,0,6.284);ctx.stroke();
     ctx.strokeStyle=C.dim;ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,wy,wr*0.45,0,6.284);ctx.stroke();
@@ -670,37 +707,37 @@ function drawLife(){
       ctx.beginPath();ctx.moveTo(cx+Math.cos(an)*wr*0.45,wy+Math.sin(an)*wr*0.45);
       ctx.lineTo(cx+Math.cos(an)*wr*0.9,wy+Math.sin(an)*wr*0.9);ctx.stroke();}
     if(S.vec){
-      arrow(ctx,cx+wr+34,wy-wr,cx+wr+34,wy-wr-Math.min(64,F*0.018),C.success,'F '+fmt(F,0)+' Н');
-      arrow(ctx,cx-wr-34,bodyY+10,cx-wr-34,bodyY+10+Math.min(64,p.load*0.018),C.amber,'вес');
+      arrow(ctx,cx+wr+30,wy-wr,cx+wr+30,wy-wr-Math.min(56,F*0.016),C.success,'F '+fmt(F,0)+' Н');
+      arrow(ctx,cx-wr-30,bodyY+8,cx-wr-30,bodyY+8+Math.min(56,p.load*0.016),C.amber,'вес');
     }
     var d3=xDisp();
-    txt(ctx,'ход подвески '+fmt(d3.v,d3.d)+' '+p.unit,14,bodyY-58,C.flesh,11,'700');
-    txt(ctx,'Кочка на дороге',14,H-14,C.dim,10,'700');
+    txt(ctx,'ход подвески '+fmt(d3.v,d3.d)+' '+p.unit,14,Math.max(20,bodyY-54),C.flesh,11,'700');
+    txt(ctx,'Кочка на дороге',14,H-12,C.dim,10,'700');
   }else{
-    var fy=H*0.44,span=Math.min(W*0.72,420),sag=u*Math.min(120,H*0.24);
+    var fy=H*0.42,span=Math.min(W*0.7,400),sag=u*Math.min(100,H*0.2);
     var lx=cx-span/2,rx2=cx+span/2;
     ctx.strokeStyle=C.muted;ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(lx,fy);ctx.lineTo(lx-14,H-40);ctx.moveTo(rx2,fy);ctx.lineTo(rx2+14,H-40);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(lx,fy);ctx.lineTo(lx-14,H-36);ctx.moveTo(rx2,fy);ctx.lineTo(rx2+14,H-36);ctx.stroke();
     ctx.strokeStyle=C.skin;ctx.lineWidth=5;
-    ctx.beginPath();ctx.moveTo(lx-22,fy);ctx.lineTo(lx,fy);ctx.moveTo(rx2,fy);ctx.lineTo(rx2+22,fy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(lx-20,fy);ctx.lineTo(lx,fy);ctx.moveTo(rx2,fy);ctx.lineTo(rx2+20,fy);ctx.stroke();
     spring(ctx,lx,fy,lx+span*0.16,fy+sag*0.55,5,7,over()?C.danger:C.acc,2.6);
     spring(ctx,rx2,fy,rx2-span*0.16,fy+sag*0.55,5,7,over()?C.danger:C.acc,2.6);
     ctx.strokeStyle=C.amber;ctx.lineWidth=4;ctx.beginPath();
     ctx.moveTo(lx+span*0.16,fy+sag*0.55);
     ctx.quadraticCurveTo(cx,fy+sag*1.35,rx2-span*0.16,fy+sag*0.55);ctx.stroke();
-    var py2=fy+sag*1.02;
-    person(ctx,cx,py2,Math.min(96,H*0.2),C.cream);
+    var py2=Math.min(H-30,fy+sag*1.02);
+    person(ctx,cx,py2,Math.min(88,H*0.19),C.cream);
     if(S.vec){
-      arrow(ctx,cx-70,py2-30,cx-70,py2-30-Math.min(70,F*0.05),C.success,'F '+fmt(F,0)+' Н');
-      arrow(ctx,cx+70,py2-60,cx+70,py2-60+Math.min(70,p.load*0.05),C.amber,'вес');
+      arrow(ctx,cx-64,py2-28,cx-64,py2-28-Math.min(60,F*0.045),C.success,'F '+fmt(F,0)+' Н');
+      arrow(ctx,cx+64,py2-54,cx+64,py2-54+Math.min(60,p.load*0.045),C.amber,'вес');
     }
     var d4=xDisp();
-    txt(ctx,'прогиб '+fmt(d4.v,d4.d)+' '+p.unit,cx,fy-24,C.flesh,11,'700','center');
-    txt(ctx,'Прыжок на батуте',14,H-14,C.dim,10,'700');
+    txt(ctx,'прогиб '+fmt(d4.v,d4.d)+' '+p.unit,cx,Math.max(20,fy-20),C.flesh,11,'700','center');
+    txt(ctx,'Прыжок на батуте',14,H-12,C.dim,10,'700');
   }
   if(S.lim&&over()){
     ctx.fillStyle='rgba(255,95,95,.1)';ctx.fillRect(0,0,W,H);
-    txt(ctx,'ЗА ПРЕДЕЛОМ УПРУГОСТИ',cx,26,C.danger,12,'700','center');
+    txt(ctx,'ЗА ПРЕДЕЛОМ УПРУГОСТИ',cx,24,C.danger,12,'700','center');
   }
 }
 
@@ -734,20 +771,13 @@ function drawGraph(){
 
 function state(){
   var p=P(),d=xDisp();
-  return {preset:p.id,preset_name:p.name,mode:S.mode,k:p.k,limit_m:p.lim,
+  return {preset:p.id,preset_index:S.pi,preset_name:p.name,mode:S.mode,k:p.k,limit_m:p.lim,
     x_m:+S.x.toFixed(6),x_display:+d.v.toFixed(2),unit:p.unit,
     F_N:+force().toFixed(4),E_J:+energy().toFixed(5),load_N:p.load,
-    over_limit:over(),oscillating:S.osc,speed:S.speed,
-    vectors:S.vec,ruler:S.rul,limit_shown:S.lim,graph:S.gr,seed:20261126};
+    over_limit:over(),oscillating:S.osc,paused:S.paused,speed:S.speed,
+    vectors:S.vec,ruler:S.rul,limit_shown:S.lim,graph:S.gr,seed:SEED};
 }
-function p_hud(){var p=P();return 'k = '+p.k+' Н/м';}
-function loop(now){
-  requestAnimationFrame(loop);
-  if(!last)last=now;
-  var dt=Math.min(.05,(now-last)/1000);last=now;
-  acc+=dt*S.speed;var guard=0;
-  while(acc>=1/240&&guard<60){step(1/240);acc-=1/240;guard++;}
-  if(acc>.4)acc=0;
+function render(){
   ctx.clearRect(0,0,W,H);
   if(S.mode==='book')drawBook();else drawLife();
   drawGraph();
@@ -755,32 +785,47 @@ function loop(now){
   document.getElementById('stChip').textContent=ov?'ЗА ПРЕДЕЛОМ':'УПРУГАЯ';
   document.getElementById('stChip').className='st'+(ov?' bad':'');
   document.getElementById('hud').innerHTML='<span class="chip">'+(S.mode==='book'?'УЧЕБНИК':'ИЗ ЖИЗНИ')+'</span>'+
-    '<span class="chip p">'+p_hud()+'</span>';
+    '<span class="chip p">k = '+P().k+' Н/м</span>'+(S.paused?'<span class="chip">ПАУЗА</span>':'');
+}
+function paintReadouts(){
+  var d=xDisp();
+  document.getElementById('oF').textContent=fmt(force(),2);
+  document.getElementById('oE').textContent=fmt(energy(),3);
+  document.getElementById('rdF').className='rd'+(over()?' bad':'');
+  document.getElementById('vX').textContent=fmt(d.v,d.d);
+  document.getElementById('pctX').textContent=Math.round(S.x/P().lim*100)+' %';
+}
+function loop(now){
+  requestAnimationFrame(loop);
+  if(!last)last=now;
+  var dt=Math.min(.05,(now-last)/1000);last=now;
+  if(!S.paused){
+    acc+=dt*S.speed;var guard=0;
+    while(acc>=1/240&&guard<60){step(1/240);acc-=1/240;guard++;}
+    if(acc>.4)acc=0;
+  }
+  render();
   uiT+=dt;
-  if(uiT>=.12){uiT=0;var d=xDisp();
-    document.getElementById('oF').textContent=fmt(force(),2);
-    document.getElementById('oE').textContent=fmt(energy(),3);
-    document.getElementById('rdF').className='rd'+(ov?' bad':'');
-    document.getElementById('vX').textContent=fmt(d.v,d.d);
-    document.getElementById('pctX').textContent=Math.round(S.x/P().lim*100)+' %';
-    send({type:'state',state:state()});}
+  if(uiT>=.12){uiT=0;paintReadouts();send({type:'state',state:state()});}
 }
 
 window.WidgetAPI={
-  seed:20261126,
-  reset:function(){reset();return true;},
+  seed:SEED,
+  reset:function(){reset();return state();},
   getState:function(){return state();},
+  pause:function(v){S.paused=(v===undefined?true:!!v);act('pause',S.paused);return state();},
+  step:function(n){var c=Math.max(1,Math.min(2000,n||1));for(var i=0;i<c;i++)step(1/240);render();paintReadouts();return state();},
   setState:function(o){
     if(o&&typeof o==='object'){
       if(o.preset){for(var i=0;i<PRESETS.length;i++)if(PRESETS[i].id===o.preset)S.pi=i;}
-      if(typeof o.pi==='number'&&PRESETS[o.pi])S.pi=o.pi;
+      if(typeof o.preset_index==='number'&&PRESETS[o.preset_index])S.pi=o.preset_index;
       if(o.mode==='book'||o.mode==='life')S.mode=o.mode;
       if(typeof o.x==='number'){S.x=Math.max(0,Math.min(P().lim*1.3,o.x));S.osc=false;S.v=0;
         document.getElementById('sx').value=Math.round(S.x/P().lim*100);}
       if(typeof o.speed==='number')S.speed=Math.max(.2,Math.min(2,o.speed));
-      ['vec','rul','lim','gr'].forEach(function(kk){if(typeof o[kk]==='boolean')S[kk]=o[kk];});
-      Array.prototype.forEach.call(document.querySelectorAll('[data-p]'),function(b,j){b.classList.toggle('on',j===S.pi);});
-      document.getElementById('ss').value=S.speed;sync();resize();
+      if(typeof o.paused==='boolean')S.paused=o.paused;
+      ['vec','rul','lim','gr'].forEach(function(k2){if(typeof o[k2]==='boolean')S[k2]=o[k2];});
+      markPresets();sync();resize();
     }
     return state();
   }
@@ -789,14 +834,16 @@ window.addEventListener('message',function(e){
   var d=e.data||{};
   if(d.type==='ping'){send({type:'pong',t:d.t});return;}
   if(d.type==='cmd'){
-    if(d.cmd==='reset'){reset();send({type:'cmd_ack',cmd:'reset',ok:true});}
+    if(d.cmd==='reset'){send({type:'cmd_ack',cmd:'reset',ok:true,state:window.WidgetAPI.reset()});}
     else if(d.cmd==='getState'){send({type:'cmd_ack',cmd:'getState',ok:true,state:state()});}
     else if(d.cmd==='setState'){send({type:'cmd_ack',cmd:'setState',ok:true,state:window.WidgetAPI.setState(d.args)});}
+    else if(d.cmd==='pause'){send({type:'cmd_ack',cmd:'pause',ok:true,state:window.WidgetAPI.pause(d.value)});}
+    else if(d.cmd==='step'){send({type:'cmd_ack',cmd:'step',ok:true,state:window.WidgetAPI.step(d.n)});}
     else if(d.cmd==='export'){try{send({type:'export',dataURL:cv.toDataURL('image/png')});}catch(err){send({type:'error',message:'export: '+err.message});}}
   }
 });
-buildPresets();resize();sync();requestAnimationFrame(loop);
-send({type:'ready',seed:20261126,api:['reset','getState','setState'],presets:PRESETS.map(function(p){return p.id;})});
+buildPresets();resize();sync();paintReadouts();requestAnimationFrame(loop);
+send({type:'ready',seed:SEED,api:['reset','getState','setState','pause','step'],presets:PRESETS.map(function(p){return p.id;})});
 })();
 </script>
 </template>
@@ -806,7 +853,10 @@ send({type:'ready',seed:20261126,api:['reset','getState','setState'],presets:PRE
 'use strict';
 var $=function(s){return document.querySelector(s);};
 
-/* ================= ПРЕСЕТЫ: единый источник чисел ================= */
+/* ============================================================
+   ЕДИНЫЙ ИСТОЧНИК ЧИСЕЛ. Все задачи ниже выводятся отсюда.
+   Правишь пресет — задачи, пул значений и ответы пересчитываются.
+   ============================================================ */
 var PRESETS=[
  {id:'dyn', name:'Пружина динамометра',    k:50,    lim:0.080, load:2,    unit:'см', life:'scale', note:'Предел упругости 8 см.'},
  {id:'pen', name:'Пружина шариковой ручки',k:400,   lim:0.010, load:3,    unit:'мм', life:'pen',   note:'Предел упругости 10 мм.'},
@@ -815,12 +865,15 @@ var PRESETS=[
  {id:'car', name:'Пружина подвески авто',  k:25000, lim:0.120, load:2500, unit:'см', life:'car',   note:'Ход подвески 12 см.'}
 ];
 var G=9.8;
-function preset(id){var r=null;PRESETS.forEach(function(p){if(p.id===id)r=p;});return r;}
+function P(id){for(var i=0;i<PRESETS.length;i++)if(PRESETS[i].id===id)return PRESETS[i];return PRESETS[0];}
+function toM(val,unit){return val/(unit==='мм'?1000:100);}
+function fromM(m,unit){return m*(unit==='мм'?1000:100);}
 
-/* ================= ФОРМАТ ЧИСЕЛ ================= */
+/* ================= ФОРМАТ ================= */
 function fmt(v,d){return v.toFixed(d===undefined?2:d).replace('.',',');}
 function nice(v){return Math.abs(v-Math.round(v))<1e-9?String(Math.round(v)):fmt(v,2);}
 function mstr(v){return String(parseFloat(v.toFixed(6))).replace('.',',');}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 
 /* ================= ДАННЫЕ УРОКА ================= */
 var LESSON={
@@ -862,41 +915,44 @@ var LESSON={
   next:{n:20,t:'Растяжение пружины и приложенная сила'}
 };
 
-/* ================= ЗАДАНИЯ: 6 штук, ответы считает код ================= */
+/* ================= ЗАДАНИЯ: числа выводятся из PRESETS ================= */
+function limitNote(xm,p){
+  var limDisp=fromM(p.lim,p.unit),xDisp=fromM(xm,p.unit);
+  if(xm>p.lim+1e-9)return ' Проверка предела: '+nice(xDisp)+' '+p.unit+' > '+nice(limDisp)+' '+p.unit+' — за пределом упругости закон Гука неприменим.';
+  var near=xm>p.lim*0.9?' почти у предела':'';
+  return ' Проверка предела: '+nice(xDisp)+' '+p.unit+' < '+nice(limDisp)+' '+p.unit+near+' — закон Гука применим.';
+}
+/* вариант t1: деформация задана в единицах пресета, k и предел берутся из пресета */
+function v1(pid,xd,verb){var p=P(pid);return {p:p,xd:xd,verb:verb,xm:toM(xd,p.unit)};}
+/* вариант t2: сила задана, деформация вычисляется */
+function v2(pid,F,verb){var p=P(pid);return {p:p,F:F,verb:verb};}
+/* вариант t6: сила задана, предел берётся из пресета */
+function v6(pid,F){var p=P(pid);return {p:p,F:F};}
+
 var TASKS=[
  {id:'t1',kind:'numeric',tag:'расчёт',tagClass:'numeric',title:'Сила упругости реального объекта',unit:'Н',
-  variants:[
-   {obj:'Пружина динамометра',      k:50,    xd:4,  unit:'см', xm:0.04,  verb:'растянута'},
-   {obj:'Пружина шариковой ручки',  k:400,   xd:5,  unit:'мм', xm:0.005, verb:'сжата'},
-   {obj:'Пружина батута',           k:2000,  xd:30, unit:'см', xm:0.30,  verb:'растянута'},
-   {obj:'Кистевой эспандер',        k:4000,  xd:2,  unit:'см', xm:0.02,  verb:'сжат'},
-   {obj:'Пружина подвески авто',    k:25000, xd:8,  unit:'см', xm:0.08,  verb:'сжата'}
-  ],
-  solve:function(v){return v.k*v.xm;},
-  text:function(v){return v.obj+' жёсткостью '+v.k+' Н/м '+v.verb+' на '+nice(v.xd)+' '+v.unit+'. Найдите силу упругости.';},
+  variants:[v1('dyn',4,'растянута'),v1('pen',5,'сжата'),v1('bat',30,'растянута'),v1('grip',2,'сжат'),v1('car',8,'сжата')],
+  solve:function(v){return v.p.k*v.xm;},
+  text:function(v){return v.p.name+' жёсткостью '+v.p.k+' Н/м '+v.verb+' на '+nice(v.xd)+' '+v.p.unit+'. Найдите силу упругости.';},
   hint:'Деформацию переведи в метры: сантиметры раздели на 100, миллиметры — на 1000.',
-  explain:function(v,a){return 'x = '+nice(v.xd)+' '+v.unit+' = '+mstr(v.xm)+' м. F = k · x = '+v.k+' · '+mstr(v.xm)+' = '+nice(a)+' Н.';}},
+  explain:function(v,a){return 'x = '+nice(v.xd)+' '+v.p.unit+' = '+mstr(v.xm)+' м. F = k · x = '+v.p.k+' · '+mstr(v.xm)+' = '+nice(a)+' Н.'+limitNote(v.xm,v.p);}},
 
- {id:'t2',kind:'numeric',tag:'расчёт',tagClass:'numeric',title:'Деформация по приложенной силе',unit:'см',
-  variants:[
-   {obj:'Пружина динамометра',     k:50,    F:3,    unit:'см', verb:'растянута'},
-   {obj:'Пружина шариковой ручки', k:400,   F:2,    unit:'мм', verb:'сжата'},
-   {obj:'Пружина батута',          k:2000,  F:600,  unit:'см', verb:'растянута'},
-   {obj:'Кистевой эспандер',       k:4000,  F:100,  unit:'см', verb:'сжат'},
-   {obj:'Пружина подвески авто',   k:25000, F:2000, unit:'см', verb:'сжата'}
-  ],
-  solve:function(v){return v.F/v.k*(v.unit==='мм'?1000:100);},
-  text:function(v){return v.obj+' жёсткостью '+v.k+' Н/м '+v.verb+' силой '+nice(v.F)+' Н. Найдите деформацию в '+v.unit+'.';},
+ {id:'t2',kind:'numeric',tag:'расчёт',tagClass:'numeric',title:'Деформация по приложенной силе',
+  variants:[v2('dyn',3,'растянута'),v2('pen',2,'сжата'),v2('bat',600,'растянута'),v2('grip',100,'сжат'),v2('car',2000,'сжата')],
+  solve:function(v){return fromM(v.F/v.p.k,v.p.unit);},
+  unitOf:function(v){return v.p.unit;},
+  text:function(v){return v.p.name+' жёсткостью '+v.p.k+' Н/м '+v.verb+' силой '+nice(v.F)+' Н. Найдите деформацию в '+v.p.unit+'.';},
   hint:'Из F = k · x вырази x = F / k, получишь метры. Потом переведи в нужную единицу.',
-  explain:function(v,a){return 'x = F / k = '+nice(v.F)+' / '+v.k+' = '+mstr(v.F/v.k)+' м = '+nice(a)+' '+v.unit+'.';},
-  unitOf:function(v){return v.unit;}},
+  explain:function(v,a){var xm=v.F/v.p.k;
+    return 'x = F / k = '+nice(v.F)+' / '+v.p.k+' = '+mstr(xm)+' м = '+nice(a)+' '+v.p.unit+'.'+limitNote(xm,v.p);}},
 
  {id:'t3',kind:'numeric',tag:'из жизни',tagClass:'life',title:'Подвеска автомобиля: два шага',unit:'см',
-  variants:[{k:25000,m:250},{k:25000,m:280},{k:30000,m:250},{k:30000,m:350},{k:20000,m:220}],
-  solve:function(v){return v.m*G/v.k*100;},
-  text:function(v){return 'На одну пружину подвески автомобиля жёсткостью '+v.k+' Н/м приходится нагрузка '+v.m+' кг. На сколько сантиметров сжалась пружина? Принять g = 9,8 Н/кг, ответ округлить до сотых.';},
+  variants:[{m:200},{m:220},{m:250},{m:280},{m:300}],
+  solve:function(v){return v.m*G/P('car').k*100;},
+  text:function(v){return 'На одну пружину подвески автомобиля жёсткостью '+P('car').k+' Н/м приходится нагрузка '+v.m+' кг. На сколько сантиметров сжалась пружина? Принять g = 9,8 Н/кг, ответ округлить до сотых.';},
   hint:'Сначала найди силу: F = m · g. Только потом x = F / k.',
-  explain:function(v,a){return 'F = m · g = '+v.m+' · 9,8 = '+nice(v.m*G)+' Н. x = F / k = '+nice(v.m*G)+' / '+v.k+' = '+mstr(v.m*G/v.k)+' м = '+nice(a)+' см.';}},
+  explain:function(v,a){var p=P('car'),F=v.m*G,xm=F/p.k;
+    return 'F = m · g = '+v.m+' · 9,8 = '+nice(F)+' Н. x = F / k = '+nice(F)+' / '+p.k+' = '+mstr(xm)+' м = '+nice(a)+' см.'+limitNote(xm,p);}},
 
  {id:'t4',kind:'choice',tag:'выбор',tagClass:'choice',title:'Что происходит за пределом упругости',
   text:'Пружину растянули сильнее предела упругости. Что произойдёт?',
@@ -911,40 +967,75 @@ var TASKS=[
   explain:'За пределом упругости деформация необратима, прямая пропорциональность силы и смещения нарушается. Жёсткость — свойство самой пружины, от деформации она не зависит.'},
 
  {id:'t5',kind:'match',tag:'сопоставление',tagClass:'match',title:'Объект и его жёсткость',
-  text:'Сопоставь каждый объект с его жёсткостью. Нажми объект, затем значение справа.',
+  text:'Сопоставь каждый объект с его жёсткостью. Нажми название объекта, затем значение справа.',
   items:PRESETS.map(function(p){return {k:p.id,t:p.name};}),
-  pool:[4000,50,25000,400,2000],
-  answer:{dyn:50,pen:400,bat:2000,grip:4000,car:25000},
+  pool:(function(){var order=[3,0,4,1,2];return order.map(function(i){return PRESETS[i].k;});})(),
+  answer:(function(){var o={};PRESETS.forEach(function(p){o[p.id]=p.k;});return o;})(),
   hint:'Порядок величин: динамометр — десятки Н/м, подвеска автомобиля — десятки тысяч.',
-  explain:'Динамометр 50 → ручка 400 → батут 2000 → эспандер 4000 → подвеска автомобиля 25000 Н/м. Разброс в 500 раз, и именно поэтому один и тот же закон описывает и кнопку ручки, и колесо машины.'},
+  explain:(function(){
+    var sorted=PRESETS.slice().sort(function(a,b){return a.k-b.k;});
+    return sorted.map(function(p){return p.name.replace('Пружина ','').replace('Кистевой ','')+' '+p.k;}).join(' → ')+
+      ' Н/м. Разброс в '+Math.round(sorted[sorted.length-1].k/sorted[0].k)+' раз, и один закон описывает и кнопку ручки, и колесо машины.';})()},
 
  {id:'t6',kind:'numeric',tag:'границы',tagClass:'limit',title:'Выйдет ли деформация за предел',unit:'см',
-  variants:[
-   {obj:'Пружина динамометра', k:50,   lim:8,  F:5},
-   {obj:'Пружина динамометра', k:50,   lim:8,  F:3},
-   {obj:'Кистевой эспандер',   k:4000, lim:4,  F:200},
-   {obj:'Кистевой эспандер',   k:4000, lim:4,  F:120},
-   {obj:'Пружина батута',      k:2000, lim:60, F:1400}
-  ],
-  solve:function(v){return Math.max(0,v.F/v.k*100-v.lim);},
-  text:function(v){return v.obj+' имеет жёсткость '+v.k+' Н/м и предел упругости '+v.lim+' см. К ней приложили силу '+nice(v.F)+' Н. На сколько сантиметров деформация выйдет за предел упругости? Если не выйдет — введи 0.';},
-  hint:'Посчитай x = F / k в сантиметрах и сравни с пределом. Разницу отрицательной не делают: если x меньше предела, ответ 0.',
-  explain:function(v,a){var x=v.F/v.k*100;
-    return 'x = F / k = '+nice(v.F)+' / '+v.k+' = '+mstr(v.F/v.k)+' м = '+nice(x)+' см. Предел '+v.lim+' см. '+
+  variants:[v6('dyn',5),v6('dyn',3),v6('grip',200),v6('grip',120),v6('bat',1400)],
+  solve:function(v){return Math.max(0,v.F/v.p.k*100-fromM(v.p.lim,'см'));},
+  text:function(v){return v.p.name+' имеет жёсткость '+v.p.k+' Н/м и предел упругости '+nice(fromM(v.p.lim,'см'))+' см. К ней приложили силу '+nice(v.F)+' Н. На сколько сантиметров деформация выйдет за предел упругости? Если не выйдет — введи 0.';},
+  hint:'Посчитай x = F / k в сантиметрах и сравни с пределом. Если x меньше предела, ответ 0.',
+  explain:function(v,a){var x=v.F/v.p.k*100,lim=fromM(v.p.lim,'см');
+    return 'x = F / k = '+nice(v.F)+' / '+v.p.k+' = '+mstr(v.F/v.p.k)+' м = '+nice(x)+' см. Предел '+nice(lim)+' см. '+
       (a>0?'Превышение '+nice(a)+' см: за пределом закон Гука уже не работает.'
           :'Деформация меньше предела, закон применим, ответ 0.');}}
 ];
 
-/* ================= СОСТОЯНИЕ ================= */
-var TS={},sound=true,ac=null,lastTap=0,errCount=0;
-var LSKEY='avo-done-'+LESSON.id;
-TASKS.forEach(function(t){
-  TS[t.id]={solved:false,tries:0,vi:0,pairs:t.kind==='match'?{}:null,sel:null,checked:false};
-});
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+/* ================= СОСТОЯНИЕ + СОХРАНЕНИЕ ================= */
+var LSKEY='avo-done-'+LESSON.id, LSSTATE='avo-state-'+LESSON.id;
+var TS={},sound=true,ac=null,lastTap=0,undoSnapshot=null,undoTimer=null;
+function freshState(){
+  var o={};
+  TASKS.forEach(function(t){o[t.id]={solved:false,tries:0,vi:0,pairs:t.kind==='match'?{}:null,sel:null,checked:false};});
+  return o;
+}
+TS=freshState();
+function saveState(){
+  try{
+    var slim={};
+    TASKS.forEach(function(t){var s=TS[t.id];slim[t.id]={solved:!!s.solved,tries:s.tries|0,vi:s.vi|0,pairs:s.pairs||null};});
+    localStorage.setItem(LSSTATE,JSON.stringify({v:1,tasks:slim}));
+  }catch(e){}
+}
+function loadState(){
+  var raw=null;try{raw=localStorage.getItem(LSSTATE);}catch(e){return;}
+  if(!raw)return;
+  var data=null;try{data=JSON.parse(raw);}catch(e){return;}
+  if(!data||data.v!==1||!data.tasks)return;
+  TASKS.forEach(function(t){
+    var d=data.tasks[t.id];if(!d)return;
+    var s=TS[t.id];
+    s.tries=Math.max(0,d.tries|0);
+    s.vi=(t.variants&&d.vi>=0&&d.vi<t.variants.length)?d.vi:0;
+    s.solved=!!d.solved;
+    if(t.kind==='match'&&d.pairs&&typeof d.pairs==='object'){
+      var clean={},used={};
+      t.items.forEach(function(it){
+        var val=d.pairs[it.k];
+        if(typeof val==='number'&&t.pool.indexOf(val)>=0&&!used[val]){clean[it.k]=val;used[val]=true;}
+      });
+      s.pairs=clean;
+    }
+  });
+}
 function solvedCount(){var n=0;TASKS.forEach(function(t){if(TS[t.id].solved)n++;});return n;}
+function syncCompletion(){
+  var complete=solvedCount()===TASKS.length;
+  try{
+    if(complete)localStorage.setItem(LSKEY,'1');
+    else localStorage.removeItem(LSKEY);
+  }catch(e){}
+  return complete;
+}
 function toast(m){var el=$('#toast');el.textContent=m;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},2000);}
-function taskById(id){var r=null;TASKS.forEach(function(t){if(t.id===id)r=t;});return r;}
+function taskById(id){for(var i=0;i<TASKS.length;i++)if(TASKS[i].id===id)return TASKS[i];return null;}
 
 /* ================= ЗВУК ================= */
 function initAudio(){if(ac)return;try{var C=window.AudioContext||window.webkitAudioContext;if(C)ac=new C();}catch(e){}}
@@ -991,7 +1082,7 @@ function mascot(){
   '<ellipse cx="33" cy="53" rx="4.6" ry="3" fill="#ff9d8a" opacity=".45"/><ellipse cx="71" cy="53" rx="4.6" ry="3" fill="#ff9d8a" opacity=".45"/></svg>';
 }
 
-/* ================= РЕНДЕР ================= */
+/* ================= РЕНДЕР ОБОЛОЧКИ ================= */
 function renderMain(){
   var L=LESSON,h='';
   h+='<div class="card lhead reveal"><div class="lmeta"><span class="badge">'+L.subject+'</span>'+
@@ -1019,7 +1110,7 @@ function renderMain(){
     '<div class="readstrip">'+
     '<div class="rs" id="rsF"><i>Сила упругости, Н</i><b id="rF">0,00</b></div>'+
     '<div class="rs"><i>Деформация</i><b id="rX">0</b></div>'+
-    '<div class="rs"><i>Жёсткость, Н/м</i><b id="rK">50</b></div>'+
+    '<div class="rs"><i>Жёсткость, Н/м</i><b id="rK">'+PRESETS[0].k+'</b></div>'+
     '<div class="rs"><i>Энергия, Дж</i><b id="rE">0,000</b></div>'+
     '<div class="rs st"><i>Состояние</i><b id="rS">упругая</b></div>'+
     '</div></div></div>';
@@ -1033,14 +1124,15 @@ function renderMain(){
   h+='<div class="card pad reveal"><div class="blocktitle"><span class="dot"></span>Типичная ошибка<span class="n">06</span></div>'+
     '<div class="mistake"><div class="tag">САНТИМЕТРЫ ВМЕСТО МЕТРОВ</div><p>'+L.mistake+'</p></div></div>';
 
-  h+='<div id="tasks" style="scroll-margin-top:120px"><div class="blocktitle reveal" style="padding:0 4px"><span class="dot"></span>Проверь себя · '+TASKS.length+' заданий<span class="n">07</span></div>'+
+  h+='<div id="tasks"><div class="blocktitle reveal" style="padding:0 4px"><span class="dot"></span>Проверь себя · '+TASKS.length+' заданий<span class="n">07</span></div>'+
     '<div style="display:flex;flex-direction:column;gap:12px">'+TASKS.map(renderTask).join('')+'</div></div>';
 
-  h+='<div class="card pad reveal" id="summaryCard"><div class="blocktitle"><span class="dot"></span>Что теперь умеешь<span class="n">08</span></div>'+
+  h+='<div class="card pad reveal" id="summaryCard" style="scroll-margin-top:var(--head)"><div class="blocktitle"><span class="dot"></span>Что теперь умеешь<span class="n">08</span></div>'+
     '<div class="summary">'+L.summary.map(function(s){return '<div class="srow">'+esc(s)+'</div>';}).join('')+'</div>'+
-    '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center">'+
-    '<button class="btn g" id="markBtn" disabled>Реши все задания</button>'+
-    '<a class="btn" href="../../index.html#physics">К списку тем</a></div></div>';
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:stretch">'+
+    '<div class="donebox" id="doneBox"></div>'+
+    '<button class="btn warn s" id="resetAll">Сбросить ответы</button>'+
+    '<a class="btn s" href="../../index.html#physics">К списку тем</a></div></div>';
 
   h+='<div class="lnav reveal">'+
     '<div class="nvb soon"><i>ПРЕДЫДУЩИЙ · '+L.prev.n+'</i><b>'+esc(L.prev.t)+'</b><span style="font:600 9px/1 var(--mono);color:var(--dim)">СКОРО</span></div>'+
@@ -1051,21 +1143,23 @@ function renderMain(){
 }
 
 function matchHTML(t){
-  var s=TS[t.id],used={};
-  Object.keys(s.pairs).forEach(function(k){used[s.pairs[k]]=true;});
+  var s=TS[t.id],owner={};
+  Object.keys(s.pairs).forEach(function(k){owner[s.pairs[k]]=k;});
   var left=t.items.map(function(it){
     var val=s.pairs[it.k],cls='mobj';
     if(val!==undefined)cls+=' paired';
     if(s.sel===it.k)cls+=' sel';
     if(s.checked&&val!==undefined)cls+=(t.answer[it.k]===val?' ok':' bad');
-    return '<button class="'+cls+'" data-obj="'+it.k+'" data-task="'+t.id+'">'+
-      '<span class="nm">'+esc(it.t)+'</span>'+
-      '<span class="slot">'+(val!==undefined?val+' Н/м':'выбрать')+'</span></button>';
+    var slot=val!==undefined
+      ? '<button class="slot" data-unpair="'+it.k+'" data-task="'+t.id+'" title="Снять пару" aria-label="Снять пару с '+esc(it.t)+'">'+val+' <span class="x">✕</span></button>'
+      : '<span class="empty">выбрать</span>';
+    return '<div class="'+cls+'"><button class="pick" data-obj="'+it.k+'" data-task="'+t.id+'" aria-pressed="'+(s.sel===it.k)+'">'+esc(it.t)+'</button>'+slot+'</div>';
   }).join('');
   var right=t.pool.map(function(v){
-    return '<button class="mval'+(used[v]?' used':'')+'" data-val="'+v+'" data-task="'+t.id+'"'+(used[v]?' disabled':'')+'>'+v+'</button>';
+    var used=owner[v]!==undefined;
+    return '<button class="mval'+(used?' used':'')+'" data-val="'+v+'" data-task="'+t.id+'" aria-label="Жёсткость '+v+' ньютон на метр'+(used?', назначено':'')+'">'+v+'</button>';
   }).join('');
-  return '<div class="mnote">Значения жёсткости не подписаны объектами — вспомни порядок величин или посмотри их в симуляции, выбрав объект.</div>'+
+  return '<div class="mnote">Значения не подписаны объектами. Назначенное значение можно перенести другому объекту — оно освободится автоматически. Крестик снимает пару.</div>'+
     '<div class="match"><div class="mcol"><div class="mhint">Объект</div>'+left+'</div>'+
     '<div class="mcol vals"><div class="mhint">Жёсткость, Н/м</div>'+right+'</div></div>';
 }
@@ -1074,7 +1168,7 @@ function renderTask(t){
   if(t.kind==='numeric'){
     var v=t.variants[s.vi],unit=t.unitOf?t.unitOf(v):t.unit;
     qtext=t.text(v);
-    body='<div class="row"><input type="text" inputmode="decimal" id="in-'+t.id+'" placeholder="0,00" aria-label="Ответ">'+
+    body='<div class="row"><input type="text" inputmode="decimal" id="in-'+t.id+'" placeholder="0,00" aria-label="Ответ на задание '+esc(t.title)+'">'+
       '<span style="font:600 13px var(--mono);color:var(--dim)">'+esc(unit)+'</span>'+
       '<button class="btn p s" data-check="'+t.id+'">Проверить</button>'+
       '<button class="btn s" data-var="'+t.id+'">Другой вариант</button>'+
@@ -1096,12 +1190,13 @@ function renderTask(t){
     '<div class="thead"><span class="tb '+t.tagClass+'">'+t.tag+'</span>'+
     '<h4>'+esc(t.title)+'</h4><span class="solvedmark">✓ ЗАЧТЕНО</span></div>'+
     '<p class="qtext">'+esc(qtext)+'</p>'+body+
-    '<div class="fb" id="fb-'+t.id+'"></div>'+
+    '<div class="fb" id="fb-'+t.id+'" role="status" aria-live="polite"></div>'+
     '<div class="disclose" id="ex-'+t.id+'"><b>Разбор.</b> '+esc(ex)+'</div></div>';
 }
-function refreshTask(id){
+function refreshTask(id,focusInput){
   var t=taskById(id),old=$('#task-'+id);
-  if(old)old.outerHTML=renderTask(t);
+  if(old){old.outerHTML=renderTask(t);
+    if(focusInput){var inp=$('#in-'+id);if(inp)inp.focus();}}
 }
 function renderSide(){
   var L=LESSON;
@@ -1116,11 +1211,9 @@ function renderSide(){
     '<div class="card pad reveal"><div class="blocktitle" style="font-size:14px"><span class="dot"></span>Пределы упругости</div>'+
     '<div style="display:flex;flex-direction:column;gap:7px">'+
     PRESETS.map(function(p){
-      var lv=p.unit==='мм'?p.lim*1000:p.lim*100;
-      return '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px"><span style="color:#cddcc1">'+esc(p.name)+'</span><b style="font-family:var(--mono);color:var(--pit);white-space:nowrap">'+nice(lv)+' '+p.unit+'</b></div>';
+      return '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px"><span style="color:#cddcc1">'+esc(p.name)+'</span><b style="font-family:var(--mono);color:var(--pit);white-space:nowrap">'+nice(fromM(p.lim,p.unit))+' '+p.unit+'</b></div>';
     }).join('')+
     '</div><div style="font:11px/1.5 var(--sans);color:var(--dim);margin-top:10px">За этим значением закон Гука перестаёт работать. Жёсткость каждого объекта видна в симуляции при его выборе.</div></div>';
-  updateProgress();
 }
 function ringHTML(pct){
   var r=27,c=2*Math.PI*r;
@@ -1128,35 +1221,42 @@ function ringHTML(pct){
     '<circle cx="32" cy="32" r="'+r+'" fill="none" stroke="#35d6c0" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+(c*(1-pct/100))+'" style="transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1)"/></svg><b>'+Math.round(pct)+'%</b>';
 }
 function updateProgress(){
-  var n=solvedCount(),tot=TASKS.length,pct=n/tot*100;
+  var n=solvedCount(),tot=TASKS.length,pct=n/tot*100,complete=syncCompletion();
   var rb=$('#ringBox');if(rb)rb.innerHTML=ringHTML(pct);
   var pt=$('#pTxt');if(pt)pt.textContent=n+' / '+tot;
   var pb=$('#pBar');if(pb)pb.style.width=pct+'%';
   $('#taskPill').textContent=n+' / '+tot+' заданий';
-  $('#taskPill').className='pill'+(n===tot?' ok':' acc');
+  $('#taskPill').className='pill'+(complete?' ok':' acc');
   var tl=$('#tList');
   if(tl)tl.innerHTML=TASKS.map(function(t,i){
-    return '<a class="'+(TS[t.id].solved?'ok':'')+'" href="#task-'+t.id+'"><span class="n">'+(TS[t.id].solved?'✓':String(i+1).padStart(2,'0'))+'</span><span>'+esc(t.title)+'</span></a>';
+    return '<a class="'+(TS[t.id].solved?'ok':'')+'" href="#task-'+t.id+'" data-jump="'+t.id+'"><span class="n">'+(TS[t.id].solved?'✓':String(i+1).padStart(2,'0'))+'</span><span>'+esc(t.title)+'</span></a>';
   }).join('');
-  var mb=$('#markBtn');
-  if(mb){
-    var done=false;try{done=localStorage.getItem(LSKEY)==='1';}catch(e){}
-    if(n===tot){mb.disabled=false;mb.className='btn '+(done?'done':'g');mb.textContent=done?'✓ Урок пройден':'Отметить урок пройденным';}
-    else{mb.disabled=true;mb.className='btn g';mb.textContent='Реши все задания ('+n+' / '+tot+')';}
+  var db=$('#doneBox');
+  if(db){
+    db.className='donebox'+(complete?' complete':'');
+    db.innerHTML=complete
+      ? '<span class="ic">✓</span><span>Урок пройден<small>ОТМЕТКА СОХРАНЕНА, ВИДНА В КАТАЛОГЕ</small></span>'
+      : '<span class="ic">'+n+'</span><span>Решено '+n+' из '+tot+' заданий<small>УРОК ЗАСЧИТАЕТСЯ ПОСЛЕ ВСЕХ ЗАДАНИЙ</small></span>';
   }
+  var ra=$('#resetAll');if(ra)ra.disabled=(n===0&&!anyInput());
+  saveState();
+}
+function anyInput(){
+  var any=false;
+  TASKS.forEach(function(t){var s=TS[t.id];
+    if(s.tries>0||s.vi>0)any=true;
+    if(s.pairs&&Object.keys(s.pairs).length)any=true;});
+  return any;
 }
 
 /* ================= ПРОВЕРКА ================= */
 function fb(id,cls,html){var el=$('#fb-'+id);if(el){el.className='fb show '+cls;el.innerHTML=html;}}
 function markSolved(t){
+  var wasComplete=solvedCount()===TASKS.length;
   TS[t.id].solved=true;
   var c=$('#task-'+t.id);if(c)c.classList.add('solved');
   sfx('ok');updateProgress();
-  if(solvedCount()===TASKS.length){
-    try{localStorage.setItem(LSKEY,'1');}catch(e){}
-    sfx('done');toast('Все задания решены — урок пройден');
-    updateProgress();
-  }
+  if(!wasComplete&&solvedCount()===TASKS.length){sfx('done');toast('Все задания решены — урок пройден');}
 }
 function shake(id){var c=$('#task-'+id);if(c){c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');}}
 function check(id){
@@ -1175,6 +1275,7 @@ function check(id){
       shake(id);
       fb(id,'no','Пока нет. Попытка '+s.tries+'. '+(t.id==='t6'?'Сравни деформацию с пределом и не забудь про случай «не выйдет».':'Проверь перевод единиц.')+(s.tries>=2?' Разбор открыт ниже.':''));
       sfx('no');if(s.tries>=2)$('#ex-'+id).classList.add('show');
+      saveState();
     }
   }else if(t.kind==='choice'){
     var sel=document.querySelector('input[name="q-'+id+'"]:checked');
@@ -1188,6 +1289,7 @@ function check(id){
       labels[+sel.value].classList.add('wrong');
       fb(id,'no','Не то. Попытка '+s.tries+'. Подумай, обратима ли такая деформация.');
       sfx('no');if(s.tries>=2)$('#ex-'+id).classList.add('show');
+      saveState();
     }
   }else{
     var keys=t.items.map(function(i){return i.k;});
@@ -1200,52 +1302,92 @@ function check(id){
       fb(id,'ok','<b>Все пары верны.</b> '+esc(t.explain));markSolved(t);$('#ex-'+id).classList.add('show');
     }else{
       shake(id);
-      fb(id,'no','Верных пар: '+good+' из '+keys.length+'. Неверные подсвечены красным — нажми объект, чтобы снять пару.');
+      fb(id,'no','Верных пар: '+good+' из '+keys.length+'. Неверные подсвечены красным.');
       sfx('no');if(s.tries>=2)$('#ex-'+id).classList.add('show');
+      saveState();
     }
   }
 }
 
+/* ================= СБРОС + ОТМЕНА ================= */
+function showUndo(){
+  var el=$('#undo');el.classList.add('show');
+  clearTimeout(undoTimer);
+  undoTimer=setTimeout(hideUndo,8000);
+}
+function hideUndo(){var el=$('#undo');el.classList.remove('show');clearTimeout(undoTimer);undoSnapshot=null;}
+$('#undoBtn').addEventListener('click',function(){
+  if(!undoSnapshot)return;
+  TS=undoSnapshot;undoSnapshot=null;
+  TASKS.forEach(function(t){refreshTask(t.id,false);});
+  updateProgress();hideUndo();sfx('pair');toast('Ответы восстановлены');
+});
+$('#undoClose').addEventListener('click',hideUndo);
+
 /* ================= СОБЫТИЯ ================= */
 document.addEventListener('click',function(e){
+  var jump=e.target.closest('[data-jump]');
+  if(jump){
+    var jid=jump.dataset.jump;
+    setTimeout(function(){
+      var card=$('#task-'+jid);
+      if(card){card.classList.remove('flash');void card.offsetWidth;card.classList.add('flash');}
+    },260);
+    sfx('tap');return;
+  }
+  var un=e.target.closest('[data-unpair]');
+  if(un){
+    var uid=un.dataset.task,us=TS[uid];
+    delete us.pairs[un.dataset.unpair];us.sel=un.dataset.unpair;us.checked=false;
+    $('#match-'+uid).innerHTML=matchHTML(taskById(uid));
+    var fu=$('#fb-'+uid);if(fu)fu.className='fb';
+    updateProgress();sfx('tap');return;
+  }
   var ob=e.target.closest('[data-obj]');
   if(ob){
     var id=ob.dataset.task,s=TS[id],k=ob.dataset.obj;initAudio();
-    if(s.pairs[k]!==undefined){delete s.pairs[k];s.sel=null;sfx('tap');}
-    else{s.sel=(s.sel===k?null:k);sfx('tap');}
-    s.checked=false;
+    s.sel=(s.sel===k?null:k);s.checked=false;
     $('#match-'+id).innerHTML=matchHTML(taskById(id));
-    return;
+    var f=$('#fb-'+id);if(f)f.className='fb';
+    sfx('tap');return;
   }
   var vb=e.target.closest('[data-val]');
-  if(vb&&!vb.disabled){
-    var id2=vb.dataset.task,s2=TS[id2];initAudio();
-    if(!s2.sel){fb(id2,'hint','Сначала нажми объект слева, потом значение.');sfx('tap');return;}
-    s2.pairs[s2.sel]=+vb.dataset.val;s2.sel=null;s2.checked=false;
-    $('#match-'+id2).innerHTML=matchHTML(taskById(id2));sfx('pair');
-    return;
+  if(vb){
+    var id2=vb.dataset.task,s2=TS[id2],t2=taskById(id2),val=+vb.dataset.val;initAudio();
+    if(!s2.sel){fb(id2,'hint','Сначала нажми название объекта слева, потом значение.');sfx('tap');return;}
+    Object.keys(s2.pairs).forEach(function(k){if(s2.pairs[k]===val)delete s2.pairs[k];});
+    s2.pairs[s2.sel]=val;
+    var nextKey=null;
+    t2.items.forEach(function(it){if(nextKey===null&&s2.pairs[it.k]===undefined)nextKey=it.k;});
+    s2.sel=nextKey;s2.checked=false;
+    $('#match-'+id2).innerHTML=matchHTML(t2);
+    var f2=$('#fb-'+id2);if(f2)f2.className='fb';
+    updateProgress();sfx('pair');return;
   }
   var cl=e.target.closest('[data-clear]');
   if(cl){var id3=cl.dataset.clear;TS[id3].pairs={};TS[id3].sel=null;TS[id3].checked=false;
     $('#match-'+id3).innerHTML=matchHTML(taskById(id3));
-    var f=$('#fb-'+id3);if(f)f.className='fb';sfx('tap');return;}
+    var f3=$('#fb-'+id3);if(f3)f3.className='fb';
+    updateProgress();sfx('tap');return;}
   var c=e.target.closest('[data-check]');if(c){check(c.dataset.check);return;}
   var h=e.target.closest('[data-hint]');
   if(h){var t=taskById(h.dataset.hint);fb(t.id,'hint','<b>Подсказка.</b> '+esc(t.hint));sfx('tap');return;}
   var v=e.target.closest('[data-var]');
-  if(v){var id4=v.dataset.var,t2=taskById(id4),s4=TS[id4];
-    s4.vi=(s4.vi+1)%t2.variants.length;s4.solved=false;s4.tries=0;
-    refreshTask(id4);updateProgress();sfx('tap');toast('Новый вариант задания');return;}
-  var mb=e.target.closest('#markBtn');
-  if(mb&&!mb.disabled){
-    var done=false;try{done=localStorage.getItem(LSKEY)==='1';}catch(e){}
-    if(!done){try{localStorage.setItem(LSKEY,'1');}catch(e){}sfx('done');toast('Урок отмечен пройденным');}
-    updateProgress();return;}
+  if(v){var id4=v.dataset.var,t4=taskById(id4),s4=TS[id4];
+    s4.vi=(s4.vi+1)%t4.variants.length;s4.solved=false;s4.tries=0;
+    refreshTask(id4,true);updateProgress();sfx('tap');toast('Новый вариант задания');return;}
+  var ra=e.target.closest('#resetAll');
+  if(ra&&!ra.disabled){
+    undoSnapshot=JSON.parse(JSON.stringify(TS));
+    TS=freshState();
+    TASKS.forEach(function(t){refreshTask(t.id,false);});
+    updateProgress();showUndo();sfx('tap');return;}
 });
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&e.target.tagName==='INPUT'&&e.target.type==='text'){
     var card=e.target.closest('.task');if(card)check(card.id.replace('task-',''));
   }
+  if(e.key==='Escape'&&$('#undo').classList.contains('show'))hideUndo();
 });
 
 /* ================= МОСТ ВИДЖЕТА ================= */
@@ -1279,12 +1421,40 @@ window.addEventListener('message',function(e){
       setTimeout(function(){URL.revokeObjectURL(u);},1200);toast('Кадр сохранён');
     }catch(err){toast('Не удалось сохранить кадр');}
   }else if(d.type==='error'){
-    errCount++;var bn=$('#banner');
+    var bn=$('#banner');
     bn.textContent='Симуляция сообщила об ошибке: '+d.message+' (строка '+d.line+'). Обнови страницу.';
     bn.classList.add('show');
     $('#wReady').textContent='ошибка';$('#wReady').className='pill';
   }
 });
+
+/* ================= САМОПРОВЕРКА ДАННЫХ ================= */
+function selfCheck(){
+  var problems=[];
+  TASKS.forEach(function(t){
+    if(t.kind==='numeric'){
+      t.variants.forEach(function(v,i){
+        var a=t.solve(v);
+        if(!isFinite(a))problems.push(t.id+' вариант '+(i+1)+': ответ не число');
+        if(t.id==='t1'&&v.xm>v.p.lim+1e-9)problems.push(t.id+' вариант '+(i+1)+': деформация за пределом');
+        if(t.id==='t2'&&v.F/v.p.k>v.p.lim+1e-9)problems.push(t.id+' вариант '+(i+1)+': деформация за пределом');
+        if(t.id==='t3'&&v.m*G/P('car').k>P('car').lim+1e-9)problems.push(t.id+' вариант '+(i+1)+': ход за пределом');
+      });
+    }
+    if(t.kind==='match'){
+      var need=t.items.map(function(i){return t.answer[i.k];}).sort(function(a,b){return a-b;});
+      var have=t.pool.slice().sort(function(a,b){return a-b;});
+      if(need.length!==have.length||need.some(function(x,i){return x!==have[i];}))
+        problems.push(t.id+': пул значений не совпадает с ответами');
+    }
+  });
+  if(problems.length){
+    var bn=$('#banner');
+    bn.textContent='Данные урока несогласованы: '+problems.join('; ')+'. Сообщи учителю.';
+    bn.classList.add('show');
+  }
+  return problems.length===0;
+}
 
 /* ================= РЕВИЛЫ ================= */
 function reveal(){
@@ -1294,7 +1464,8 @@ function reveal(){
 }
 
 /* ================= СТАРТ ================= */
-renderMain();renderSide();reveal();bootWidget();
+loadState();
+renderMain();renderSide();reveal();updateProgress();bootWidget();selfCheck();
 var kb=(new Blob([document.documentElement.outerHTML]).size/1024).toFixed(0);
 $('#footStat').textContent=TASKS.length+' ЗАДАНИЙ · '+PRESETS.length+' ПРЕСЕТОВ · 2 РЕЖИМА · '+kb+' КБ';
 })();
