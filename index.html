@@ -3,28 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AvoSchool — уроки физики, химии и биологии</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230e1a12'/><path d='M16 4c4 0 6 5 7 9 1 5 4 7 4 11 0 5-5 8-11 8S5 29 5 24c0-4 3-6 4-11 1-4 3-9 7-9z' fill='%23a8d24a'/><circle cx='16' cy='22' r='5' fill='%23b5763a'/></svg>">
+<title>AvoSchool — библиотека уроков</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230d1a11'/><path d='M16 4c4 0 6 5 7 9 1 5 4 7 4 11 0 5-5 8-11 8S5 29 5 24c0-4 3-6 4-11 1-4 3-9 7-9z' fill='%23a8d24a'/><circle cx='16' cy='22' r='5' fill='%23b5763a'/></svg>">
+<!--
+  ПОДКЛЮЧЕНИЕ УРОКОВ
+  1. Файл урока кладётся в lessons/<id>/index.html  (например lessons/phys-7-019/index.html)
+  2. Готовность отмечается в блоке READY ниже ИЛИ в файле lessons.json рядом с этим index.html.
+     Формат lessons.json: { "ready": { "phys-7-019": "lessons/phys-7-019/" } }
+     На сайте lessons.json подхватывается автоматически, index.html править не нужно.
+  3. Урок может отметить себя пройденным: localStorage.setItem('avo-done-phys-7-019','1')
+-->
 <style>
 :root{
-  --abyss:#0e1a12;--bark:#14251a;--surface:#1a3020;--surface2:#22402a;
+  --abyss:#0d1a11;--bark:#14251a;--surface:#1b3121;--surface2:#24422b;
   --line:rgba(168,210,74,.16);--line2:rgba(168,210,74,.36);
-  --flesh:#a8d24a;--lime:#d6f07d;--skin:#3f6b3a;--pit:#b5763a;--pitdark:#7a4a22;
-  --cream:#f6f2e2;--muted:#a9bfa0;--dim:#6f8a68;
-  --teal:#35d6c0;--magenta:#ff6f9c;--amber:#ffb020;--danger:#ff5f5f;--success:#8fe04a;
+  --flesh:#a8d24a;--lime:#d8f283;--skin:#3f6b3a;--pit:#b5763a;
+  --cream:#f5f1e3;--muted:#a9bfa0;--dim:#6f8a68;
+  --teal:#35d6c0;--magenta:#ff6f9c;--violet:#a78bfa;--amber:#ffb020;--brass:#d9a441;
+  --success:#8fe04a;--danger:#ff5f5f;
   --acc:var(--flesh);--acc2:var(--lime);
   --mono:"Cascadia Mono",Consolas,"SF Mono",ui-monospace,monospace;
   --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  --serif:Georgia,"Times New Roman",serif;
-  --math:"Cambria Math","Times New Roman",serif;
-  --r:18px;--shadow:0 24px 64px -28px rgba(0,0,0,.92);
+  --r:16px;--shadow:0 22px 56px -26px rgba(0,0,0,.9);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--abyss);color:var(--cream);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-body[data-subj="physics"]{--acc:#35d6c0;--acc2:#7ef0e0}
-body[data-subj="chemistry"]{--acc:#ff6f9c;--acc2:#ffa8c4}
-body[data-subj="biology"]{--acc:#a8d24a;--acc2:#d6f07d}
+body{margin:0;background:var(--abyss);color:var(--cream);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body[data-hue="physics"]{--acc:#35d6c0;--acc2:#8bf0e2}
+body[data-hue="chemistry"]{--acc:#ff6f9c;--acc2:#ffb0c8}
+body[data-hue="biology"]{--acc:#a8d24a;--acc2:#d8f283}
 ::selection{background:rgba(168,210,74,.32);color:#fff}
 *{scrollbar-width:thin;scrollbar-color:var(--skin) rgba(20,37,26,.85)}
 ::-webkit-scrollbar{width:12px;height:12px}
@@ -34,768 +41,331 @@ body[data-subj="biology"]{--acc:#a8d24a;--acc2:#d6f07d}
 ::-webkit-scrollbar-corner{background:transparent}
 
 .bg{position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden}
-.mesh{position:absolute;inset:-22%;transition:background 1.1s ease;background:
+.mesh{position:absolute;inset:-22%;transition:background 1s ease;background:
   radial-gradient(46% 38% at 12% 6%,rgba(168,210,74,.26),transparent 62%),
   radial-gradient(40% 34% at 88% 2%,rgba(181,118,58,.20),transparent 60%),
-  radial-gradient(52% 44% at 74% 80%,rgba(63,107,58,.30),transparent 64%),
-  radial-gradient(38% 30% at 20% 94%,rgba(214,240,125,.12),transparent 62%);
+  radial-gradient(52% 44% at 74% 82%,rgba(63,107,58,.32),transparent 64%),
+  radial-gradient(38% 30% at 20% 94%,rgba(216,242,131,.12),transparent 62%);
   animation:drift 38s ease-in-out infinite alternate;filter:blur(8px)}
-body[data-subj="physics"] .mesh{background:
+body[data-hue="physics"] .mesh{background:
   radial-gradient(46% 38% at 12% 6%,rgba(53,214,192,.26),transparent 62%),
   radial-gradient(40% 34% at 88% 2%,rgba(168,210,74,.16),transparent 60%),
-  radial-gradient(52% 44% at 74% 80%,rgba(30,70,70,.34),transparent 64%),
-  radial-gradient(38% 30% at 20% 94%,rgba(214,240,125,.10),transparent 62%)}
-body[data-subj="chemistry"] .mesh{background:
+  radial-gradient(52% 44% at 74% 82%,rgba(24,66,64,.34),transparent 64%),
+  radial-gradient(38% 30% at 20% 94%,rgba(216,242,131,.10),transparent 62%)}
+body[data-hue="chemistry"] .mesh{background:
   radial-gradient(46% 38% at 12% 6%,rgba(255,111,156,.24),transparent 62%),
   radial-gradient(40% 34% at 88% 2%,rgba(181,118,58,.20),transparent 60%),
-  radial-gradient(52% 44% at 74% 80%,rgba(80,30,55,.34),transparent 64%),
+  radial-gradient(52% 44% at 74% 82%,rgba(74,28,52,.34),transparent 64%),
   radial-gradient(38% 30% at 20% 94%,rgba(168,210,74,.12),transparent 62%)}
 @keyframes drift{0%{transform:translate3d(-2%,-1%,0) scale(1.02)}100%{transform:translate3d(3%,2%,0) scale(1.09)}}
-.gridbg{position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(168,210,74,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(168,210,74,.045) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(74% 64% at 50% 24%,#000,transparent 84%);-webkit-mask-image:radial-gradient(74% 64% at 50% 24%,#000,transparent 84%)}
-.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.gridbg{position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(168,210,74,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(168,210,74,.045) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(74% 60% at 50% 22%,#000,transparent 84%);-webkit-mask-image:radial-gradient(74% 60% at 50% 22%,#000,transparent 84%)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-.top{position:fixed;top:0;left:0;right:0;z-index:70;display:flex;align-items:center;gap:14px;padding:9px 18px;flex-wrap:wrap;background:rgba(14,26,18,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);box-shadow:0 12px 36px -24px #000}
+.top{position:fixed;top:0;left:0;right:0;z-index:70;display:flex;align-items:center;gap:14px;padding:9px 18px;flex-wrap:wrap;background:rgba(13,26,17,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);box-shadow:0 12px 34px -24px #000}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--cream);flex:none}
 .logo b{font-size:19px;font-weight:800;letter-spacing:-.02em}
 .logo b i{font-style:normal;color:var(--flesh)}
-.logo small{display:block;font:600 8.5px/1 var(--mono);letter-spacing:.22em;color:var(--dim);margin-top:3px}
+.logo small{display:block;font:600 8.5px/1 var(--mono);letter-spacing:.2em;color:var(--dim);margin-top:3px}
 .nav{display:flex;gap:5px;overflow-x:auto;flex:1;min-width:0;padding-bottom:2px}
 .nav::-webkit-scrollbar{height:5px}
-.nav a{font:600 12px/1 var(--sans);color:var(--muted);text-decoration:none;padding:9px 13px;border-radius:10px;white-space:nowrap;border:1px solid transparent;transition:.2s;display:inline-flex;align-items:center;gap:7px}
+.nav a{font:600 12.5px/1 var(--sans);color:var(--muted);text-decoration:none;padding:9px 13px;border-radius:10px;white-space:nowrap;border:1px solid transparent;transition:.2s;display:inline-flex;align-items:center;gap:7px}
 .nav a:hover{color:var(--cream);background:rgba(168,210,74,.1);border-color:var(--line)}
-.nav a.on{color:#0e1a12;background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;font-weight:700}
-.nav a .d{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.7}
+.nav a.on{color:#0d1a11;background:linear-gradient(135deg,var(--acc),var(--acc2));font-weight:700}
+.nav a .d{width:7px;height:7px;border-radius:50%;background:currentColor}
 .acts{display:flex;gap:8px;align-items:center;flex:none}
-.srch{position:relative;width:210px}
-.srch input{width:100%;background:rgba(14,26,18,.85);border:1px solid var(--line2);color:var(--cream);padding:8px 12px 8px 32px;border-radius:10px;font:13px/1.2 var(--sans)}
+.srch{position:relative;width:200px}
+.srch input{width:100%;background:rgba(13,26,17,.85);border:1px solid var(--line2);color:var(--cream);padding:8px 30px 8px 31px;border-radius:10px;font:13px/1.2 var(--sans)}
 .srch input::placeholder{color:var(--dim)}
-.srch .i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;font-size:13px}
+.srch .i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none}
+.srch .k{position:absolute;right:9px;top:50%;transform:translateY(-50%);font:600 10px/1 var(--mono);color:var(--dim);border:1px solid var(--line);border-radius:5px;padding:3px 5px;pointer-events:none}
 
 button,.btn{font-family:var(--sans);cursor:pointer;border:none;transition:transform .16s,box-shadow .2s,background .2s,border-color .2s,color .2s}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;background:rgba(168,210,74,.09);color:var(--cream);border:1px solid var(--line2);text-decoration:none}
-.btn:hover{background:rgba(168,210,74,.18);transform:translateY(-2px);box-shadow:0 10px 24px -14px var(--acc)}
+.btn:hover{background:rgba(168,210,74,.18);transform:translateY(-2px);box-shadow:0 10px 22px -14px var(--acc)}
 .btn:active{transform:translateY(0)}
-.btn.p{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0e1a12;border-color:transparent;font-weight:700}
-.btn.p:hover{box-shadow:0 14px 30px -12px var(--acc)}
+.btn.p{background:linear-gradient(135deg,var(--flesh),var(--lime));color:#0d1a11;border-color:transparent;font-weight:700}
+.btn.p:hover{box-shadow:0 14px 28px -12px var(--flesh)}
 .btn.s{padding:7px 12px;font-size:12.5px;border-radius:10px}
-.btn.xs{padding:5px 9px;font-size:11.5px;border-radius:8px}
-.btn.done{background:rgba(143,224,74,.16);border-color:rgba(143,224,74,.5);color:var(--success)}
-.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
-.btn:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.btn:focus-visible,input:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .iconbtn{width:34px;height:34px;border-radius:10px;background:rgba(168,210,74,.09);border:1px solid var(--line2);color:var(--cream);font-size:15px;display:grid;place-content:center;flex:none}
 .iconbtn:hover{background:rgba(168,210,74,.2)}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;font:600 11px/1 var(--mono);border:1px solid var(--line2);background:rgba(168,210,74,.08);color:var(--flesh);white-space:nowrap}
 .pill.hot{color:var(--pit);border-color:rgba(181,118,58,.5);background:rgba(181,118,58,.12)}
 
-main{max-width:1240px;margin:0 auto;padding:98px 18px 30px}
-.card{background:linear-gradient(180deg,rgba(34,64,42,.5),rgba(20,37,26,.76));border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);position:relative}
-.card::before{content:"";position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,rgba(214,240,125,.45),transparent);pointer-events:none}
+main{max-width:1200px;margin:0 auto;padding:96px 18px 30px}
+section{scroll-margin-top:118px}
+.card{background:linear-gradient(180deg,rgba(36,66,43,.5),rgba(20,37,26,.76));border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);position:relative}
+.card::before{content:"";position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,rgba(216,242,131,.45),transparent);pointer-events:none}
 .pad{padding:20px}
-.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s cubic-bezier(.2,.7,.2,1),transform .65s cubic-bezier(.2,.7,.2,1)}
 .reveal.in{opacity:1;transform:none}
 
-.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:18px;align-items:center;margin-bottom:44px}
-.kicker{font:700 11px/1 var(--mono);letter-spacing:.24em;color:var(--pit);margin-bottom:14px}
-.hero h1{margin:0 0 14px;font-size:clamp(32px,5.4vw,54px);line-height:1.02;letter-spacing:-.038em;font-weight:800}
-.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--flesh),var(--lime) 60%,var(--pit));-webkit-background-clip:text;background-clip:text;color:transparent}
-.lead{color:#d9e6cf;font-size:16.5px;margin:0 0 20px;max-width:56ch}
-.hstats{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:22px}
-.hstat b{display:block;font:800 26px/1 var(--mono);color:var(--flesh)}
-.hstat i{display:block;font:600 10px/1 var(--mono);letter-spacing:.14em;color:var(--dim);font-style:normal;text-transform:uppercase;margin-top:6px}
+.hero{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;padding:24px;margin-bottom:26px}
+.kicker{font:700 10.5px/1 var(--mono);letter-spacing:.24em;color:var(--pit);margin-bottom:12px}
+.hero h1{margin:0 0 10px;font-size:clamp(28px,4.4vw,42px);line-height:1.05;letter-spacing:-.035em;font-weight:800}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--flesh),var(--lime) 55%,var(--pit));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:0 0 16px;color:#d9e6cf;font-size:15.5px;max-width:56ch}
+.hstats{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+.hstat b{display:block;font:800 24px/1 var(--mono);color:var(--flesh)}
+.hstat i{display:block;font:600 9.5px/1 var(--mono);letter-spacing:.14em;color:var(--dim);font-style:normal;text-transform:uppercase;margin-top:6px}
 .hcta{display:flex;gap:10px;flex-wrap:wrap}
-.mascot-wrap{display:grid;place-content:center;position:relative;min-height:270px}
-.mascot{width:min(280px,72vw);height:auto;animation:bob 4.6s ease-in-out infinite;filter:drop-shadow(0 26px 34px rgba(0,0,0,.55))}
-@keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-14px) rotate(1.5deg)}}
-.mascot .leaf{transform-origin:52px 12px;animation:sway 3.4s ease-in-out infinite}
+.masc{width:min(190px,42vw);height:auto;animation:bob 4.8s ease-in-out infinite;filter:drop-shadow(0 20px 26px rgba(0,0,0,.5))}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-12px) rotate(1.5deg)}}
+.masc .leaf{transform-origin:52px 12px;animation:sway 3.6s ease-in-out infinite}
 @keyframes sway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(9deg)}}
-.mascot .eyes{transform-origin:center;animation:blink 5.2s infinite}
+.masc .eyes{transform-origin:center;animation:blink 5.4s infinite}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
-.halo{position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(168,210,74,.22),transparent 68%);filter:blur(14px);animation:halo 6s ease-in-out infinite}
-@keyframes halo{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.14);opacity:1}}
 
-.shead{display:flex;align-items:baseline;gap:12px;margin:0 0 18px;flex-wrap:wrap}
-.shead h2{margin:0;font-size:clamp(21px,2.7vw,28px);letter-spacing:-.02em;font-weight:750}
-.shead .rule{flex:1;height:1px;min-width:20px;background:linear-gradient(90deg,var(--line2),transparent)}
-.shead .tag{font:600 10.5px/1 var(--mono);letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
-
-.subjgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:44px}
-.subj{padding:22px;cursor:pointer;transition:.24s;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:12px;border-top:3px solid var(--sc)}
-.subj:hover{transform:translateY(-5px);border-color:var(--line2);box-shadow:0 26px 54px -26px var(--sc)}
-.subj .sh{display:flex;align-items:center;gap:12px}
-.subj .ic{width:46px;height:46px;border-radius:14px;display:grid;place-content:center;background:color-mix(in srgb,var(--sc) 18%,transparent);border:1px solid color-mix(in srgb,var(--sc) 45%,transparent);flex:none}
-.subj h3{margin:0;font-size:20px;letter-spacing:-.02em}
-.subj .cnt{font:600 11px/1 var(--mono);color:var(--dim);margin-top:4px}
-.subj p{margin:0;font-size:13.5px;color:var(--muted);flex:1}
-.subj .topics{display:flex;flex-direction:column;gap:5px}
-.subj .topics span{font-size:12.5px;color:#c8d9bd;display:flex;gap:8px;align-items:baseline}
-.subj .topics span::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--sc);flex:none;transform:translateY(-2px)}
-.ring{position:relative;width:52px;height:52px;flex:none}
-.ring svg{transform:rotate(-90deg)}
-.ring b{position:absolute;inset:0;display:grid;place-content:center;font:700 12px/1 var(--mono);color:var(--sc)}
-.pbar{height:7px;border-radius:99px;background:rgba(14,26,18,.85);border:1px solid var(--line);overflow:hidden}
-.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--sc,var(--flesh)),var(--acc2));transition:width .9s cubic-bezier(.2,.8,.2,1)}
-
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:44px}
-.step{padding:18px;position:relative}
-.step .n{font:800 30px/1 var(--mono);color:var(--pit);opacity:.5}
-.step h4{margin:8px 0 6px;font-size:15.5px}
-.step p{margin:0;font-size:13px;color:var(--muted)}
-
-.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:40px}
-.fc{padding:0;overflow:hidden;cursor:pointer;transition:.24s;text-decoration:none;color:inherit;display:block}
-.fc:hover{transform:translateY(-5px);border-color:var(--line2)}
-.fc .art{height:132px;position:relative;overflow:hidden;background:radial-gradient(70% 90% at 50% 10%,color-mix(in srgb,var(--sc) 26%,transparent),rgba(14,26,18,.6))}
-.fc .art svg{position:absolute;inset:0;width:100%;height:100%}
-.fc .body{padding:16px}
-.fc h4{margin:0 0 6px;font-size:16px}
-.fc p{margin:0;font-size:12.5px;color:var(--muted)}
-.fc .meta{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
-.badge{font:700 9px/1 var(--mono);letter-spacing:.12em;padding:5px 8px;border-radius:6px;text-transform:uppercase}
-.badge.inter{background:rgba(181,118,58,.2);color:var(--pit);border:1px solid rgba(181,118,58,.45)}
-.badge.sub{background:color-mix(in srgb,var(--sc) 18%,transparent);color:var(--sc)}
-
-.subjhead{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;padding:24px;margin-bottom:22px;border-top:3px solid var(--acc)}
-.subjhead h1{margin:0 0 6px;font-size:clamp(26px,4vw,38px);letter-spacing:-.03em}
-.subjhead p{margin:0;color:var(--muted);font-size:14px;max-width:60ch}
-.subjhead .masc{width:92px;height:auto;animation:bob 5s ease-in-out infinite}
-.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
-.chip{padding:7px 13px;border-radius:99px;font:600 12.5px/1 var(--sans);background:rgba(14,26,18,.6);border:1px solid var(--line);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.chip{padding:7px 13px;border-radius:99px;font:600 12.5px/1 var(--sans);background:rgba(13,26,17,.6);border:1px solid var(--line);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
 .chip:hover{border-color:var(--line2);color:var(--cream)}
-.chip.on{background:color-mix(in srgb,var(--acc) 18%,transparent);border-color:var(--acc);color:var(--acc)}
+.chip.on{background:rgba(168,210,74,.18);border-color:var(--flesh);color:var(--flesh)}
 .chip .n{font:700 10px/1 var(--mono);opacity:.8}
+.resline{font:12px/1 var(--mono);color:var(--dim);margin-left:auto}
+.resline b{color:var(--flesh)}
 
-.group{margin-bottom:22px}
-.gtitle{display:flex;align-items:baseline;gap:11px;margin-bottom:10px}
-.gtitle h3{margin:0;font-size:16px;letter-spacing:-.01em}
-.gtitle .c{font:600 10.5px/1 var(--mono);color:var(--dim)}
-.gtitle .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
-.rows{display:flex;flex-direction:column;gap:7px}
-.row{display:grid;grid-template-columns:34px 1fr auto auto;gap:14px;align-items:center;padding:13px 16px;border-radius:13px;background:rgba(20,37,26,.6);border:1px solid var(--line);border-left:3px solid transparent;cursor:pointer;transition:.18s;text-decoration:none;color:inherit}
-.row:hover{background:rgba(34,64,42,.7);border-left-color:var(--acc);transform:translateX(4px)}
-.row.learned{border-left-color:var(--success)}
-.row .num{font:700 13px/1 var(--mono);color:var(--dim)}
-.row.learned .num{color:var(--success)}
-.row .t{font-size:14.5px;font-weight:600}
-.row .m{font:11px/1 var(--mono);color:var(--dim);white-space:nowrap}
-.row .go{color:var(--acc);font-size:16px}
+.subj{margin-bottom:34px}
+.shead{display:flex;align-items:center;gap:14px;padding:16px 18px;margin-bottom:14px;border-left:3px solid var(--sc)}
+.shead .ic{width:44px;height:44px;border-radius:13px;display:grid;place-content:center;background:color-mix(in srgb,var(--sc) 16%,transparent);border:1px solid color-mix(in srgb,var(--sc) 44%,transparent);flex:none}
+.shead h2{margin:0;font-size:22px;letter-spacing:-.02em}
+.shead .c{font:600 11px/1 var(--mono);color:var(--dim);margin-top:5px}
+.shead .grow{flex:1;min-width:0}
+.pbar{height:6px;border-radius:99px;background:rgba(13,26,17,.85);border:1px solid var(--line);overflow:hidden;margin-top:8px;max-width:280px}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--sc),var(--acc2));transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.ring{position:relative;width:50px;height:50px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-content:center;font:700 11px/1 var(--mono);color:var(--sc)}
 
-.crumb{display:flex;gap:8px;align-items:center;font:11.5px/1 var(--mono);color:var(--dim);margin-bottom:16px;flex-wrap:wrap}
-.crumb a{color:var(--muted);text-decoration:none}
-.crumb a:hover{color:var(--acc)}
-.lesson{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start}
-.lmain{display:flex;flex-direction:column;gap:16px;min-width:0}
-.lhead{padding:24px;border-top:3px solid var(--acc)}
-.lhead h1{margin:10px 0 10px;font-size:clamp(24px,3.6vw,34px);line-height:1.12;letter-spacing:-.03em}
-.lmeta{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
-.goals{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
-.goals li{display:flex;gap:10px;font-size:14px;color:#d5e4c9}
-.goals li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--acc);flex:none;margin-top:8px;box-shadow:0 0 8px var(--acc)}
-.prose{font-family:var(--serif);font-size:16.5px;line-height:1.75;color:#e4ecd9}
-.prose p{margin:0 0 14px}
-.prose p:last-child{margin-bottom:0}
-.prose b{color:var(--lime);font-weight:700}
-.blocktitle{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:16px;font-family:var(--sans);font-weight:700}
-.blocktitle .dot{width:8px;height:8px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc)}
-.formula{font-family:var(--math);font-size:30px;text-align:center;padding:20px 12px;background:radial-gradient(70% 130% at 50% 0%,color-mix(in srgb,var(--acc) 16%,transparent),rgba(14,26,18,.5));border:1px solid var(--line2);border-radius:14px;color:#f2ffe6}
-.formula sub,.formula sup{font-size:.6em}
-.legend{display:flex;flex-direction:column;gap:7px;margin-top:12px}
-.legend div{display:flex;gap:11px;font-size:13px;color:var(--muted)}
-.legend b{color:var(--acc);font-family:var(--math);font-size:16px;min-width:30px}
-.keys{display:flex;flex-direction:column;gap:10px}
-.key{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:11px 13px;border-radius:11px;background:rgba(14,26,18,.5);border:1px solid var(--line)}
-.key b{color:var(--lime);font-size:13.5px;white-space:nowrap}
-.key span{font-size:13.5px;color:#cddcc1}
-.ex{border-left:3px solid var(--pit);background:rgba(181,118,58,.08);padding:14px 16px;border-radius:0 12px 12px 0}
-.ex .q{font-size:14.5px;color:#f0e2cd;margin:0 0 10px;font-weight:600}
-.ex ol{margin:0;padding-left:20px;font-size:13.5px;color:#dfd0ba}
-.ex ol li{margin-bottom:5px;font-family:var(--mono);font-size:12.5px}
-.ex .a{margin-top:10px;font:700 14px/1 var(--mono);color:var(--pit)}
+.group{margin-bottom:12px}
+.ghead{display:flex;align-items:center;gap:11px;width:100%;padding:10px 14px;border-radius:12px;background:rgba(20,37,26,.55);border:1px solid var(--line);color:var(--cream);text-align:left}
+.ghead:hover{border-color:var(--line2);background:rgba(36,66,43,.6)}
+.ghead .ar{color:var(--sc);font-size:11px;transition:transform .22s;flex:none}
+.ghead.closed .ar{transform:rotate(-90deg)}
+.ghead h3{margin:0;font-size:14.5px;font-weight:650;flex:1;min-width:0}
+.ghead .n{font:600 10.5px/1 var(--mono);color:var(--dim);flex:none}
+.ghead .live{font:700 9px/1 var(--mono);letter-spacing:.1em;padding:4px 7px;border-radius:6px;background:rgba(143,224,74,.16);color:var(--success);flex:none}
+.gbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:9px;padding:11px 0 4px}
+.gbody[hidden]{display:none}
 
-.quiz .opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
-.opt{display:flex;gap:11px;align-items:center;padding:11px 14px;border:1px solid var(--line);border-radius:11px;background:rgba(14,26,18,.45);cursor:pointer;transition:.16s;font-size:14px}
-.opt:hover{border-color:var(--line2);background:rgba(168,210,74,.07)}
-.opt input{accent-color:var(--acc);width:17px;height:17px;flex:none}
-.opt.right{border-color:rgba(143,224,74,.55);background:rgba(143,224,74,.12)}
-.opt.wrong{border-color:rgba(255,95,95,.5);background:rgba(255,95,95,.1)}
-.numin{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
-.numin input{background:rgba(14,26,18,.85);border:1px solid var(--line2);color:var(--cream);padding:10px 13px;border-radius:11px;font:600 15px/1 var(--mono);width:150px}
-.fb{margin-top:12px;font-size:13.5px;padding:11px 14px;border-radius:11px;display:none}
-.fb.show{display:block}
-.fb.ok{background:rgba(143,224,74,.12);border:1px solid rgba(143,224,74,.42);color:#d3f5bb}
-.fb.no{background:rgba(255,95,95,.1);border:1px solid rgba(255,95,95,.4);color:#ffd2d2}
-.shake{animation:shk .34s}
-@keyframes shk{0%,100%{transform:translateX(0)}22%{transform:translateX(-6px)}44%{transform:translateX(5px)}66%{transform:translateX(-3px)}}
+.lb{display:grid;grid-template-columns:30px 1fr auto;gap:11px;align-items:center;padding:12px 14px;border-radius:13px;background:rgba(20,37,26,.62);border:1px solid var(--line);border-left:3px solid transparent;text-decoration:none;color:inherit;transition:.18s;position:relative;min-width:0}
+.lb.ready{border-left-color:var(--success);background:linear-gradient(100deg,rgba(143,224,74,.12),rgba(20,37,26,.7))}
+.lb.ready:hover{transform:translateY(-3px);border-color:var(--line2);box-shadow:0 14px 30px -18px var(--success)}
+.lb.ready .num{color:var(--success)}
+.lb.ready .go{color:var(--success)}
+.lb.soon{opacity:.62;cursor:default}
+.lb .num{font:700 12px/1 var(--mono);color:var(--dim)}
+.lb .t{font-size:14px;font-weight:600;line-height:1.3;min-width:0}
+.lb .meta{display:flex;gap:7px;align-items:center;margin-top:5px;flex-wrap:wrap}
+.lb .go{font-size:15px;color:var(--dim);flex:none}
+.tb{font:700 8.5px/1 var(--mono);letter-spacing:.1em;padding:4px 6px;border-radius:5px;text-transform:uppercase;border:1px solid}
+.tb.theory{color:var(--teal);border-color:rgba(53,214,192,.35)}
+.tb.tasks{color:var(--violet);border-color:rgba(167,139,250,.35)}
+.tb.lab{color:var(--amber);border-color:rgba(255,176,32,.35)}
+.tb.test{color:var(--brass);border-color:rgba(217,164,65,.35)}
+.tb.reserve{color:var(--dim);border-color:var(--line)}
+.gr{font:600 9.5px/1 var(--mono);color:var(--dim)}
+.st{font:700 8.5px/1 var(--mono);letter-spacing:.1em;color:var(--dim)}
+.st.ok{color:var(--success)}
+.st.warn{color:var(--danger)}
 
-.lside{display:flex;flex-direction:column;gap:14px;position:sticky;top:100px}
-.tip{display:flex;gap:12px;align-items:flex-start;padding:16px}
-.tip svg{width:58px;height:auto;flex:none;animation:bob 5.4s ease-in-out infinite}
-.tip .b{font-size:13px;color:#d8e6cc}
-.tip .b b{display:block;color:var(--pit);font:700 10px/1 var(--mono);letter-spacing:.16em;margin-bottom:7px}
-.navlist{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow:auto;padding-right:4px}
-.navlist a{display:flex;gap:9px;align-items:baseline;padding:8px 10px;border-radius:9px;font-size:12.5px;color:var(--muted);text-decoration:none;border:1px solid transparent}
-.navlist a:hover{background:rgba(168,210,74,.08);color:var(--cream);border-color:var(--line)}
-.navlist a.cur{background:color-mix(in srgb,var(--acc) 16%,transparent);color:var(--acc);border-color:var(--acc);font-weight:600}
-.navlist a .n{font:700 10px/1 var(--mono);color:var(--dim);flex:none}
-.navlist a.ok .n{color:var(--success)}
-.lnav{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:4px}
+.empty{padding:40px 20px;text-align:center;border:1px dashed var(--line2);border-radius:16px;background:rgba(20,37,26,.4)}
+.empty svg{width:88px;height:auto;margin-bottom:10px}
+.empty h3{margin:0 0 8px;font-size:18px}
+.empty p{margin:0 0 14px;color:var(--muted);font-size:14px}
 
-.simwrap{border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;background:#0b1510;box-shadow:var(--shadow)}
-.simbar{display:flex;align-items:center;gap:10px;padding:9px 14px;background:rgba(14,26,18,.9);border-bottom:1px solid var(--line);flex-wrap:wrap}
-.simbar .t{font:700 10px/1 var(--mono);letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
-.sim{display:grid;grid-template-columns:1fr 264px}
-.stage{position:relative;min-height:330px;background:radial-gradient(80% 70% at 50% 20%,#12241a,#080f0b)}
-.stage canvas{position:absolute;inset:0;display:block;touch-action:none}
-.hud{position:absolute;left:12px;top:11px;display:flex;gap:7px;flex-wrap:wrap;pointer-events:none}
-.hchip{font:700 10.5px/1 var(--mono);letter-spacing:.08em;padding:6px 9px;border-radius:8px;background:rgba(8,15,11,.86);border:1px solid var(--line);color:var(--flesh)}
-.panel{background:linear-gradient(180deg,#16281c,#0f1c14);border-left:1px solid var(--line);padding:13px;display:flex;flex-direction:column;gap:10px;max-height:430px;overflow-y:auto}
-.pt{font:700 9px/1 var(--mono);letter-spacing:.2em;color:var(--dim)}
-.ctl{display:flex;flex-direction:column;gap:4px}
-.ctl .lb{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:#c8d9bd}
-.ctl .lb b{font:700 12px/1 var(--mono);color:var(--acc)}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;cursor:pointer;margin:0}
-input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:9px;background:linear-gradient(90deg,var(--skin),rgba(168,210,74,.18))}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-5.5px;border-radius:50%;background:var(--acc);border:2px solid #0b1510;box-shadow:0 0 10px color-mix(in srgb,var(--acc) 70%,transparent)}
-input[type=range]::-moz-range-track{height:5px;border-radius:9px;background:rgba(168,210,74,.24)}
-input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--acc);border:2px solid #0b1510}
-input[type=range]:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:8px}
-.panel select{width:100%;background:#0b1510;color:var(--cream);border:1px solid var(--line);border-radius:9px;padding:7px 9px;font:600 12.5px/1 var(--sans);cursor:pointer}
-.sw{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#c8d9bd;cursor:pointer;padding:3px 0}
-.sw input{position:absolute;opacity:0;width:0;height:0}
-.track{width:34px;height:18px;border-radius:99px;background:rgba(168,210,74,.16);border:1px solid var(--line);position:relative;transition:.2s;flex:none}
-.track::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--dim);transition:.2s}
-.sw input:checked+.track{background:color-mix(in srgb,var(--acc) 30%,transparent);border-color:var(--acc)}
-.sw input:checked+.track::after{left:18px;background:var(--acc)}
-.sw input:focus-visible+.track{outline:2px solid var(--acc);outline-offset:2px}
-.reads{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.rd{background:rgba(8,15,11,.7);border:1px solid var(--line);border-radius:9px;padding:7px 9px}
-.rd i{display:block;font:600 8.5px/1 var(--mono);letter-spacing:.1em;color:var(--dim);font-style:normal}
-.rd b{display:block;font:700 15px/1.2 var(--mono);margin-top:4px;color:var(--acc)}
-.btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.panel button{font-family:var(--sans);font-size:12px;font-weight:700;padding:8px 6px;border-radius:9px;background:rgba(168,210,74,.1);border:1px solid var(--line);color:var(--cream)}
-.panel button:hover{background:rgba(168,210,74,.22);transform:translateY(-1px)}
-.panel button.p{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b1510;border-color:transparent}
-.wide{grid-column:1/-1}
-.simnote{font:11px/1.45 var(--sans);color:var(--dim)}
-
-.ptable{padding:14px;display:flex;flex-direction:column;gap:12px}
-.pgrid{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:3px}
-.el{aspect-ratio:1;border-radius:6px;border:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.15s;padding:2px;position:relative;overflow:hidden;min-width:0}
-.el:hover{transform:scale(1.14);z-index:5;box-shadow:0 8px 20px -8px #000;border-color:#fff}
-.el.sel{outline:2px solid var(--cream);outline-offset:1px;z-index:4}
-.el.dim{opacity:.2}
-.el .z{font:600 7px/1 var(--mono);opacity:.75;align-self:flex-start}
-.el .s{font:800 clamp(9px,1.35vw,15px)/1 var(--sans);letter-spacing:-.02em}
-.el .n{font:500 6px/1 var(--sans);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.el .m{font:600 6px/1 var(--mono);opacity:.75}
-.elegend{display:flex;gap:10px;flex-wrap:wrap;font:11px/1 var(--mono);color:var(--muted)}
-.elegend span{display:inline-flex;align-items:center;gap:6px}
-.elegend i{width:10px;height:10px;border-radius:3px;display:inline-block}
-.edetail{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:14px;border-radius:13px;background:rgba(8,15,11,.6);border:1px solid var(--line)}
-.edetail .big{width:84px;height:84px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none}
-.edetail .big b{font:800 30px/1 var(--sans)}
-.edetail .big i{font:600 10px/1 var(--mono);font-style:normal;opacity:.8;margin-top:4px}
-.edetail h4{margin:0 0 6px;font-size:17px}
-.efacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px;margin-top:8px}
-.efacts div{background:rgba(20,37,26,.6);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
-.efacts i{display:block;font:600 8px/1 var(--mono);letter-spacing:.1em;color:var(--dim);font-style:normal}
-.efacts b{display:block;font:700 12.5px/1.2 var(--mono);margin-top:3px}
-
-.searchres{display:flex;flex-direction:column;gap:8px}
-.empty{padding:48px 20px;text-align:center;border:1px dashed var(--line2);border-radius:16px;background:rgba(20,37,26,.4)}
-.empty svg{width:96px;height:auto;margin-bottom:12px;opacity:.85}
-.empty h3{margin:0 0 8px;font-size:19px}
-.empty p{margin:0 0 16px;color:var(--muted);font-size:14px}
-
-footer{max-width:1240px;margin:26px auto 0;padding:22px 18px 44px;border-top:1px solid var(--line);display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center;font:11.5px/1.6 var(--mono);color:var(--dim)}
+footer{max-width:1200px;margin:20px auto 0;padding:20px 18px 40px;border-top:1px solid var(--line);display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center;font:11.5px/1.6 var(--mono);color:var(--dim)}
 footer .fl{display:flex;gap:10px;align-items:center}
-footer svg{width:26px;height:auto}
-.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,22px);z-index:100;padding:11px 20px;border-radius:13px;background:rgba(26,48,32,.97);border:1px solid var(--line2);color:var(--cream);font:600 13px/1 var(--sans);box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s}
+footer svg{width:24px;height:auto}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:100;padding:11px 20px;border-radius:13px;background:rgba(27,49,33,.97);border:1px solid var(--line2);color:var(--cream);font:600 13px/1 var(--sans);box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
-@media(max-width:1040px){.hero,.lesson{grid-template-columns:1fr}.lside{position:static}.subjgrid,.feat{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,1fr)}.mascot-wrap{min-height:210px;order:-1}}
-@media(max-width:900px){main{padding-top:132px}.nav{order:3;width:100%;flex:1 0 100%}.srch{width:150px}.sim{grid-template-columns:1fr}.panel{border-left:0;border-top:1px solid var(--line);max-height:none;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}.panel .pt,.panel .reads,.panel .btns,.panel .simnote{grid-column:1/-1}.stage{min-height:300px}.subjhead{grid-template-columns:1fr;text-align:left}.subjhead .masc{display:none}}
-@media(max-width:560px){.srch{width:120px}.acts .lbl{display:none}.steps{grid-template-columns:1fr}.row{grid-template-columns:26px 1fr auto;gap:10px}.row .m{display:none}.pgrid{gap:2px}.el .n,.el .m{display:none}.hstats{gap:16px}}
+@media(max-width:900px){main{padding-top:130px}.nav{order:3;width:100%;flex:1 0 100%}.srch{width:150px}.hero{grid-template-columns:1fr}.masc{display:none}}
+@media(max-width:560px){.srch{width:118px}.srch .k{display:none}.gbody{grid-template-columns:1fr}.resline{margin-left:0;width:100%}.shead .ring{display:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.reveal{opacity:1;transform:none}}
 </style>
 </head>
-<body data-subj="home">
+<body data-hue="home">
 <div class="bg"><div class="mesh"></div><div class="gridbg"></div><div class="grain"></div></div>
 
 <header class="top">
-  <a class="logo" href="#/" data-link>
+  <a class="logo" href="#top">
     <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3c4 0 6 5 7 9 1 5 4 7 4 11 0 5-5 8-11 8S5 29 5 24c0-4 3-6 4-11 1-4 3-9 7-9z" fill="#3f6b3a"/><path d="M16 6c3 0 4.6 4.4 5.4 8 .8 4.2 3.4 6 3.4 9.6 0 4-4.2 6.6-8.8 6.6S7.2 27.6 7.2 23.6c0-3.6 2.6-5.4 3.4-9.6C11.4 10.4 13 6 16 6z" fill="#a8d24a"/><circle cx="16" cy="22" r="5" fill="#b5763a"/><circle cx="14.4" cy="20.4" r="1.6" fill="#d9a441" opacity=".7"/></svg>
-    <div><b>Avo<i>School</i></b><small>УРОКИ ПОНЯТНЫМ ЯЗЫКОМ</small></div>
+    <div><b>Avo<i>School</i></b><small>БИБЛИОТЕКА УРОКОВ</small></div>
   </a>
   <nav class="nav" id="nav">
-    <a href="#/" data-link data-r="home"><span class="d"></span>Главная</a>
-    <a href="#/physics" data-link data-r="physics"><span class="d" style="background:#35d6c0"></span>Физика</a>
-    <a href="#/chemistry" data-link data-r="chemistry"><span class="d" style="background:#ff6f9c"></span>Химия</a>
-    <a href="#/biology" data-link data-r="biology"><span class="d" style="background:#a8d24a"></span>Биология</a>
+    <a href="#physics" data-h="physics"><span class="d" style="background:#35d6c0"></span>Физика</a>
+    <a href="#chemistry" data-h="chemistry"><span class="d" style="background:#ff6f9c"></span>Химия</a>
+    <a href="#biology" data-h="biology"><span class="d" style="background:#a8d24a"></span>Биология</a>
   </nav>
   <div class="acts">
-    <div class="srch"><span class="i">⌕</span><input id="q" type="text" placeholder="Поиск темы…" aria-label="Поиск уроков"></div>
+    <div class="srch"><span class="i">⌕</span><input id="q" type="text" placeholder="Поиск темы…" aria-label="Поиск уроков"><span class="k">/</span></div>
     <span class="pill" id="progPill">0%</span>
     <button class="iconbtn" id="sndBtn" aria-pressed="true" title="Звук включён"><span id="sndIco">🔊</span></button>
   </div>
 </header>
 
-<main id="app"></main>
+<main>
+  <section id="top">
+    <div class="card hero reveal">
+      <div>
+        <div class="kicker">7–9 КЛАСС · ТЕОРИЯ, ФОРМУЛЫ, ПРОВЕРКА</div>
+        <h1>Выбери урок —<br><em>и открой его</em></h1>
+        <p>Каждый урок — отдельная страница со своей симуляцией, теорией и задачами. Здесь только список тем: ничего лишнего, страница открывается мгновенно.</p>
+        <div class="hstats">
+          <div class="hstat"><b id="stReady">0</b><i>готово</i></div>
+          <div class="hstat"><b id="stTotal">0</b><i>тем в плане</i></div>
+          <div class="hstat"><b id="stOpen">0</b><i>открыто тобой</i></div>
+          <div class="hstat"><b>3</b><i>предмета</i></div>
+        </div>
+        <div class="hcta" id="cta"></div>
+      </div>
+      <div id="mascBox"></div>
+    </div>
+
+    <div class="toolbar reveal">
+      <div id="gradeChips" style="display:flex;gap:9px;flex-wrap:wrap"></div>
+      <button class="chip" id="onlyReady"><span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block"></span>Только готовые <span class="n" id="nReady">0</span></button>
+      <button class="btn s" id="resetF">Сбросить</button>
+      <span class="resline">Показано: <b id="shown">0</b></span>
+    </div>
+
+    <div id="list"></div>
+  </section>
+</main>
 
 <footer>
   <div class="fl">
     <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3c4 0 6 5 7 9 1 5 4 7 4 11 0 5-5 8-11 8S5 29 5 24c0-4 3-6 4-11 1-4 3-9 7-9z" fill="#3f6b3a"/><circle cx="16" cy="22" r="5" fill="#b5763a"/></svg>
-    <span>AVOSCHOOL · СБОРНИК УРОКОВ</span>
+    <span>AVOSCHOOL · БИБЛИОТЕКА УРОКОВ</span>
   </div>
   <span id="footStat">—</span>
 </footer>
 <div class="toast" id="toast"></div>
-<noscript><div style="padding:120px 20px;text-align:center">Для работы сборника нужен включённый JavaScript.</div></noscript>
+<noscript><div style="padding:120px 20px;text-align:center">Для работы списка нужен включённый JavaScript.</div></noscript>
 
 <script>
 (function(){
 'use strict';
 var $=function(s){return document.querySelector(s);};
-var app=$('#app');
 
-/* ================= МАСКОТ ================= */
-function mascot(cls,extra){
-  return '<svg class="'+(cls||'mascot')+'" viewBox="0 0 104 120" '+(extra||'')+' aria-hidden="true">'+
-  '<defs>'+
-  '<linearGradient id="mgSkin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4b7d43"/><stop offset="1" stop-color="#25401f"/></linearGradient>'+
-  '<linearGradient id="mgFlesh" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#e2f59a"/><stop offset=".55" stop-color="#b7db5c"/><stop offset="1" stop-color="#8cb83c"/></linearGradient>'+
-  '<radialGradient id="mgPit" cx=".35" cy=".3"><stop offset="0" stop-color="#d29a55"/><stop offset="1" stop-color="#7a4a22"/></radialGradient>'+
-  '</defs>'+
-  '<ellipse cx="52" cy="114" rx="30" ry="5" fill="#000" opacity=".35"/>'+
-  '<g class="leaf"><path d="M52 14C52 6 60 1 70 2c1 9-5 15-13 15z" fill="#5d9a3f"/><path d="M52 14C56 9 62 5 68 4" stroke="#3f6b3a" stroke-width="1.4" fill="none"/><path d="M52 17V9" stroke="#4b7d43" stroke-width="3" stroke-linecap="round"/></g>'+
-  '<path d="M52 12c9 0 13 10 15 20 2 11 12 16 12 29 0 17-13 27-27 27S25 78 25 61c0-13 10-18 12-29 2-10 6-20 15-20z" fill="url(#mgSkin)"/>'+
-  '<path d="M52 19c7 0 10 9 11.6 18 1.8 10 10 14 10 25 0 14-10.6 22-21.6 22S30.4 76 30.4 62c0-11 8.2-15 10-25C42 28 45 19 52 19z" fill="url(#mgFlesh)"/>'+
-  '<ellipse cx="52" cy="72" rx="17" ry="17" fill="url(#mgPit)"/>'+
-  '<ellipse cx="46" cy="66" rx="5.4" ry="4.2" fill="#e6b877" opacity=".55"/>'+
+/* ---------- маскот ---------- */
+function mascot(cls){
+  return '<svg class="'+(cls||'masc')+'" viewBox="0 0 104 120" aria-hidden="true"><defs>'+
+  '<linearGradient id="ms" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4b7d43"/><stop offset="1" stop-color="#25401f"/></linearGradient>'+
+  '<linearGradient id="mf" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#e6f7a4"/><stop offset=".55" stop-color="#b7db5c"/><stop offset="1" stop-color="#8cb83c"/></linearGradient>'+
+  '<radialGradient id="mp" cx=".35" cy=".3"><stop offset="0" stop-color="#d29a55"/><stop offset="1" stop-color="#7a4a22"/></radialGradient></defs>'+
+  '<ellipse cx="52" cy="114" rx="29" ry="5" fill="#000" opacity=".35"/>'+
+  '<g class="leaf"><path d="M52 14C52 6 60 1 70 2c1 9-5 15-13 15z" fill="#5d9a3f"/><path d="M52 17V9" stroke="#4b7d43" stroke-width="3" stroke-linecap="round"/></g>'+
+  '<path d="M52 12c9 0 13 10 15 20 2 11 12 16 12 29 0 17-13 27-27 27S25 78 25 61c0-13 10-18 12-29 2-10 6-20 15-20z" fill="url(#ms)"/>'+
+  '<path d="M52 19c7 0 10 9 11.6 18 1.8 10 10 14 10 25 0 14-10.6 22-21.6 22S30.4 76 30.4 62c0-11 8.2-15 10-25C42 28 45 19 52 19z" fill="url(#mf)"/>'+
+  '<ellipse cx="52" cy="72" rx="17" ry="17" fill="url(#mp)"/><ellipse cx="46" cy="66" rx="5.4" ry="4.2" fill="#e6b877" opacity=".55"/>'+
   '<g class="eyes"><ellipse cx="42" cy="46" rx="5.2" ry="6" fill="#20301c"/><ellipse cx="62" cy="46" rx="5.2" ry="6" fill="#20301c"/>'+
   '<circle cx="43.6" cy="44" r="1.9" fill="#fff"/><circle cx="63.6" cy="44" r="1.9" fill="#fff"/></g>'+
   '<path d="M45 56q7 6 14 0" stroke="#20301c" stroke-width="2.6" fill="none" stroke-linecap="round"/>'+
-  '<ellipse cx="33" cy="53" rx="4.6" ry="3" fill="#ff9d8a" opacity=".45"/><ellipse cx="71" cy="53" rx="4.6" ry="3" fill="#ff9d8a" opacity=".45"/>'+
-  '</svg>';
+  '<ellipse cx="33" cy="53" rx="4.6" ry="3" fill="#ff9d8a" opacity=".45"/><ellipse cx="71" cy="53" rx="4.6" ry="3" fill="#ff9d8a" opacity=".45"/></svg>';
 }
 
-/* ================= ДАННЫЕ ================= */
+/* ---------- предметы и разделы ---------- */
 var SUBJ={
-  physics:{name:'Физика',color:'#35d6c0',desc:'От измерений и молекул до сил, давления и энергии. Каждый закон — с формулой, разобранным примером и проверкой.',
-    icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#35d6c0" stroke-width="1.8"><path d="M2 12h3l2-6 3 12 3-12 3 12 2-6h4" stroke-linejoin="round"/></svg>'},
-  chemistry:{name:'Химия',color:'#ff6f9c',desc:'Строение атома, таблица Менделеева, классы веществ и реакции. С расчётами по формулам и живыми примерами.',
-    icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff6f9c" stroke-width="1.8"><path d="M9 2v6l-5 9a3 3 0 0 0 2.6 4.5h10.8A3 3 0 0 0 20 17l-5-9V2" stroke-linejoin="round"/><path d="M7.5 2h9M6.5 14h11"/></svg>'},
-  biology:{name:'Биология',color:'#a8d24a',desc:'Клетка, растения, микромир, деление, человек и генетика. Схемы, процессы и понятные объяснения.',
-    icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a8d24a" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/><circle cx="7" cy="8" r="1.3"/><circle cx="17" cy="16" r="1.5"/></svg>'}
+  physics:{name:'Физика',color:'#35d6c0',icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#35d6c0" stroke-width="1.9"><path d="M2 12h3l2-6 3 12 3-12 3 12 2-6h4" stroke-linejoin="round"/></svg>'},
+  chemistry:{name:'Химия',color:'#ff6f9c',icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff6f9c" stroke-width="1.9"><path d="M9 2v6l-5 9a3 3 0 0 0 2.6 4.5h10.8A3 3 0 0 0 20 17l-5-9V2" stroke-linejoin="round"/><path d="M7.5 2h9M6.5 14h11"/></svg>'},
+  biology:{name:'Биология',color:'#a8d24a',icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a8d24a" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/><circle cx="7" cy="8" r="1.3"/><circle cx="17" cy="16" r="1.5"/></svg>'}
 };
-function L(o){return o;}
-var LESSONS=[
-/* ---------- ФИЗИКА ---------- */
-L({id:'izmereniya',s:'physics',g:7,sec:'Введение',t:'Физические величины и измерения',min:12,
- goals:['Понять, что такое физическая величина','Находить цену деления шкалы','Записывать результат с учётом погрешности'],
- th:['Физика изучает самые общие явления природы: движение, нагревание, свечение, электричество. Чтобы описать явление точно, его нужно <b>измерить</b> — сравнить с однородной величиной, принятой за единицу. Длина сравнивается с метром, масса — с килограммом, время — с секундой.',
- 'Любое измерение приближённо. Погрешность прямого измерения обычно принимают равной половине цены деления прибора. Результат записывают как <b>a = a₀ ± Δa</b>: например, длина карандаша 12,4 ± 0,1 см. Чем мельче деления шкалы, тем точнее прибор.'],
- keys:[['Величина','то, что можно измерить и выразить числом с единицей'],['Цена деления','разность соседних подписанных значений, делённая на число промежутков'],['СИ','международная система единиц: м, кг, с, А, К, моль, кд']],
- f:{html:'C = (a₂ − a₁) / n',leg:[['C','цена деления'],['a₂ − a₁','разность подписанных значений'],['n','число промежутков между ними']]},
- ex:{q:'На шкале мензурки подписаны 50 мл и 100 мл, между ними 5 промежутков. Найдите цену деления.',steps:['C = (100 − 50) / 5','C = 50 / 5 = 10 мл'],a:'C = 10 мл'},
- q:{type:'choice',q:'Погрешность прямого измерения обычно принимают равной:',opts:['цене деления прибора','половине цены деления','нулю, если прибор новый','одной десятой цены деления'],c:1,why:'Стандартное правило школьных измерений — половина цены деления шкалы.'},
- tip:'Прежде чем снимать показания, всегда найди цену деления. Это первое, что спрашивают на лабораторной.'}),
-L({id:'stroenie',s:'physics',g:7,sec:'Введение',t:'Строение вещества. Диффузия',min:14,
- goals:['Объяснить дискретное строение вещества','Связать скорость частиц с температурой','Различать строение трёх агрегатных состояний'],
- th:['Вещество состоит из <b>частиц</b> — атомов и молекул, между которыми есть промежутки. Размеры молекул порядка 10⁻¹⁰ м. Частицы непрерывно и беспорядочно движутся: об этом говорят броуновское движение и диффузия.',
- '<b>Диффузия</b> — самопроизвольное перемешивание веществ из-за движения частиц. С ростом температуры она ускоряется. В газах частицы далеко друг от друга и летают свободно, в жидкостях плотно упакованы, но могут менять места, в твёрдых телах колеблются около固定的 положений — поэтому твёрдые тела держат форму.'],
- keys:[['Диффузия','взаимное проникновение частиц одного вещества между частицами другого'],['Броуновское движение','беспорядочное движение мелких частиц в жидкости или газе'],['Притяжение и отталкивание','частицы притягиваются на малых расстояниях и отталкиваются при сближении']],
- q:{type:'choice',q:'Почему диффузия в горячей воде идёт быстрее, чем в холодной?',opts:['Горячая вода менее плотная','Частицы движутся быстрее при большей температуре','В горячей воде больше молекул','Холодная вода не проводит тепло'],c:1,why:'Температура — мера средней скорости беспорядочного движения частиц.'},
- tip:'Три состояния — это не разные вещества, а разный характер движения одних и тех же частиц.'}),
-L({id:'dvizhenie',s:'physics',g:7,sec:'Механика',t:'Механическое движение. Скорость',min:15,
- goals:['Различать равномерное и неравномерное движение','Считать скорость, путь и время','Переводить км/ч в м/с'],
- th:['<b>Механическое движение</b> — изменение положения тела в пространстве относительно других тел с течением времени. Линия, вдоль которой движется тело, называется траекторией, а длина этой линии — пройденным путём.',
- 'При <b>равномерном</b> движении тело за любые равные промежутки времени проходит равные пути. Скорость показывает, какой путь проходит тело за единицу времени. При неравномерном движении используют среднюю скорость: весь путь делят на всё время.'],
- keys:[['Путь s','длина траектории, скалярная величина, метры'],['Скорость v','путь за единицу времени, м/с'],['Средняя скорость','весь путь, делённый на всё время движения']],
- f:{html:'v = s / t',leg:[['v','скорость, м/с'],['s','путь, м'],['t','время, с']]},
- ex:{q:'Поезд прошёл 240 км за 3 часа. Найдите среднюю скорость в м/с.',steps:['v = 240 / 3 = 80 км/ч','80 км/ч = 80 · 1000 / 3600 ≈ 22,2 м/с'],a:'v ≈ 22,2 м/с'},
- q:{type:'numeric',q:'Тело движется равномерно со скоростью 5 м/с. Какой путь оно пройдёт за 12 секунд? Ответ в метрах.',solve:function(){return 60;},unit:'м',why:'s = v·t = 5 · 12 = 60 м.'},
- tip:'Чтобы перевести км/ч в м/с, раздели на 3,6. Обратно — умножь на 3,6.'}),
-L({id:'inerciya',s:'physics',g:7,sec:'Механика',t:'Инерция, масса и плотность',min:16,
- goals:['Объяснить явление инерции','Понять массу как меру инертности','Считать плотность, массу и объём'],
- th:['<b>Инерция</b> — сохранение скорости тела, если на него не действуют другие тела или их действия компенсируются. Чем больше масса тела, тем труднее изменить его скорость: масса — мера <b>инертности</b>.',
- '<b>Плотность</b> показывает, какая масса вещества приходится на единицу объёма. Это характеристика самого вещества, а не конкретного тела: у алюминиевой детали и алюминиевой фольги плотность одинаковая — 2700 кг/м³.'],
- keys:[['Инертность','свойство тела по-разному менять скорость при одинаковом воздействии'],['Масса m','мера инертности, килограммы'],['Плотность ρ','масса единицы объёма вещества, кг/м³']],
- f:{html:'ρ = m / V',leg:[['ρ','плотность, кг/м³'],['m','масса, кг'],['V','объём, м³']]},
- ex:{q:'Масса тела 540 г, объём 200 см³. Найдите плотность в кг/м³.',steps:['ρ = 540 / 200 = 2,7 г/см³','2,7 г/см³ = 2700 кг/м³ — это алюминий'],a:'ρ = 2700 кг/м³'},
- q:{type:'numeric',q:'Плотность вещества 800 кг/м³. Какова масса тела объёмом 0,5 м³? Ответ в килограммах.',solve:function(){return 400;},unit:'кг',why:'m = ρ·V = 800 · 0,5 = 400 кг.'},
- tip:'1 г/см³ = 1000 кг/м³. Это самый частый перевод в задачах на плотность.'}),
-L({id:'guk',s:'physics',g:7,sec:'Механика',t:'Сила упругости. Закон Гука',min:18,ext:'lessons/phys-7-019/',
- goals:['Понять природу силы упругости','Применять закон Гука','Различать упругую и пластическую деформацию'],
- th:['При деформации расстояния между частицами вещества меняются, и они стремятся вернуться на свои места. Так возникает <b>сила упругости</b>. Она всегда направлена <b>против</b> деформации: сжатую пружину толкает наружу, растянутую тянет назад.',
- 'При малых упругих деформациях сила упругости прямо пропорциональна удлинению — это <b>закон Гука</b>. Жёсткость k зависит от материала, длины, толщины проволоки и числа витков, но не от приложенной силы. За пределом упругости деформация становится пластической, и закон перестаёт работать.'],
- keys:[['Деформация','изменение формы или размеров тела'],['Жёсткость k','сила, needed для растяжения на 1 м, Н/м'],['Предел упругости','деформация, после которой тело не возвращает форму']],
- f:{html:'F<sub>упр</sub> = k · |x|',leg:[['F','сила упругости, Н'],['k','жёсткость, Н/м'],['x','деформация, м']]},
- ex:{q:'Пружина жёсткостью 50 Н/м растянута на 4 см. Найдите силу упругости.',steps:['x = 4 см = 0,04 м','F = 50 · 0,04 = 2 Н'],a:'F = 2 Н'},
- q:{type:'numeric',q:'Пружина жёсткостью 200 Н/м сжата на 3 см. Найдите силу упругости в ньютонах.',solve:function(){return 6;},unit:'Н',why:'F = k·x = 200 · 0,03 = 6 Н.'},
- tip:'Сантиметры обязательно переводи в метры — иначе ответ будет в 100 раз больше.'}),
-L({id:'tyazhest',s:'physics',g:7,sec:'Механика',t:'Сила тяжести и вес тела',min:15,
- goals:['Различать силу тяжести и вес тела','Считать силу тяжести по массе','Объяснить состояние невесомости'],
- th:['<b>Сила тяжести</b> — притяжение тела Землёй. Она приложена к самому телу, направлена вертикально вниз и равна произведению массы на ускорение свободного падения g ≈ 9,8 Н/кг.',
- '<b>Вес тела</b> — сила, с которой тело давит на опору или растягивает подвес. Он приложен к опоре, а не к телу. В покое вес численно равен силе тяжести, но при自由ном падении опора исчезает и вес становится нулевым — это <b>невесомость</b>. Сила тяжести при этом никуда не девается.'],
- keys:[['Сила тяжести','приложена к телу, существует всегда у Земли'],['Вес','приложен к опоре или подвесу, может быть равен нулю'],['Невесомость','состояние, когда тело не давит на опору']],
- f:{html:'F<sub>тяж</sub> = m · g',leg:[['m','масса тела, кг'],['g','≈ 9,8 Н/кг на Земле'],['F','сила тяжести, Н']]},
- ex:{q:'Масса ученика 45 кг. Найдите силу тяжести (g = 9,8 Н/кг).',steps:['F = 45 · 9,8','F = 441 Н'],a:'F = 441 Н'},
- q:{type:'choice',q:'Космонавт на орбите находится в невесомости. Это значит, что:',opts:['на него не действует сила тяжести','его вес равен нулю','его масса равна нулю','он вне поля тяготения Земли'],c:1,why:'В невесомости исчезает давление на опору, то есть вес, а притяжение Земли остаётся.'},
- tip:'Сила тяжести — к телу, вес — к опоре. Путать их нельзя, это классическая ошибка.'}),
-L({id:'trenie',s:'physics',g:7,sec:'Механика',t:'Сила трения и её виды',min:13,
- goals:['Различать трение покоя, скольжения и качения','Объяснить причины трения','Знать способы изменения трения'],
- th:['<b>Трение</b> возникает при соприкосновении тел из-за шероховатости поверхностей и взаимного притяжения молекул. Сила трения направлена против относительного движения или против попытки его начать.',
- '<b>Трение покоя</b> удерживает тело на месте и растёт вместе с приложенной силой до своего максимума. <b>Трение скольжения</b> зависит от силы прижатия и характера поверхностей, но почти не зависит от площади соприкосновения. <b>Трение качения</b> при тех же условиях значительно меньше — поэтому изобрели колесо и подшипники.'],
- keys:[['Трение покоя','мешает начать движение, самоподстраивается под нагрузку'],['Трение скольжения','зависит от прижатия и материала поверхностей'],['Трение качения','намного меньше скольжения']],
- q:{type:'choice',q:'Зачем в механизмах ставят подшипники?',opts:['Чтобы увеличить трение и устойчивость','Чтобы заменить трение скольжения трением качения','Чтобы уменьшить массу механизма','Чтобы полностью убрать любое трение'],c:1,why:'Подшипник заменяет скольжение качением, а трение качения значительно меньше.'},
- tip:'Смазка не убирает трение полностью — она разделяет поверхности тонкой плёнкой жидкости.'}),
-L({id:'davlenie',s:'physics',g:7,sec:'Давление',t:'Давление твёрдых тел',min:14,
- goals:['Понять смысл давления','Считать давление по силе и площади','Объяснить, как менять давление'],
- th:['Одна и та же сила может действовать по-разному: кнопка остриём входит в доску, а тупым концом — нет. Дело в <b>площади</b>, по которой распределена сила. Физическая величина, равная силе, делённой на площадь опоры, называется <b>давлением</b>.',
- 'Чтобы увеличить давление, увеличивают силу или уменьшают площадь: так работают ножи, иглы, гвозди, шипы. Чтобы уменьшить давление, площадь увеличивают: широкие гусеницы трактора, лыжи, фундамент дома, лямки рюкзака.'],
- keys:[['Давление p','сила на единицу площади, паскаль'],['1 Па','давление силы 1 Н на площадь 1 м²'],['Способы изменения','больше сила — больше давление; больше площадь — меньше']],
- f:{html:'p = F / S',leg:[['p','давление, Па'],['F','сила давления, Н'],['S','площадь опоры, м²']]},
- ex:{q:'Тело весом 600 Н стоит на опоре площадью 0,2 м². Найдите давление.',steps:['p = 600 / 0,2','p = 3000 Па = 3 кПа'],a:'p = 3000 Па'},
- q:{type:'numeric',q:'Сила 200 Н действует на площадь 0,5 м². Найдите давление в паскалях.',solve:function(){return 400;},unit:'Па',why:'p = F/S = 200 / 0,5 = 400 Па.'},
- tip:'Сантиметры квадратные переводи в метры квадратные: 1 м² = 10 000 см².'}),
-L({id:'paskal',s:'physics',g:7,sec:'Давление',t:'Закон Паскаля. Давление жидкости',min:16,
- goals:['Формулировать закон Паскаля','Считать давление жидкости на глубине','Объяснить работу гидравлической машины'],
- th:['<b>Закон Паскаля</b>: давление, производимое на жидкость или газ, передаётся в любую точку без изменений во всех направлениях. На этом основаны гидравлический пресс, тормоза автомобиля, домкрат.',
- 'Сама жидкость давит на дно и стенки из-за силы тяжести: чем глубже, тем больше слой жидкости сверху. Давление внутри жидкости зависит только от <b>плотности</b> и <b>глубины</b> и не зависит от формы сосуда. В сообщающихся сосудах однородная жидкость стоит на одном уровне.'],
- keys:[['Закон Паскаля','давление передаётся во все стороны одинаково'],['Гидростатическое давление','растёт линейно с глубиной'],['Сообщающиеся сосуды','уровни однородной жидкости одинаковы']],
- f:{html:'p = ρ · g · h',leg:[['ρ','плотность жидкости, кг/м³'],['g','≈ 9,8 Н/кг'],['h','глубина, м']]},
- ex:{q:'Найдите давление воды на глубине 5 м (ρ = 1000 кг/м³).',steps:['p = 1000 · 9,8 · 5','p = 49 000 Па = 49 кПа'],a:'p = 49 кПа'},
- q:{type:'numeric',q:'Давление воды на глубине 2 м равно? Ответ в килопаскалях, g = 9,8.',solve:function(){return 19.6;},unit:'кПа',why:'p = 1000·9,8·2 = 19 600 Па = 19,6 кПа.'},
- tip:'Давление жидкости не зависит от формы сосуда — только от глубины и плотности.'}),
-L({id:'atmosfera',s:'physics',g:7,sec:'Давление',t:'Атмосферное давление. Опыт Торричелли',min:15,
- goals:['Объяснить существование воздушной оболочки','Описать опыт Торричелли','Связать давление с высотой'],
- th:['Земля удерживает вокруг себя <b>атмосферу</b> силой тяготения. Воздух имеет массу, поэтому нижние слои придавлены верхними — возникает атмосферное давление. Нормальным считают давление 760 мм ртутного столба, это около 101 300 Па.',
- 'В 1643 году Торричелли заполнил трубку ртутью и опустил её открытым концом в чашку. Ртуть опустилась до высоты около 760 мм: столб ртути уравновешивается атмосферным давлением. С подъёмом на высоту давление падает — примерно на 1 мм рт. ст. каждые 12 метров у поверхности.'],
- keys:[['Нормальное давление','760 мм рт. ст. ≈ 101,3 кПа'],['Барометр-анероид','прибор без жидкости, с упругой коробочкой'],['Высотомер','барометр со шкалой в метрах']],
- q:{type:'choice',q:'Почему с подъёмом в горы атмосферное давление уменьшается?',opts:['Воздух становится холоднее','Уменьшается высота столба воздуха над наблюдателем','Горы притягивают воздух сильнее','Уменьшается плотность ртути'],c:1,why:'Над наблюдателем остаётся меньший слой воздуха, значит меньше и его вес.'},
- tip:'Присоска держится не «клейкостью», а разностью давлений: изнутри воздух вытеснен.'}),
-L({id:'arhimed',s:'physics',g:7,sec:'Давление',t:'Закон Архимеда. Плавание тел',min:20,sim:'archimedes',
- goals:['Объяснить причину выталкивающей силы','Считать силу Архимеда','Предсказывать, утонет тело или всплывёт'],
- th:['Давление жидкости растёт с глубиной, поэтому на нижнюю грань погружённого тела жидкость давит сильнее, чем на верхнюю. Разность этих сил и есть <b>выталкивающая, или архимедова, сила</b>. Она направлена вверх и равна весу вытесненной жидкости.',
- 'Сила Архимеда зависит только от <b>плотности жидкости</b> и <b>объёма погружённой части</b> тела. От массы тела, его плотности и глубины погружения она не зависит. Тело плавает, если его средняя плотность меньше плотности жидкости: доля погружения равна отношению плотностей.'],
- keys:[['Причина','разность давлений на нижнюю и верхнюю части тела'],['От чего зависит','плотность жидкости и погружённый объём'],['Условие плавания','ρ тела < ρ жидкости']],
- f:{html:'F<sub>A</sub> = ρ<sub>ж</sub> · g · V<sub>погр</sub>',leg:[['ρж','плотность жидкости, кг/м³'],['g','≈ 9,8 Н/кг'],['V','объём погружённой части, м³']]},
- ex:{q:'Тело объёмом 200 см³ полностью погружено в воду. Найдите силу Архимеда.',steps:['V = 200 см³ = 200 · 10⁻⁶ м³','F = 1000 · 9,8 · 200·10⁻⁶ = 1,96 Н'],a:'F_A = 1,96 Н'},
- q:{type:'numeric',q:'Тело объёмом 300 см³ полностью в воде (ρ = 1000 кг/м³, g = 9,8). Найдите силу Архимеда в ньютонах, округлите до сотых.',solve:function(){return 2.94;},unit:'Н',why:'F = 1000·9,8·300·10⁻⁶ = 2,94 Н.'},
- tip:'Подвигай ползунки в симуляции: меняй плотность тела и смотри, когда оно всплывает.'}),
-L({id:'rabota',s:'physics',g:7,sec:'Работа и энергия',t:'Механическая работа и мощность',min:15,
- goals:['Понять, когда работа совершается','Считать работу и мощность','Различать Дж и Вт'],
- th:['<b>Механическая работа</b> совершается, когда на тело действует сила и тело перемещается в направлении этой силы. Если сила перпендикулярна перемещению, работа равна нулю: неся сумку горизонтально, ты работу против силы тяжести не совершаешь.',
- '<b>Мощность</b> показывает, как быстро совершается работа: это работа за единицу времени. Два подъёмника могут поднять одинаковый груз на одинаковую высоту, совершив равную работу, но быстрый сделает это за меньшее время — его мощность больше.'],
- keys:[['Работа A','сила, умноженная на перемещение вдоль силы, джоуль'],['Мощность N','работа за секунду, ватт'],['1 Вт','1 Дж за 1 с']],
- f:{html:'A = F · s&nbsp;&nbsp;&nbsp;N = A / t',leg:[['A','работа, Дж'],['F','сила, Н'],['s','перемещение, м'],['N','мощность, Вт']]},
- ex:{q:'Сила 20 Н переместила тело на 5 м за 10 с. Найдите работу и мощность.',steps:['A = 20 · 5 = 100 Дж','N = 100 / 10 = 10 Вт'],a:'A = 100 Дж, N = 10 Вт'},
- q:{type:'numeric',q:'Двигатель совершил работу 600 Дж за 20 секунд. Какова его мощность в ваттах?',solve:function(){return 30;},unit:'Вт',why:'N = A/t = 600/20 = 30 Вт.'},
- tip:'Если тело стоит на месте, работа равна нулю, сколько бы силы ты ни прикладывал.'}),
-L({id:'mehanizmy',s:'physics',g:7,sec:'Работа и энергия',t:'Простые механизмы. КПД',min:17,
- goals:['Применять правило равновесия рычага','Понять «золотое правило» механики','Считать КПД механизма'],
- th:['Рычаг, блок, наклонная плоскость дают выигрыш в силе. <b>Правило рычага</b>: силы обратно пропорциональны плечам. Подвижный блок даёт выигрыш в силе в 2 раза, неподвижный лишь меняет направление.',
- 'Выигрыша в работе не бывает: во сколько раз выигрываем в силе, во столько же проигрываем в расстоянии — это <b>«золотое правило» механики</b>. Из-за трения полезная работа всегда меньше затраченной, поэтому <b>КПД</b> любого механизма меньше 100 %.'],
- keys:[['Плечо силы','кратчайшее расстояние от оси до линии действия силы'],['Золотое правило','выигрыш в силе = проигрыш в расстоянии'],['КПД','отношение полезной работы к затраченной, в процентах']],
- f:{html:'F₁ / F₂ = l₂ / l₁&nbsp;&nbsp;&nbsp;η = A<sub>пол</sub> / A<sub>затр</sub> · 100 %',leg:[['l','плечи сил'],['η','КПД, %'],['A','работа, Дж']]},
- ex:{q:'Подняли груз 100 Н на 1 м, приложив силу 40 Н к концу верёвки длиной 3 м. Найдите КПД.',steps:['A пол = 100 · 1 = 100 Дж','A затр = 40 · 3 = 120 Дж','η = 100/120 · 100 % ≈ 83 %'],a:'η ≈ 83 %'},
- q:{type:'numeric',q:'Полезная работа 240 Дж, затраченная 300 Дж. Найдите КПД в процентах.',solve:function(){return 80;},unit:'%',why:'η = 240/300 · 100 % = 80 %.'},
- tip:'КПД больше 100 % невозможен — это признак ошибки в решении.'}),
-L({id:'energiya',s:'physics',g:7,sec:'Работа и энергия',t:'Механическая энергия и её сохранение',min:16,
- goals:['Различать кинетическую и потенциальную энергию','Считать оба вида энергии','Объяснять превращения энергии'],
- th:['<b>Кинетическая энергия</b> — энергия движения, она зависит от массы и квадрата скорости. <b>Потенциальная энергия</b> поднятого тела зависит от массы, высоты и g. Упруго деформированная пружина тоже запасает потенциальную энергию.',
- 'При падении тела потенциальная энергия переходит в кинетическую, при подъёме — наоборот. Если трения нет, сумма двух видов энергии остаётся постоянной: это <b>закон сохранения механической энергии</b>. При наличии трения часть энергии переходит во внутреннюю — тела нагреваются.'],
- keys:[['Кинетическая','энергия движения, зависит от v²'],['Потенциальная','энергия положения или деформации'],['Закон сохранения','полная механическая энергия без трения постоянна']],
- f:{html:'E<sub>к</sub> = mv² / 2&nbsp;&nbsp;&nbsp;E<sub>п</sub> = mgh',leg:[['m','масса, кг'],['v','скорость, м/с'],['h','высота, м']]},
- ex:{q:'Тело массой 2 кг движется со скоростью 3 м/с. Найдите кинетическую энергию.',steps:['E = 2 · 3² / 2','E = 2 · 9 / 2 = 9 Дж'],a:'E к = 9 Дж'},
- q:{type:'numeric',q:'Тело массой 4 кг поднято на 5 м. Найдите потенциальную энергию, g = 10 Н/кг. Ответ в джоулях.',solve:function(){return 200;},unit:'Дж',why:'E = mgh = 4·10·5 = 200 Дж.'},
- tip:'Удвоение скорости увеличивает кинетическую энергию вчетверо — отсюда тормозной путь.'}),
-L({id:'teplota',s:'physics',g:8,sec:'Тепловые явления',t:'Количество теплоты. Нагревание',min:18,
- goals:['Понять смысл удельной теплоёмкости','Считать теплоту при нагревании','Объяснить, почему вода греется медленно'],
- th:['<b>Внутренняя энергия</b> — сумма энергий движения и взаимодействия всех частиц тела. Её можно изменить двумя способами: совершив работу или передав теплоту. <b>Количество теплоты</b> — та часть энергии, что передана без совершения работы.',
- '<b>Удельная теплоёмкость</b> показывает, сколько теплоты нужно, чтобы нагреть 1 кг вещества на 1 °C. У воды она 4200 Дж/(кг·°C) — одна из самых больших. Поэтому вода медленно нагревается и медленно остывает, а моря смягчают климат побережий.'],
- keys:[['Теплопередача','изменение внутренней энергии без работы'],['Удельная теплоёмкость c','Дж/(кг·°C), характеристика вещества'],['Δt','разность конечной и начальной температуры']],
- f:{html:'Q = c · m · (t₂ − t₁)',leg:[['Q','количество теплоты, Дж'],['c','удельная теплоёмкость'],['m','масса, кг']]},
- ex:{q:'Сколько теплоты нужно, чтобы нагреть 2 кг воды от 20 до 70 °C?',steps:['Δt = 70 − 20 = 50 °C','Q = 4200 · 2 · 50 = 420 000 Дж'],a:'Q = 420 кДж'},
- q:{type:'numeric',q:'Нагревают 3 кг воды на 10 °C. Сколько нужно теплоты в килоджоулях? c = 4200.',solve:function(){return 126;},unit:'кДж',why:'Q = 4200·3·10 = 126 000 Дж = 126 кДж.'},
- tip:'Если тело остывает, Δt отрицательна и Q тоже — тело отдаёт теплоту.'}),
-L({id:'om',s:'physics',g:8,sec:'Электричество',t:'Закон Ома для участка цепи',min:18,
- goals:['Связать ток, напряжение и сопротивление','Применять закон Ома','Понять, от чего зависит сопротивление'],
- th:['<b>Сила тока</b> — заряд, проходящий через поперечное сечение проводника за секунду. <b>Напряжение</b> — работа поля по переносу единичного заряда. <b>Сопротивление</b> возникает из-за взаимодействия движущихся электронов с ионами кристаллической решётки.',
- '<b>Закон Ома</b>: сила тока прямо пропорциональна напряжению и обратно пропорциональна сопротивлению. Сопротивление проводника зависит от материала, длины и площади сечения: чем длиннее и тоньше провод, тем больше сопротивление.'],
- keys:[['Сила тока I','амперы, измеряется амперметром последовательно'],['Напряжение U','вольты, вольтметр подключают параллельно'],['Сопротивление R','омы, зависит от ρ, длины и сечения']],
- f:{html:'I = U / R',leg:[['I','сила тока, А'],['U','напряжение, В'],['R','сопротивление, Ом']]},
- ex:{q:'Напряжение 12 В, сопротивление 4 Ом. Найдите силу тока.',steps:['I = 12 / 4','I = 3 А'],a:'I = 3 А'},
- q:{type:'numeric',q:'Напряжение 220 В, сопротивление 110 Ом. Найдите силу тока в амперах.',solve:function(){return 2;},unit:'А',why:'I = U/R = 220/110 = 2 А.'},
- tip:'Амперметр — в разрыв цепи, вольтметр — к двум точкам. Перепутаешь — прибор сгорит.'}),
-/* ---------- ХИМИЯ ---------- */
-L({id:'atom',s:'chemistry',g:8,sec:'Основы',t:'Атомы, молекулы и химические элементы',min:14,
- goals:['Различать атом, молекулу и элемент','Читать химические формулы','Понять, что такое относительная атомная масса'],
- th:['<b>Атом</b> — наименьшая химически неделимая частица элемента. Он состоит из положительно заряженного ядра (протоны и нейтроны) и электронов. Число протонов — это <b>порядковый номер</b> элемента, оно же равно числу электронов в нейтральном атоме.',
- '<b>Химический элемент</b> — совокупность атомов с одинаковым зарядом ядра. <b>Молекула</b> — частица из двух или более атомов, связанных химическими связями. Формула H₂SO₄ означает: 2 атома водорода, 1 серы, 4 кислорода. Индекс относится к знаку, перед которым стоит.'],
- keys:[['Порядковый номер','число протонов = число электронов'],['Массовое число','протоны + нейтроны'],['Индекс','число атомов данного элемента в формуле']],
- ex:{q:'Сколько всего атомов в формуле Al₂(SO₄)₃?',steps:['Al: 2','S: 1 · 3 = 3','O: 4 · 3 = 12','Всего: 2 + 3 + 12 = 17'],a:'17 атомов'},
- q:{type:'choice',q:'Что определяет, к какому элементу относится атом?',opts:['Число нейтронов','Число протонов в ядре','Число электронных слоёв','Масса атома'],c:1,why:'Элемент задаётся зарядом ядра, то есть числом протонов.'},
- tip:'Коэффициент перед формулой умножает всю формулу, индекс — только свой знак.'}),
-L({id:'tablica',s:'chemistry',g:8,sec:'Основы',t:'Периодическая таблица',min:20,sim:'periodic',
- goals:['Читать ячейку элемента','Связать положение с электронным строением','Объяснять периодичность свойств'],
- th:['В таблице элементы расположены по возрастанию заряда ядра. <b>Период</b> — горизонтальный ряд, его номер равен числу электронных слоёв. <b>Группа</b> — вертикальный столбец; у элементов главных подгрупп номер группы равен числу электронов на внешнем слое.',
- 'Свойства повторяются <b>периодически</b>, потому что повторяется строение внешнего электронного слоя. В периоде слева направо металлические свойства ослабевают, неметаллические усиливаются. В группе сверху вниз у металлов свойства усиливаются: атому легче отдать электрон с более далёкого слоя.'],
- keys:[['Период','номер = число электронных слоёв'],['Группа','номер главной подгруппы = электроны внешнего слоя'],['Периодичность','повтор свойств через определённые интервалы']],
- ex:{q:'Элемент в 3-м периоде, VI группе главной подгруппы. Сколько электронов на внешнем слое и сколько слоёв?',steps:['Период 3 → 3 слоя','Группа VI → 6 внешних электронов','Это сера S: 2, 8, 6'],a:'3 слоя, 6 внешних электронов'},
- q:{type:'choice',q:'Что показывает номер периода?',opts:['Число электронов на внешнем слое','Число электронных слоёв','Число нейтронов','Валентность элемента'],c:1,why:'Номер периода равен числу заполняемых электронных слоёв.'},
- tip:'Потяни ползунок температуры в таблице — увидишь, какие элементы плавятся и кипят.'}),
-L({id:'valentnost',s:'chemistry',g:8,sec:'Основы',t:'Валентность и составление формул',min:16,
- goals:['Определять валентность элементов','Составлять формулы по валентности','Называть бинарные соединения'],
- th:['<b>Валентность</b> — способность атома образовывать определённое число химических связей. У водорода она всегда I, у кислорода почти всегда II. У элементов главных подгрупп высшая валентность равна номеру группы.',
- 'Чтобы составить формулу, находят наименьшее общее кратное валентностей и делят его на валентность каждого элемента — получают индексы. Например, для Al(III) и O(II): НОК(3,2)=6, индексы 6/3=2 и 6/2=3, формула Al₂O₃.'],
- keys:[['Постоянная валентность','H — I, O — II, металлы I и II групп'],['Переменная валентность','у железа II и III, у меди I и II'],['НОК','наименьшее общее кратное валентностей']],
- ex:{q:'Составьте формулу соединения фосфора(V) с кислородом.',steps:['НОК(5, 2) = 10','P: 10/5 = 2','O: 10/2 = 5','P₂O₅ — оксид фосфора(V)'],a:'P₂O₅'},
- q:{type:'choice',q:'Какова формула соединения кальция(II) и хлора(I)?',opts:['CaCl','CaCl₂','Ca₂Cl','Ca₂Cl₃'],c:1,why:'НОК(2,1)=2: Ca 2/2=1, Cl 2/1=2 → CaCl₂.'},
- tip:'Проверяй формулу: сумма произведений валентностей на индексы у обоих элементов должна совпадать.'}),
-L({id:'yavleniya',s:'chemistry',g:8,sec:'Основы',t:'Физические и химические явления',min:13,
- goals:['Различать два типа явлений','Называть признаки химической реакции','Приводить примеры из быта'],
- th:['При <b>физических</b> явлениях состав вещества не меняется: таяние льда, испарение воды, измельчение мела, плавление металла. Меняются форма, размеры, агрегатное состояние, но молекулы остаются теми же.',
- 'При <b>химических</b> явлениях одни вещества превращаются в другие. Признаки реакции: выделение газа, выпадение или растворение осадка, изменение цвета, появление запаха, выделение или поглощение теплоты и света. Горение, ржавление, скисание молока, гашение соды уксусом — химические явления.'],
- keys:[['Физическое','состав вещества сохраняется'],['Химическое','образуются новые вещества'],['Признаки','газ, осадок, цвет, запах, теплота, свет']],
- q:{type:'choice',q:'Какое из явлений химическое?',opts:['Таяние снега','Растворение сахара в воде','Скисание молока','Кипение воды'],c:2,why:'При скисании молока образуются новые вещества — молочная кислота и другие.'},
- tip:'Растворение соли — физическое явление: соль можно вернуть выпариванием.'}),
-L({id:'sohranenie',s:'chemistry',g:8,sec:'Основы',t:'Закон сохранения массы. Уравнения',min:15,
- goals:['Формулировать закон сохранения массы','Расставлять коэффициенты','Понимать смысл уравнения реакции'],
- th:['<b>Закон сохранения массы</b>: масса веществ, вступивших в реакцию, равна массе продуктов. Атомы не исчезают и не появляются — они лишь перегруппировываются. Значит, число атомов каждого элемента слева и справа должно быть одинаковым.',
- 'Уравнивание начинают с элемента, который входит в наименьшее число формул, обычно с металла или неметалла, а водород и кислород оставляют на конец. Коэффициент ставится перед формулой и умножает все атомы в ней.'],
- keys:[['Коэффициент','число перед формулой, умножает всю формулу'],['Индекс','менять при уравнивании нельзя'],['Порядок','металл → неметалл → водород → кислород']],
- ex:{q:'Уравняйте: Al + O₂ → Al₂O₃',steps:['O: НОК(2,3)=6 → 3O₂ и 2Al₂O₃','Al справа 4 → слева 4Al','4Al + 3O₂ = 2Al₂O₃'],a:'4Al + 3O₂ = 2Al₂O₃'},
- q:{type:'numeric',q:'Какой коэффициент стоит перед H₂ в уравнении N₂ + ?H₂ = 2NH₃?',solve:function(){return 3;},unit:'',why:'Справа 6 атомов H, значит слева нужно 3 молекулы H₂.'},
- tip:'Никогда не меняй индексы ради уравнивания — это изменит само вещество.'}),
-L({id:'mol',s:'chemistry',g:8,sec:'Расчёты',t:'Моль и молярная масса',min:18,
- goals:['Понять, что такое моль','Считать молярную массу','Переводить массу в количество вещества'],
- th:['<b>Моль</b> — количество вещества, содержащее 6,02·10²³ частиц (число Авогадро). Это «химическая дюжина»: считать атомы поштучно невозможно, а молями удобно.',
- '<b>Молярная масса</b> численно равна относительной молекулярной массе, но выражается в г/моль. Для воды Mr = 18, значит M = 18 г/моль: один моль воды весит 18 граммов. Зная массу и молярную массу, легко найти количество вещества.'],
- keys:[['Моль','6,02·10²³ частиц'],['Молярная масса M','г/моль, численно равна Mr'],['Молярный объём газа','22,4 л/моль при н.у.']],
- f:{html:'n = m / M',leg:[['n','количество вещества, моль'],['m','масса, г'],['M','молярная масса, г/моль']]},
- ex:{q:'Сколько моль в 88 г углекислого газа CO₂?',steps:['M(CO₂) = 12 + 16·2 = 44 г/моль','n = 88 / 44 = 2 моль'],a:'n = 2 моль'},
- q:{type:'numeric',q:'Сколько моль содержится в 36 г воды H₂O? M = 18 г/моль.',solve:function(){return 2;},unit:'моль',why:'n = 36/18 = 2 моль.'},
- tip:'Сначала посчитай молярную массу по таблице — это половина решения.'}),
-L({id:'typy',s:'chemistry',g:8,sec:'Реакции',t:'Типы химических реакций',min:17,
- goals:['Различать четыре типа реакций','Определять тип по уравнению','Приводить примеры каждого типа'],
- th:['По числу и составу исходных веществ и продуктов реакции делят на четыре типа. <b>Соединение</b>: из нескольких веществ одно. <b>Разложение</b>: из одного несколько. <b>Замещение</b>: простое вещество замещает атомы в сложном. <b>Обмен</b>: два сложных вещества обмениваются составными частями.',
- 'Реакции также делят по тепловому эффекту на экзо- и эндотермические, по изменению степеней окисления — на окислительно-восстановительные и остальные, по обратимости — на обратимые и необратимые.'],
- keys:[['Соединение','A + B → AB'],['Разложение','AB → A + B'],['Замещение','A + BC → AC + B'],['Обмен','AB + CD → AD + CB']],
- ex:{q:'Определите тип: Zn + 2HCl = ZnCl₂ + H₂↑',steps:['Простое вещество Zn + сложное HCl','Образовались новое сложное ZnCl₂ и простое H₂','Это замещение'],a:'Реакция замещения'},
- q:{type:'choice',q:'К какому типу относится реакция CaCO₃ = CaO + CO₂↑?',opts:['Соединение','Разложение','Замещение','Обмен'],c:1,why:'Из одного сложного вещества образовалось два — это разложение.'},
- tip:'Смотри на число веществ слева и справа — тип определяется почти мгновенно.'}),
-L({id:'oksidy',s:'chemistry',g:8,sec:'Классы веществ',t:'Оксиды',min:15,
- goals:['Определять оксиды по формуле','Делить оксиды на основные и кислотные','Называть оксиды'],
- th:['<b>Оксиды</b> — сложные вещества из двух элементов, один из которых кислород в степени окисления −2. Общая формула ЭₓOᵧ. Примеры: CaO, CO₂, Fe₂O₃, SO₃.',
- 'Оксиды металлов в низших степенях окисления — <b>основные</b>, им соответствуют основания. Оксиды неметаллов и металлов в высших степенях — <b>кислотные</b>, им соответствуют кислоты. Оксиды алюминия и цинка — амфотерные, проявляют двойственные свойства.'],
- keys:[['Оксид','два элемента, один — кислород −2'],['Основный','оксид металла, даёт основание'],['Кислотный','оксид неметалла, даёт кислоту']],
- ex:{q:'Назовите Fe₂O₃ и определите его характер.',steps:['Железо в степени +3','Название: оксид железа(III)','Оксид металла → основный'],a:'Оксид железа(III), основный'},
- q:{type:'choice',q:'Какой из оксидов кислотный?',opts:['Na₂O','CaO','SO₃','MgO'],c:2,why:'SO₃ — оксид неметалла, ему соответствует серная кислота H₂SO₄.'},
- tip:'Если в формуле ровно два элемента и последний — кислород, перед тобой оксид.'}),
-L({id:'kisloty',s:'chemistry',g:8,sec:'Классы веществ',t:'Кислоты',min:16,
- goals:['Распознавать кислоты по формуле','Классифицировать кислоты','Знать их общие свойства'],
- th:['<b>Кислоты</b> — сложные вещества, состоящие из атомов водорода и кислотного остатка. Число атомов водорода определяет <b>основность</b>: HCl — одноосновная, H₂SO₄ — двухосновная, H₃PO₄ — трёхосновная.',
- 'Кислоты изменяют окраску индикаторов: лакмус краснеет, метилоранж розовеет. Они реагируют с активными металлами с выделением водорода, с основными оксидами и основаниями (нейтрализация), с солями более слабых кислот.'],
- keys:[['Кислотный остаток','часть формулы без водорода'],['Основность','число атомов водорода'],['Индикатор','лакмус в кислоте красный']],
- f:{html:'Кислота = H<sub>n</sub> + кислотный остаток',leg:[['n','основность кислоты'],['остаток','SO₄, NO₃, Cl, PO₄ и др.']]},
- ex:{q:'Определите основность H₃PO₄ и назовите кислоту.',steps:['Атомов водорода: 3','Остаток PO₄ — фосфат','Ортофосфорная кислота, трёхосновная'],a:'Трёхосновная ортофосфорная'},
- q:{type:'choice',q:'Какая кислота двухосновная?',opts:['HNO₃','H₂SO₄','HCl','H₃PO₄'],c:1,why:'В серной кислоте два атома водорода.'},
- tip:'Кислоту всегда узнаёшь по водороду в начале формулы.'}),
-L({id:'osnovaniya',s:'chemistry',g:8,sec:'Классы веществ',t:'Основания и щёлочи',min:15,
- goals:['Распознавать основания','Различать щёлочи и нерастворимые основания','Знать признаки реакций оснований'],
- th:['<b>Основания</b> — сложные вещества из атома металла и гидроксогрупп OH. Число групп OH равно валентности металла: NaOH, Ca(OH)₂, Fe(OH)₃.',
- 'Растворимые основания называют <b>щёлочами</b>: NaOH, KOH, Ca(OH)₂, Ba(OH)₂. Они мылкие на ощупь, едкие, окрашивают фенолфталеин в малиновый цвет, лакмус — в синий. Нерастворимые основания, например Cu(OH)₂, при нагревании разлагаются на оксид и воду.'],
- keys:[['Гидроксогруппа','OH, валентность I'],['Щёлочь','растворимое основание'],['Фенолфталеин','в щёлочи малиновый']],
- ex:{q:'Составьте формулу основания алюминия.',steps:['Валентность Al — III','Групп OH нужно 3','Al(OH)₃ — нерастворимое основание'],a:'Al(OH)₃'},
- q:{type:'choice',q:'Какое основание является щёлочью?',opts:['Cu(OH)₂','Fe(OH)₃','KOH','Mg(OH)₂'],c:2,why:'Гидроксид калия хорошо растворим в воде — это щёлочь.'},
- tip:'Фенолфталеин в кислоте и нейтральной среде бесцветный, малиновый — только в щёлочи.'}),
-L({id:'soli',s:'chemistry',g:8,sec:'Классы веществ',t:'Соли',min:14,
- goals:['Распознавать соли','Называть соли по формуле','Понять связь соли с кислотой и основанием'],
- th:['<b>Соли</b> — сложные вещества, состоящие из атомов металла и кислотного остатка. Их можно мысленно получить, заменив в кислоте водород на металл: H₂SO₄ → Na₂SO₄.',
- 'Название соли складывается из названия кислотного остатка и металла: NaCl — хлорид натрия, CaCO₃ — карбонат кальция, CuSO₄ — сульфат меди(II). Соли образуются при нейтрализации, при реакции металла с кислотой, кислоты с оксидом металла и во многих других реакциях.'],
- keys:[['Соль','металл + кислотный остаток'],['Название','остаток в именительном + металл в родительном'],['Средняя соль','весь водород замещён металлом']],
- ex:{q:'Назовите K₂CO₃.',steps:['Остаток CO₃ — карбонат','Металл K — калий','Карбонат калия'],a:'Карбонат калия'},
- q:{type:'choice',q:'Какое вещество является солью?',opts:['HNO₃','NaOH','CaO','NaNO₃'],c:3,why:'NaNO₃ состоит из металла натрия и кислотного остатка NO₃.'},
- tip:'Металл впереди, остаток позади — почти всегда соль.'}),
-L({id:'dissociaciya',s:'chemistry',g:9,sec:'Растворы',t:'Электролитическая диссоциация',min:17,
- goals:['Понять, что такое диссоциация','Различать электролиты и неэлектролиты','Записывать уравнения диссоциации'],
- th:['В растворе или расплаве некоторые вещества распадаются на <b>ионы</b> — заряженные частицы. Это <b>электролитическая диссоциация</b>. Положительные ионы — катионы, отрицательные — анионы. Именно ионы делают раствор проводником тока.',
- 'Кислоты диссоциируют на катионы водорода и анионы кислотного остатка, основания — на катионы металла и гидроксид-ионы, соли — на катионы металла и анионы остатка. Сахар, спирт, большинство органических веществ — неэлектролиты.'],
- keys:[['Катион','положительный ион, идёт к катоду'],['Анион','отрицательный ион, идёт к аноду'],['Степень диссоциации','доля распавшихся молекул']],
- ex:{q:'Запишите диссоциацию硫酸 натрия Na₂SO₄.',steps:['Катион: Na⁺, их 2','Анион: SO₄²⁻','Na₂SO₄ = 2Na⁺ + SO₄²⁻'],a:'Na₂SO₄ = 2Na⁺ + SO₄²⁻'},
- q:{type:'choice',q:'Какие ионы образует при диссоциации кислота?',opts:['Катионы металла','Катионы водорода','Только анионы','Гидроксид-ионы'],c:1,why:'Общее свойство кислот обусловлено катионами водорода H⁺.'},
- tip:'Сумма зарядов справа должна быть равна нулю — это проверка уравнения.'}),
-L({id:'ionnye',s:'chemistry',g:9,sec:'Растворы',t:'Реакции ионного обмена',min:18,
- goals:['Понять условие протекания реакции','Записывать ионные уравнения','Сокращать одинаковые ионы'],
- th:['Реакции между растворами электролитов идут до конца, если образуется <b>осадок</b>, <b>газ</b> или <b>малодиссоциирующее вещество</b> — чаще всего вода. Если ничего из этого не получается, ионы просто остаются в растворе, и реакции нет.',
- 'Полное ионное уравнение записывают, расписав растворимые сильные электролиты на ионы. Осадки, газы и воду оставляют в молекулярном виде. Затем одинаковые ионы слева и справа сокращают — получают сокращённое ионное уравнение, показывающее суть процесса.'],
- keys:[['Условия','осадок ↓, газ ↑, вода'],['Не расписывают','осадки, газы, воду, слабые электролиты'],['Сокращение','убираем ионы-наблюдатели']],
- ex:{q:'Сокращённое ионное уравнение для NaOH + HCl.',steps:['Полное: Na⁺+OH⁻+H⁺+Cl⁻ = Na⁺+Cl⁻+H₂O','Сокращаем Na⁺ и Cl⁻','OH⁻ + H⁺ = H₂O'],a:'H⁺ + OH⁻ = H₂O'},
- q:{type:'choice',q:'Реакция ионного обмена идёт до конца, если:',opts:['все вещества растворимы','образуется осадок, газ или вода','участвуют только соли','раствор нагревается'],c:1,why:'Ионы уходят из раствора — только тогда процесс необратим.'},
- tip:'Суть любой нейтрализации одна: H⁺ + OH⁻ = H₂O.'}),
-L({id:'ovr',s:'chemistry',g:9,sec:'Реакции',t:'Окисление и восстановление',min:19,
- goals:['Определять степени окисления','Находить окислитель и восстановитель','Понять электронный баланс'],
- th:['<b>Степень окисления</b> — условный заряд атома, если считать все связи ионными. У простого вещества она равна нулю, у кислорода обычно −2, у водорода +1. Сумма степеней окисления в нейтральной молекуле равна нулю.',
- '<b>Окисление</b> — отдача электронов, степень окисления повышается. <b>Восстановление</b> — приём электронов, степень понижается. Отдающий электроны — восстановитель, принимающий — окислитель. Число отданных и принятых электронов всегда одинаково: это основа электронного баланса.'],
- keys:[['Окисление','отдача e⁻, степень растёт'],['Восстановление','приём e⁻, степень падает'],['Окислитель','сам восстанавливается']],
- ex:{q:'Определите степень окисления серы в H₂SO₄.',steps:['H: +1 · 2 = +2','O: −2 · 4 = −8','+2 + x − 8 = 0 → x = +6'],a:'S⁺⁶'},
- q:{type:'choice',q:'Восстановитель — это частица, которая:',opts:['принимает электроны','отдаёт электроны','не меняет степень окисления','всегда является кислородом'],c:1,why:'Восстановитель отдаёт электроны и сам при этом окисляется.'},
- tip:'Запомни: «окислитель грабит» — забирает электроны у восстановителя.'}),
-/* ---------- БИОЛОГИЯ ---------- */
-L({id:'kletka',s:'biology',g:5,sec:'Клетка',t:'Клетка — единица живого',min:13,
- goals:['Понять клеточное строение организмов','Различать растительную и животную клетку','Назвать основные части клетки'],
- th:['Все живые организмы состоят из <b>клеток</b>. Клетка — наименьшая единица живого, способная к обмену веществ, росту и размножению. Одноклеточные организмы обходятся одной клеткой, у человека их около 30 триллионов.',
- 'Любая клетка имеет <b>мембрану</b>, <b>цитоплазму</b> и генетический материал. У растений additionally есть прочная клеточная стенка из целлюлозы, крупные вакуоли с клеточным соком и пластиды — хлоропласты. У животных клеточной стенки и хлоропластов нет.'],
- keys:[['Мембрана','оболочка, регулирует поступление веществ'],['Цитоплазма','полужидкая среда, объединяет части клетки'],['Ядро','хранит наследственную информацию']],
- q:{type:'choice',q:'Что есть в растительной клетке, но отсутствует в животной?',opts:['Ядро','Мембрана','Хлоропласты','Цитоплазма'],c:2,why:'Хлоропласты, клеточная стенка и крупные вакуоли — признаки растительной клетки.'},
- tip:'Клеточная стенка снаружи от мембраны — она жёсткая и держит форму растения.'}),
-L({id:'organoidy',s:'biology',g:5,sec:'Клетка',t:'Органоиды клетки и их функции',min:16,
- goals:['Называть основные органоиды','Связывать строение органоида с функцией','Понять роль митохондрий'],
- th:['<b>Органоиды</b> — постоянные структуры клетки, каждая выполняет свою работу, как органы в теле. Ядро хранит ДНК и управляет процессами, рибосомы собирают белки, эндоплазматическая сеть транспортирует вещества, аппарат Гольджи упаковывает и выводит их.',
- '<b>Митохондрии</b> — «энергетические станции»: в них идёт окисление органических веществ и запасается энергия в АТФ. <b>Лизосомы</b> переваривают вещества и старые структуры. <b>Хлоропласты</b> у растений ловят свет и создают органику из углекислого газа и воды.'],
- keys:[['Рибосомы','синтез белка'],['Митохондрии','синтез АТФ, клеточное дыхание'],['Аппарат Гольджи','сортировка и упаковка веществ']],
- q:{type:'choice',q:'Какой органоид отвечает за выработку энергии в виде АТФ?',opts:['Рибосома','Митохондрия','Лизосома','Вакуоль'],c:1,why:'Митохондрии окисляют органические вещества и запасают энергию в АТФ.'},
- tip:'Митохондрий больше там, где нужно много энергии: в мышцах, в сперматозоидах.'}),
-L({id:'tkani',s:'biology',g:5,sec:'Клетка',t:'Ткани, органы и системы',min:12,
- goals:['Понять уровни организации живого','Определить, что такое ткань','Приводить примеры тканей'],
- th:['<b>Ткань</b> — группа клеток и межклеточного вещества, сходных по строению, происхождению и выполняемой функции. У животных выделяют эпителиальную, соединительную, мышечную и нервную ткани. У растений — образовательную, покровную, проводящую, механическую и основную.',
- 'Из тканей построены <b>органы</b>, из органов — <b>системы органов</b>, а вместе они образуют целостный <b>организм</b>. Такая иерархия позволяет разделять труд: каждая структура делает своё дело, а вместе они обеспечивают жизнь целого.'],
- keys:[['Ткань','сходные клетки + межклеточное вещество'],['Орган','несколько тканей с общей функцией'],['Система','органы, работающие согласованно']],
- q:{type:'choice',q:'Какая ткань обеспечивает сокращение и движение?',opts:['Эпителиальная','Соединительная','Мышечная','Нервная'],c:2,why:'Свойства мышечной ткани — возбудимость и сократимость.'},
- tip:'Кровь — это соединительная ткань, у неё очень много межклеточного вещества — плазмы.'}),
-L({id:'fotosintez',s:'biology',g:6,sec:'Растения',t:'Фотосинтез',min:18,
- goals:['Записывать суммарное уравнение фотосинтеза','Понять роль хлорофилла и света','Объяснить значение фотосинтеза для планеты'],
- th:['<b>Фотосинтез</b> — образование органических веществ из углекислого газа и воды на свету в хлоропластах. Зелёный пигмент <b>хлорофилл</b> улавливает энергию света, которая запасается в химических связях глюкозы. Побочный продукт — кислород.',
- 'Фотосинтез — основа почти всех пищевых цепей и источник кислорода атмосферы. Растения создают органику из неорганики, поэтому их называют <b>продуцентами</b>. Без света фотосинтез останавливается, а дыхание продолжается круглосуточно.'],
- keys:[['Хлорофилл','пигмент, поглощающий свет'],['Продуценты','организмы, создающие органику из неорганики'],['Условия','свет, вода, CO₂, хлоропласты']],
- f:{html:'6CO₂ + 6H₂O →<sup>свет</sup> C₆H₁₂O₆ + 6O₂',leg:[['CO₂','из воздуха через устьица'],['H₂O','из почвы через корни'],['C₆H₁₂O₆','глюкоза']]},
- q:{type:'choice',q:'Какой газ выделяется при фотосинтезе?',opts:['Углекислый газ','Азот','Кислород','Водород'],c:2,why:'Кислород образуется при разложении воды в световой фазе.'},
- tip:'Не путай: фотосинтез только на свету, дыхание — всегда.'}),
-L({id:'dyhanie',s:'biology',g:6,sec:'Растения',t:'Дыхание растений',min:14,
- goals:['Отличать дыхание от фотосинтеза','Понять смысл окисления органики','Объяснить, зачем растению энергия'],
- th:['<b>Дыхание</b> — окисление органических веществ с поглощением кислорода и выделением углекислого газа, воды и энергии. Энергия запасается в АТФ и тратится на рост, транспорт веществ, деление клеток.',
- 'Дыхание идёт во всех живых клетках <b>круглосуточно</b>, в отличие от фотосинтеза. Днём на свету фотосинтез обычно интенсивнее, поэтому растение в целом поглощает CO₂ и выделяет O₂. Ночью картина обратная. Прорастающие семена и клубни дышат особенно интенсивно.'],
- keys:[['Дыхание','окисление органики, выделение энергии'],['АТФ','универсальный аккумулятор энергии клетки'],['Круглосуточно','в отличие от фотосинтеза']],
- f:{html:'C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + энергия',leg:[['органика','расходуется'],['O₂','поглощается'],['энергия','запасается в АТФ']]},
- q:{type:'choice',q:'Когда растения дышат?',opts:['Только ночью','Только днём','Круглосуточно','Только во время роста'],c:2,why:'Дыхание обеспечивает энергией все процессы и не прекращается ни днём, ни ночью.'},
- tip:'Хранилища овощей проветривают: дышащие клубни выделяют тепло и углекислый газ.'}),
-L({id:'bakterii',s:'biology',g:5,sec:'Микромир',t:'Бактерии и вирусы',min:14,
- goals:['Различать прокариот и эукариот','Понять неклеточное строение вирусов','Знать роль бактерий в природе'],
- th:['<b>Бактерии</b> — одноклеточные организмы без оформленного ядра, их называют <b>прокариотами</b>. ДНК лежит прямо в цитоплазме. Размножаются делением надвое, при неблагоприятных условиях образуют споры. По форме бывают cocci, палочки, извитые.',
- '<b>Вирусы</b> — неклеточные формы жизни: нуклеиновая кислота в белковой оболочке. Вне клетки хозяина они не проявляют признаков жизни, размножаются только внутри чужой клетки. Бактерии же полезны: клубеньковые фиксируют азот, молочнокислые дают кефир и силос, гнилостные разлагают органику.'],
- keys:[['Прокариоты','нет оформленного ядра'],['Вирус','неклеточная форма, внутриклеточный паразит'],['Спора','переживание неблагоприятных условий']],
- q:{type:'choice',q:'Чем вирусы принципиально отличаются от бактерий?',opts:['Они меньше по размеру','У них нет клеточного строения','Они не содержат ДНК','Они не вызывают болезней'],c:1,why:'Вирус — неклеточная форма: нуклеиновая кислота плюс белковая оболочка.'},
- tip:'Антибиотики действуют на бактерии и бесполезны против вирусов.'}),
-L({id:'griby',s:'biology',g:6,sec:'Микромир',t:'Грибы и лишайники',min:15,
- goals:['Понять особенности грибов','Объяснить симбиоз в лишайнике','Знать значение грибов'],
- th:['<b>Грибы</b> сочетают признаки растений и животных: растут всю жизнь и прикреплены к субстрату, но питаются готовой органикой и содержат хитин в клеточной стенке. Тело гриба — <b>грибница</b> из ветвящихся нитей, гифов.',
- '<b>Лишайник</b> — симбиоз гриба и водоросли (или цианобактерии). Водоросль фотосинтезирует и даёт органику, гриб обеспечивает воду, минеральные соли и защиту. Лишайники нетребовательны, поселяются на голых камнях и очень чувствительны к загрязнению воздуха — они индикаторы чистоты.'],
- keys:[['Гифы','нити грибницы'],['Гетеротрофы','питаются готовой органикой'],['Симбиоз','взаимовыгодное сожительство']],
- q:{type:'choice',q:'Что даёт водоросль в составе лишайника?',opts:['Воду и минеральные соли','Органические вещества','Защиту от высыхания','Опору для гриба'],c:1,why:'Водоросль фотосинтезирует и снабжает гриб органикой.'},
- tip:'Гриб, который мы едим, — лишь плодовое тело; сам организм — грибница в почве.'}),
-L({id:'mitoz',s:'biology',g:9,sec:'Деление',t:'Митоз',min:20,sim:'mitosis',
- goals:['Называть фазы митоза по порядку','Связать фазу с числом хромосом и ДНК','Понять биологический смысл митоза'],
- th:['<b>Митоз</b> — деление клетки, при котором из одной материнской получаются две дочерние с <b>точно таким же</b> набором хромосом. Перед делением, в интерфазе, ДНК удваивается: каждая хромосома состоит из двух сестринских хроматид.',
- 'Фазы: <b>профаза</b> — хромосомы спирализуются, ядерная оболочка распадается; <b>метафаза</b> — хромосомы выстраиваются по экватору; <b>анафаза</b> — хроматиды расходятся к полюсам; <b>телофаза</b> — вокруг наборов восстанавливаются ядра, затем цитоплазма делится. Митоз обеспечивает рост, регенерацию и бесполое размножение.'],
- keys:[['Интерфаза','рост и удвоение ДНК, набор 2n4c'],['Метафаза','хромосомы на экваторе, 2n4c'],['Анафаза','хроматиды разошлись, 4n4c'],['Телофаза','две клетки по 2n2c']],
- q:{type:'choice',q:'В какой фазе хроматиды расходятся к полюсам клетки?',opts:['Профаза','Метафаза','Анафаза','Телофаза'],c:2,why:'Расхождение сестринских хроматид — определяющий признак анафазы.'},
- tip:'Пролистай фазы в симуляции и следи за счётчиком: набор меняется только в анафазе.'}),
-L({id:'meyoz',s:'biology',g:9,sec:'Деление',t:'Мейоз',min:19,
- goals:['Понять редукцию числа хромосом','Различать два деления мейоза','Объяснить источник разнообразия'],
- th:['<b>Мейоз</b> — деление, приводящее к уменьшению числа хромосом вдвое. Из одной диплоидной клетки образуются <b>четыре гаплоидные</b>. Мейоз состоит из двух последовательных делений, а удвоение ДНК происходит только один раз — перед первым.',
- 'В профазе I гомологичные хромосомы сближаются и обмениваются участками — <b>кроссинговер</b>. В анафазе I к полюсам расходятся целые гомологичные хромосомы, а не хроматиды. Мейоз I — редукционное деление, мейоз II похож на митоз. Кроссинговер и случайное расхождение хромосом создают генетическое разнообразие.'],
- keys:[['Редукция','2n → n в первом делении'],['Кроссинговер','обмен участками гомологичных хромосом'],['Результат','4 гаплоидные клетки']],
- q:{type:'choice',q:'Сколько клеток образуется в результате мейоза из одной исходной?',opts:['Одна','Две','Четыре','Восемь'],c:2,why:'Два деления подряд дают четыре гаплоидные клетки.'},
- tip:'В анафазе митоза расходятся хроматиды, в анафазе мейоза I — целые хромосомы.'}),
-L({id:'krov',s:'biology',g:8,sec:'Человек',t:'Кровообращение',min:17,
- goals:['Называть круги кровообращения','Различать артерии и вены','Понять строение сердца'],
- th:['Сердце человека <b>четырёхкамерное</b>: два предсердия и два желудочка. Правая половина содержит венозную кровь, левая — артериальную. Клапаны обеспечивают ток крови только в одну сторону.',
- '<b>Малый круг</b>: правый желудочек → лёгкие → левое предсердие; кровь насыщается кислородом. <b>Большой круг</b>: левый желудочек → органы → правое предсердие; кровь отдаёт кислород и забирает CO₂. <b>Артерии</b> несут кровь от сердца, <b>вены</b> — к сердцу, независимо от того, какая в них кровь.'],
- keys:[['Артерия','сосуд от сердца'],['Вена','сосуд к сердцу'],['Капилляр','место обмена веществ с тканями']],
- q:{type:'choice',q:'Где начинается большой круг кровообращения?',opts:['В правом желудочке','В левом желудочке','В левом предсердии','В аорте лёгких'],c:1,why:'Большой круг начинается в левом желудочке и заканчивается в правом предсердии.'},
- tip:'В лёгочных артериях течёт венозная кровь — название сосуда не про состав крови.'}),
-L({id:'nervnaya',s:'biology',g:8,sec:'Человек',t:'Нервная система. Рефлекс',min:16,
- goals:['Различать центральную и периферическую системы','Понять строение рефлекторной дуги','Объяснить роль нейрона'],
- th:['<b>Нейрон</b> — нервная клетка с телом, короткими дендритами, принимающими сигнал, и длинным аксоном, передающим его дальше. Сигнал идёт по нейрону электрически, а между нейронами — химически, через <b>синапс</b> с помощью нейромедиаторов.',
- '<b>Рефлекторная дуга</b>: рецептор → чувствительный нейрон → нервный центр → двигательный нейрон → рабочий орган. Простейшие рефлексы замыкаются в спинном мозге, поэтому рука отдёргивается от горячего раньше, чем человек осознаёт боль.'],
- keys:[['Дендрит','принимает сигнал к телу нейрона'],['Аксон','проводит сигнал от тела'],['Синапс','контакт между нейронами']],
- q:{type:'choice',q:'С чего начинается рефлекторная дуга?',opts:['С рабочего органа','С рецептора','С двигательного нейрона','С головного мозга'],c:1,why:'Рецептор воспринимает раздражение — это первое звено дуги.'},
- tip:'Осознание приходит позже реакции: сигнал до мозга идёт дольше, чем до спинного.'}),
-L({id:'mendel',s:'biology',g:9,sec:'Генетика',t:'Законы Менделя',min:18,
- goals:['Различать доминантный и рецессивный признаки','Понять расщепление 3:1','Записывать схему скрещивания'],
- th:['<b>Первый закон Менделя</b> (единообразие гибридов): при скрещивании чистых линий всё первое поколение единообразно и несёт доминантный признак. Доминантный аллель обозначают заглавной буквой A, рецессивный — строчной a.',
- '<b>Второй закон</b> (расщепление): при скрещивании гибридов первого поколения во втором появляется расщепление по фенотипу <b>3:1</b>, по генотипу 1AA : 2Aa : 1aa. Рецессивный признак проявляется только у гомозиготы aa. Причина — расхождение аллелей в гаметы при мейозе.'],
- keys:[['Гомозигота','AA или aa, одинаковые аллели'],['Гетерозигота','Aa, разные аллели'],['Фенотип','внешнее проявление признака']],
- ex:{q:'Скрестили Aa × Aa. Какое расщепление по фенотипу?',steps:['Гаметы: A, a от каждого','Потомство: AA, Aa, Aa, aa','С доминантным признаком 3, с рецессивным 1'],a:'3 : 1'},
- q:{type:'numeric',q:'При скрещивании Aa × Aa получено 400 потомков. Сколько ожидается с рецессивным признаком?',solve:function(){return 100;},unit:'',why:'Доля aa составляет 1/4: 400 · 0,25 = 100.'},
- tip:'Решётка Пеннета 2×2 — самый надёжный способ не запутаться в скрещивании.'}),
-L({id:'otbor',s:'biology',g:9,sec:'Эволюция',t:'Естественный отбор',min:16,
- goals:['Назвать условия действия отбора','Понять роль наследственной изменчивости','Объяснить приспособленность'],
- th:['Естественный отбор возможен благодаря трём обстоятельствам: организмы дают <b>избыточное потомство</b>, особи <b>различаются</b> по наследственным признакам, ресурсы <b>ограничены</b>, поэтому идёт борьба за существование.',
- 'Выживают и оставляют потомство преимущественно особи с признаками, полезными в данных условиях. Со временем эти признаки накапливаются в популяции — возникает <b>приспособленность</b>. Отбор не создаёт признаки, он лишь сортирует уже существующее разнообразие, которое поставляет мутационная изменчивость.'],
- keys:[['Борьба за существование','следствие избыточного потомства'],['Отбор','сохранение полезных в данных условиях признаков'],['Приспособленность','результат длительного отбора']],
- q:{type:'choice',q:'Что поставляет материал для естественного отбора?',opts:['Упражнение органов','Наследственная изменчивость','Стремление организма измениться','Условия среды напрямую'],c:1,why:'Отбор сортирует наследственную изменчивость, возникающую случайно.'},
- tip:'Приспособленность всегда относительна: полезный признак полезен только в своих условиях.'}),
-L({id:'ekosistema',s:'biology',g:6,sec:'Экология',t:'Экосистемы и цепи питания',min:14,
- goals:['Различать звенья экосистемы','Строить цепь питания','Понять правило экологической пирамиды'],
- th:['<b>Экосистема</b> — сообщество организмов вместе со средой обитания, связанное обменом веществ и энергии. <b>Продуценты</b> создают органику, <b>консументы</b> потребляют готовую, <b>редуценты</b> разлагают остатки до минеральных веществ и замыкают круговорот.',
- 'В цепи питания энергия передаётся с потерями: на каждый следующий уровень переходит лишь около <b>10 %</b> энергии. Поэтому цепей редко бывает больше четырёх-пяти звеньев, а хищников всегда меньше, чем травоядных. Это правило экологической пирамиды.'],
- keys:[['Продуценты','растения, создают органику'],['Консументы','потребители, животные'],['Редуценты','бактерии и грибы, разлагают']],
- q:{type:'choice',q:'Кто замыкает круговорот веществ, разлагая органику до минеральных соединений?',opts:['Продуценты','Консументы первого порядка','Редуценты','Хищники'],c:2,why:'Редуценты — бактерии и грибы — минерализуют остатки.'},
- tip:'Цепь всегда начинается с растения или другого продуцента, а не с хищника.'})
+var PSEC=[[1,6,'Введение'],[7,11,'Строение вещества'],[12,32,'Движение и взаимодействие тел'],[33,53,'Давление'],[54,65,'Работа и энергия'],[66,68,'Резервные уроки']];
+var TYPE={t:'theory',z:'tasks',l:'lab',k:'test',r:'reserve'};
+var TRU={theory:'теория',tasks:'задачи',lab:'лабораторная',test:'контрольная',reserve:'резерв'};
+
+/* физика, 7 класс: [номер, тема, тип] */
+var P7=[
+[1,'Физика — наука о природе. Явления природы','t'],[2,'Физические явления','t'],[3,'Физические величины и их измерение','t'],
+[4,'Измерение температуры термометром и датчиком','l'],[5,'Методы научного познания. Модели','t'],[6,'Проверка гипотезы: дальность полёта шарика','l'],
+[7,'Строение вещества. Дискретность','t'],[8,'Движение частиц. Диффузия','t'],[9,'Тепловое расширение газов','l'],
+[10,'Агрегатные состояния вещества','t'],[11,'Агрегатные состояния воды. Обобщение','t'],
+[12,'Механическое движение','t'],[13,'Скорость. Единицы скорости','t'],[14,'Расчёт пути и времени','z'],
+[15,'Инерция. Масса — мера инертности','t'],[16,'Плотность вещества','t'],[17,'Определение плотности твёрдого тела','l'],[18,'Задачи на плотность','z'],
+[19,'Сила упругости. Закон Гука','t'],[20,'Растяжение пружины и приложенная сила','l'],[21,'Тяготение. Сила тяжести','t'],
+[22,'Сила тяжести и масса. Вес тела','z'],[23,'Сила тяжести на других планетах','t'],[24,'Измерение сил. Динамометр','t'],
+[25,'Вес тела. Невесомость','t'],[26,'Сложение сил. Равнодействующая','t'],[27,'Задачи на равнодействующую','z'],
+[28,'Сила трения и её виды','t'],[29,'Сила трения и характер поверхностей','l'],[30,'Задачи на определение равнодействующей','z'],
+[31,'Задачи: вес тела и изображение сил','z'],[32,'Контрольная: движение и силы','k'],
+[33,'Давление. Способы изменения','t'],[34,'Давление газа','t'],[35,'Передача давления. Закон Паскаля','t'],
+[36,'Давление жидкости от силы тяжести','t'],[37,'Задачи: давление жидкости','z'],[38,'Сообщающиеся сосуды','t'],
+[39,'Гидравлический пресс','t'],[40,'Манометры. Поршневой насос','t'],[41,'Атмосфера Земли','t'],
+[42,'Вес воздуха. Атмосферное давление','t'],[43,'Опыт Торричелли','t'],[44,'Давление и высота','t'],
+[45,'Барометр-анероид','t'],[46,'Задачи на атмосферное давление','z'],[47,'Архимедова сила','t'],
+[48,'Определение выталкивающей силы','l'],[49,'Вес тела в воде и объём погружения','l'],[50,'Плавание тел','t'],
+[51,'Конструирование ареометра или лодки','l'],[52,'Задачи: плавание и воздухоплавание','z'],[53,'Контрольная: давление','k'],
+[54,'Механическая работа','t'],[55,'Мощность. Единицы мощности','t'],[56,'Мощность при подъёме по лестнице','l'],
+[57,'Рычаг. Равновесие сил','t'],[58,'Равновесие рычага','l'],[59,'Задачи на рычаг','z'],
+[60,'КПД наклонной плоскости','l'],[61,'Задачи: работа, мощность, КПД','z'],[62,'Кинетическая и потенциальная энергия','t'],
+[63,'Закон сохранения энергии','t'],[64,'Превращение энергии на наклонной плоскости','l'],[65,'Контрольная: работа и энергия','k'],
+[66,'Работа с текстами: движение','r'],[67,'Работа с текстами: давление','r'],[68,'Работа с текстами: энергия','r']
+];
+/* химия: [номер, класс, тема, тип, раздел] */
+var CH=[
+[1,8,'Атомы, молекулы и элементы','t','Основы'],[2,8,'Периодическая таблица','t','Основы'],[3,8,'Валентность и составление формул','t','Основы'],
+[4,8,'Физические и химические явления','t','Основы'],[5,8,'Закон сохранения массы. Уравнения','z','Основы'],
+[6,8,'Моль и молярная масса','z','Расчёты'],[7,8,'Типы химических реакций','t','Реакции'],
+[8,8,'Оксиды','t','Классы веществ'],[9,8,'Кислоты','t','Классы веществ'],[10,8,'Основания и щёлочи','t','Классы веществ'],[11,8,'Соли','t','Классы веществ'],
+[1,9,'Электролитическая диссоциация','t','Растворы'],[2,9,'Реакции ионного обмена','z','Растворы'],[3,9,'Окисление и восстановление','t','Реакции']
+];
+/* биология: [номер, класс, тема, тип, раздел] */
+var BI=[
+[1,5,'Клетка — единица живого','t','Клетка'],[2,5,'Органоиды клетки','t','Клетка'],[3,5,'Ткани и органы','t','Клетка'],[4,5,'Бактерии и вирусы','t','Микромир'],
+[1,6,'Фотосинтез','t','Растения'],[2,6,'Дыхание растений','t','Растения'],[3,6,'Грибы и лишайники','t','Микромир'],[4,6,'Экосистемы и цепи питания','t','Экология'],
+[1,8,'Кровообращение','t','Человек'],[2,8,'Нервная система. Рефлекс','t','Человек'],
+[1,9,'Митоз','t','Деление клетки'],[2,9,'Мейоз','t','Деление клетки'],[3,9,'Законы Менделя','z','Генетика'],[4,9,'Естественный отбор','t','Эволюция']
 ];
 
-var ELEMENTS=[
-[1,'H','Водород',1.008,'nm',1,1,14,20,[1]],[2,'He','Гелий',4.003,'ng',18,1,1,4,[2]],
-[3,'Li','Литий',6.94,'am',1,2,454,1615,[2,1]],[4,'Be','Бериллий',9.012,'ae',2,2,1560,2742,[2,2]],
-[5,'B','Бор',10.81,'mt',13,2,2349,4200,[2,3]],[6,'C','Углерод',12.011,'nm',14,2,3823,4300,[2,4]],
-[7,'N','Азот',14.007,'nm',15,2,63,77,[2,5]],[8,'O','Кислород',15.999,'nm',16,2,54,90,[2,6]],
-[9,'F','Фтор',18.998,'hl',17,2,53,85,[2,7]],[10,'Ne','Неон',20.18,'ng',18,2,25,27,[2,8]],
-[11,'Na','Натрий',22.99,'am',1,3,371,1156,[2,8,1]],[12,'Mg','Магний',24.305,'ae',2,3,923,1363,[2,8,2]],
-[13,'Al','Алюминий',26.982,'pm',13,3,933,2792,[2,8,3]],[14,'Si','Кремний',28.085,'mt',14,3,1687,3538,[2,8,4]],
-[15,'P','Фосфор',30.974,'nm',15,3,317,554,[2,8,5]],[16,'S','Сера',32.06,'nm',16,3,388,718,[2,8,6]],
-[17,'Cl','Хлор',35.45,'hl',17,3,172,239,[2,8,7]],[18,'Ar','Аргон',39.948,'ng',18,3,84,87,[2,8,8]],
-[19,'K','Калий',39.098,'am',1,4,337,1032,[2,8,8,1]],[20,'Ca','Кальций',40.078,'ae',2,4,1115,1757,[2,8,8,2]],
-[21,'Sc','Скандий',44.956,'tm',3,4,1814,3109,[2,8,9,2]],[22,'Ti','Титан',47.867,'tm',4,4,1941,3560,[2,8,10,2]],
-[23,'V','Ванадий',50.942,'tm',5,4,2183,3680,[2,8,11,2]],[24,'Cr','Хром',51.996,'tm',6,4,2180,2944,[2,8,13,1]],
-[25,'Mn','Марганец',54.938,'tm',7,4,1519,2334,[2,8,13,2]],[26,'Fe','Железо',55.845,'tm',8,4,1811,3134,[2,8,14,2]],
-[27,'Co','Кобальт',58.933,'tm',9,4,1768,3200,[2,8,15,2]],[28,'Ni','Никель',58.693,'tm',10,4,1728,3186,[2,8,16,2]],
-[29,'Cu','Медь',63.546,'tm',11,4,1358,2835,[2,8,18,1]],[30,'Zn','Цинк',65.38,'tm',12,4,693,1180,[2,8,18,2]],
-[31,'Ga','Галлий',69.723,'pm',13,4,303,2477,[2,8,18,3]],[32,'Ge','Германий',72.63,'mt',14,4,1211,3106,[2,8,18,4]],
-[33,'As','Мышьяк',74.922,'mt',15,4,1090,887,[2,8,18,5]],[34,'Se','Селен',78.971,'nm',16,4,494,958,[2,8,18,6]],
-[35,'Br','Бром',79.904,'hl',17,4,266,332,[2,8,18,7]],[36,'Kr','Криптон',83.798,'ng',18,4,116,120,[2,8,18,8]]
-];
-var CATS={nm:['Неметалл','#7ed957'],am:['Щелочной металл','#ff8a5c'],ae:['Щёлочноземельный','#ffb020'],
- tm:['Переходный металл','#35d6c0'],mt:['Металлоид','#a78bfa'],hl:['Галоген','#ff6f9c'],
- ng:['Благородный газ','#6fa8ff'],pm:['Постпереходный','#d9a441']};
+/* ---------- ГОТОВЫЕ УРОКИ: id → путь ---------- */
+var READY={
+  'phys-7-019':{href:'lessons/phys-7-019/',alt:['lessons/phys-7-019/','lessons/phys-7-019/index.html','19.html','phys-7-019.html','phys-7-019/index.html']}
+};
 
-/* ================= СОСТОЯНИЕ ================= */
-var progress={},last=null,sound=true,ac=null,lastBlip=0,route={v:'home'},gradeF='all',searchQ='';
-try{progress=JSON.parse(localStorage.getItem('avo-progress')||'{}')||{};}catch(e){progress={};}
-try{last=localStorage.getItem('avo-last')||null;}catch(e){}
-function save(){try{localStorage.setItem('avo-progress',JSON.stringify(progress));if(last)localStorage.setItem('avo-last',last);}catch(e){}}
-function learnedCount(s){return LESSONS.filter(function(l){return (!s||l.s===s)&&progress[l.id];}).length;}
-function totalOf(s){return LESSONS.filter(function(l){return !s||l.s===s;}).length;}
+/* ---------- сборка списка ---------- */
+function pad(n){return String(n).padStart(3,'0');}
+var LESSONS=[];
+P7.forEach(function(r){
+  var sec='Резервные уроки';
+  for(var i=0;i<PSEC.length;i++)if(r[0]>=PSEC[i][0]&&r[0]<=PSEC[i][1]){sec=PSEC[i][2];break;}
+  LESSONS.push({id:'phys-7-'+pad(r[0]),s:'physics',g:7,n:r[0],t:r[1],type:TYPE[r[2]],sec:sec});
+});
+CH.forEach(function(r){LESSONS.push({id:'chem-'+r[1]+'-'+pad(r[0]),s:'chemistry',g:r[1],n:r[0],t:r[2],type:TYPE[r[3]],sec:r[4]});});
+BI.forEach(function(r){LESSONS.push({id:'bio-'+r[1]+'-'+pad(r[0]),s:'biology',g:r[1],n:r[0],t:r[2],type:TYPE[r[3]],sec:r[4]});});
+LESSONS.forEach(function(l){
+  var r=READY[l.id];
+  l.ready=!!r;l.href=r?r.href:null;l.alt=r?r.alt:null;l.link=r?'unknown':'none';
+});
 
-/* ================= ЗВУК ================= */
+/* ---------- состояние ---------- */
+var S={q:'',grade:'all',onlyReady:false,closed:{}};
+var opened={},done={};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem('avo-cat')||'{}'));}catch(e){}
+try{opened=JSON.parse(localStorage.getItem('avo-open')||'{}')||{};}catch(e){opened={};}
+function readDone(){
+  done={};
+  try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('avo-done-')===0)done[k.slice(9)]=true;}}catch(e){}
+}
+readDone();
+function persist(){try{localStorage.setItem('avo-cat',JSON.stringify(S));localStorage.setItem('avo-open',JSON.stringify(opened));}catch(e){}}
+
+/* ---------- звук ---------- */
+var sound=true,ac=null,lastTap=0;
 function initAudio(){if(ac)return;try{var C=window.AudioContext||window.webkitAudioContext;if(C)ac=new C();}catch(e){}}
 function tone(f,dur,type,vol,slide){
   if(!sound||!ac)return;if(ac.state==='suspended')ac.resume();
   var o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;
   o.type=type||'sine';o.frequency.setValueAtTime(f,n);
   if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,slide),n+dur);
-  g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(vol||.04,n+.012);
+  g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(vol||.035,n+.012);
   g.gain.exponentialRampToValueAtTime(.0001,n+dur);
   o.connect(g);g.connect(ac.destination);o.start(n);o.stop(n+dur+.03);
 }
 function sfx(k){
   if(!sound||!ac)return;
-  if(k==='tap'){var n=performance.now();if(n-lastBlip<70)return;lastBlip=n;tone(760,.05,'triangle',.02);}
+  if(k==='tap'){var n=performance.now();if(n-lastTap<70)return;lastTap=n;tone(760,.05,'triangle',.02);}
   else if(k==='open'){tone(494,.1,'sine',.03);setTimeout(function(){tone(740,.13,'sine',.028);},70);}
-  else if(k==='ok'){[523,659,784,1047].forEach(function(f,i){setTimeout(function(){tone(f,.22,'sine',.038);},i*65);});}
-  else if(k==='no'){tone(196,.17,'square',.028,124);}
-  else if(k==='done'){[659,784,988,1319].forEach(function(f,i){setTimeout(function(){tone(f,.3,'sine',.04);},i*90);});}
+  else if(k==='ok'){[523,659,784].forEach(function(f,i){setTimeout(function(){tone(f,.2,'sine',.035);},i*65);});}
 }
 document.addEventListener('pointerdown',initAudio,{once:true});
 document.addEventListener('keydown',initAudio,{once:true});
@@ -805,582 +375,182 @@ $('#sndBtn').addEventListener('click',function(){
   this.style.opacity=sound?'1':'.55';if(sound)sfx('tap');toast(sound?'Звук включён':'Звук выключен');
 });
 
-/* ================= УТИЛИТЫ ================= */
+/* ---------- утилиты ---------- */
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-function toast(t){var el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},1900);}
-function ring(pct,color,size){
-  var r=(size||52)/2-5,c=2*Math.PI*r;
-  return '<div class="ring" style="width:'+(size||52)+'px;height:'+(size||52)+'px"><svg width="'+(size||52)+'" height="'+(size||52)+'">'+
-  '<circle cx="'+(size||52)/2+'" cy="'+(size||52)/2+'" r="'+r+'" fill="none" stroke="rgba(168,210,74,.16)" stroke-width="5"/>'+
-  '<circle cx="'+(size||52)/2+'" cy="'+(size||52)/2+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+(c*(1-pct/100))+'" style="transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)"/></svg>'+
-  '<b>'+Math.round(pct)+'%</b></div>';
+function toast(t){var el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},1800);}
+function ring(pct,color){
+  var r=20,c=2*Math.PI*r;
+  return '<div class="ring"><svg width="50" height="50"><circle cx="25" cy="25" r="'+r+'" fill="none" stroke="rgba(168,210,74,.16)" stroke-width="5"/>'+
+  '<circle cx="25" cy="25" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+(c*(1-pct/100))+'" style="transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)"/></svg><b>'+Math.round(pct)+'%</b></div>';
 }
-function byId(id){for(var i=0;i<LESSONS.length;i++)if(LESSONS[i].id===id)return LESSONS[i];return null;}
-function updateHeader(){
-  var p=Math.round(learnedCount()/LESSONS.length*100);
-  $('#progPill').textContent=p+'%';
-  $('#progPill').className='pill'+(p>=50?' hot':'');
-  $('#footStat').textContent=LESSONS.length+' УРОКОВ · ИЗУЧЕНО '+learnedCount()+' · '+p+'%';
-  var r=route.v==='lesson'?byId(route.id).s:(route.v==='subject'?route.s:'home');
-  document.body.dataset.subj=r;
-  document.querySelectorAll('#nav a').forEach(function(a){a.classList.toggle('on',a.dataset.r===r);});
+function isSeen(id){return !!done[id]||!!opened[id];}
+
+/* ---------- фильтры ---------- */
+function grades(){var g=[];LESSONS.forEach(function(l){if(g.indexOf(l.g)<0)g.push(l.g);});return g.sort(function(a,b){return a-b;});}
+function pass(l){
+  if(S.grade!=='all'&&String(l.g)!==String(S.grade))return false;
+  if(S.onlyReady&&!l.ready)return false;
+  if(S.q){var t=S.q.toLowerCase();if((l.t+' '+l.sec+' '+l.id+' '+SUBJ[l.s].name).toLowerCase().indexOf(t)<0)return false;}
+  return true;
 }
+function buildChips(){
+  var gs=grades();
+  $('#gradeChips').innerHTML='<button class="chip'+(S.grade==='all'?' on':'')+'" data-grade="all">Все классы <span class="n">'+LESSONS.length+'</span></button>'+
+    gs.map(function(g){var n=LESSONS.filter(function(l){return l.g===g;}).length;
+      return '<button class="chip'+(S.grade===String(g)?' on':'')+'" data-grade="'+g+'">'+g+' класс <span class="n">'+n+'</span></button>';}).join('');
+  $('#onlyReady').classList.toggle('on',S.onlyReady);
+  $('#nReady').textContent=String(LESSONS.filter(function(l){return l.ready;}).length);
+  $('#q').value=S.q;
+}
+
+/* ---------- карточка урока ---------- */
+function lessonBtn(l,i){
+  var seen=isSeen(l.id);
+  var mark=done[l.id]?'✓':(opened[l.id]?'↗':String(i+1).padStart(2,'0'));
+  var meta='<span class="tb '+l.type+'">'+TRU[l.type]+'</span><span class="gr">'+l.g+' класс</span>';
+  if(l.ready){
+    var warn=l.link==='missing'?'<span class="st warn">файл не найден</span>':'<span class="st ok">'+(done[l.id]?'ПРОЙДЕН':'ГОТОВО')+'</span>';
+    return '<a class="lb ready" href="'+esc(l.href)+'" data-open="'+l.id+'">'+
+      '<span class="num">'+mark+'</span><span><span class="t">'+esc(l.t)+'</span><span class="meta">'+meta+warn+'</span></span><span class="go">→</span></a>';
+  }
+  return '<div class="lb soon" aria-disabled="true"><span class="num">'+mark+'</span>'+
+    '<span><span class="t">'+esc(l.t)+'</span><span class="meta">'+meta+'<span class="st">СКОРО</span></span></span><span class="go">·</span></div>';
+}
+
+/* ---------- рендер ---------- */
+function render(){
+  buildChips();
+  var shown=0,html='';
+  ['physics','chemistry','biology'].forEach(function(k){
+    var all=LESSONS.filter(function(l){return l.s===k;});
+    var vis=all.filter(pass);
+    if(!vis.length&&(S.q||S.onlyReady||S.grade!=='all'))return;
+    shown+=vis.length;
+    var sub=SUBJ[k],seenN=all.filter(function(l){return isSeen(l.id);}).length;
+    var readyN=all.filter(function(l){return l.ready;}).length;
+    var pct=all.length?seenN/all.length*100:0;
+    html+='<section class="subj" id="'+k+'" style="--sc:'+sub.color+';--acc2:'+sub.color+'">'+
+      '<div class="card shead reveal"><span class="ic">'+sub.icon+'</span><div class="grow">'+
+      '<h2>'+sub.name+'</h2><div class="c">'+all.length+' тем · готово '+readyN+' · открыто '+seenN+'</div>'+
+      '<div class="pbar"><i style="width:'+pct+'%"></i></div></div>'+ring(pct,sub.color)+'</div>';
+    var secs=[];vis.forEach(function(l){if(secs.indexOf(l.sec)<0)secs.push(l.sec);});
+    secs.forEach(function(sec){
+      var ls=vis.filter(function(l){return l.sec===sec;});
+      var key=k+'|'+sec,closed=!!S.closed[key]&&!S.q&&!S.onlyReady;
+      var live=ls.filter(function(l){return l.ready;}).length;
+      html+='<div class="group reveal"><button class="ghead'+(closed?' closed':'')+'" data-toggle="'+esc(key)+'" aria-expanded="'+(!closed)+'">'+
+        '<span class="ar">▼</span><h3>'+esc(sec)+'</h3>'+(live?'<span class="live">'+live+' ГОТОВО</span>':'')+'<span class="n">'+ls.length+'</span></button>'+
+        '<div class="gbody"'+(closed?' hidden':'')+'>'+ls.map(lessonBtn).join('')+'</div></div>';
+    });
+    html+='</section>';
+  });
+  if(!shown){
+    html='<div class="empty">'+mascot('')+'<h3>Ничего не найдено</h3><p>Попробуй короче: «сила», «кислота», «клетка». Или сними фильтры.</p><button class="btn p" id="emptyReset">Сбросить фильтры</button></div>';
+  }
+  $('#list').innerHTML=html;
+  $('#shown').textContent=String(shown);
+  var er=$('#emptyReset');if(er)er.addEventListener('click',resetF);
+  updateTop();reveal();persist();
+}
+function updateTop(){
+  var total=LESSONS.length,ready=LESSONS.filter(function(l){return l.ready;}).length;
+  var seen=LESSONS.filter(function(l){return isSeen(l.id);}).length;
+  $('#stTotal').textContent=String(total);$('#stReady').textContent=String(ready);$('#stOpen').textContent=String(seen);
+  var pct=Math.round(seen/total*100);
+  $('#progPill').textContent=pct+'%';$('#progPill').className='pill'+(pct>=30?' hot':'');
+  var kb=(new Blob([document.documentElement.outerHTML]).size/1024).toFixed(0);
+  $('#footStat').textContent=ready+' ГОТОВО · '+total+' ТЕМ · '+kb+' КБ · УРОКИ ОТДЕЛЬНЫМИ ФАЙЛАМИ';
+  var first=LESSONS.filter(function(l){return l.ready;})[0];
+  var next=LESSONS.filter(function(l){return l.ready&&!isSeen(l.id);})[0]||first;
+  $('#cta').innerHTML=next?'<a class="btn p" href="'+esc(next.href)+'" data-open="'+next.id+'">Открыть: '+esc(next.t)+' →</a><button class="btn" id="jumpReady">Показать только готовые</button>':
+    '<span class="btn" style="opacity:.6;cursor:default">Первые уроки готовятся</span>';
+  var jr=$('#jumpReady');if(jr)jr.addEventListener('click',function(){S.onlyReady=true;render();sfx('tap');});
+}
+function resetF(){S.q='';S.grade='all';S.onlyReady=false;S.closed={};render();sfx('tap');toast('Фильтры сброшены');}
+
+/* ---------- события ---------- */
+document.addEventListener('click',function(e){
+  var o=e.target.closest('[data-open]');
+  if(o){initAudio();sfx('open');opened[o.dataset.open]=Date.now();persist();
+    setTimeout(function(){readDone();updateTop();},400);return;}
+  var g=e.target.closest('[data-grade]');
+  if(g){S.grade=g.dataset.grade;render();sfx('tap');return;}
+  var t=e.target.closest('[data-toggle]');
+  if(t){var k=t.dataset.toggle;S.closed[k]=!S.closed[k];
+    var body=t.nextElementSibling;var cl=!!S.closed[k];
+    t.classList.toggle('closed',cl);t.setAttribute('aria-expanded',String(!cl));
+    if(cl)body.setAttribute('hidden','');else body.removeAttribute('hidden');
+    sfx('tap');persist();return;}
+  var nv=e.target.closest('#nav a');if(nv){sfx('tap');}
+});
+$('#onlyReady').addEventListener('click',function(){S.onlyReady=!S.onlyReady;render();sfx('tap');});
+$('#resetF').addEventListener('click',resetF);
+$('#q').addEventListener('input',function(){S.q=this.value;render();});
+document.addEventListener('keydown',function(e){
+  if(e.key==='/'&&!/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){e.preventDefault();$('#q').focus();$('#q').select();}
+  if(e.key==='Escape'&&S.q){S.q='';$('#q').value='';render();}
+});
+window.addEventListener('focus',function(){readDone();updateTop();});
+
+/* ---------- reveal + активный раздел ---------- */
+var io=null,so=null;
 function reveal(){
   if(!('IntersectionObserver' in window)){document.querySelectorAll('.reveal').forEach(function(e){e.classList.add('in');});return;}
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.06});
+  if(io)io.disconnect();
+  io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.05});
   document.querySelectorAll('.reveal').forEach(function(e){io.observe(e);});
-}
-
-/* ================= ГЛАВНАЯ ================= */
-function viewHome(){
-  var feat=LESSONS.filter(function(l){return l.sim;});
-  var lastL=last?byId(last):null;
-  var h='<section class="hero reveal"><div>'+
-    '<div class="kicker">7–9 КЛАСС · ТЕОРИЯ, ФОРМУЛЫ И ПРОВЕРКА</div>'+
-    '<h1>Уроки, которые<br><em>понятно объясняют</em></h1>'+
-    '<p class="lead">Авокадо Аво ведёт тебя по темам школьного курса: короткая теория, формула с расшифровкой, разобранный пример и вопрос на проверку. Прогресс сохраняется прямо в браузере.</p>'+
-    '<div class="hstats"><div class="hstat"><b>'+LESSONS.length+'</b><i>уроков</i></div>'+
-    '<div class="hstat"><b>3</b><i>предмета</i></div>'+
-    '<div class="hstat"><b>'+learnedCount()+'</b><i>изучено</i></div>'+
-    '<div class="hstat"><b>'+feat.length+'</b><i>симуляции</i></div></div>'+
-    '<div class="hcta"><a class="btn p" href="#/physics" data-link>Начать с физики →</a>'+
-    (lastL?'<a class="btn" href="#/lesson/'+lastL.id+'" data-link>Продолжить: '+esc(lastL.t)+'</a>':'<a class="btn" href="#/biology" data-link>Открыть биологию</a>')+
-    '</div></div><div class="mascot-wrap"><div class="halo"></div>'+mascot('mascot')+'</div></section>';
-
-  h+='<div class="shead reveal"><h2>Разделы</h2><span class="rule"></span><span class="tag">выбери предмет</span></div><div class="subjgrid reveal">';
-  ['physics','chemistry','biology'].forEach(function(k){
-    var s=SUBJ[k],n=totalOf(k),d=learnedCount(k),pct=n?Math.round(d/n*100):0;
-    var tops=LESSONS.filter(function(l){return l.s===k;}).slice(0,3);
-    h+='<a class="card subj" style="--sc:'+s.color+'" href="#/'+k+'" data-link>'+
-      '<div class="sh"><span class="ic">'+s.icon+'</span><div style="flex:1"><h3>'+s.name+'</h3><div class="cnt">'+n+' уроков · изучено '+d+'</div></div>'+ring(pct,s.color)+'</div>'+
-      '<p>'+s.desc+'</p>'+
-      '<div class="topics">'+tops.map(function(l){return '<span>'+esc(l.t)+'</span>';}).join('')+'</div>'+
-      '<div class="pbar"><i style="width:'+pct+'%"></i></div></a>';
-  });
-  h+='</div>';
-
-  h+='<div class="shead reveal"><h2>Уроки с живыми моделями</h2><span class="rule"></span><span class="tag">можно крутить и менять</span></div><div class="feat reveal">';
-  feat.forEach(function(l){
-    var s=SUBJ[l.s];
-    h+='<a class="card fc" style="--sc:'+s.color+'" href="#/lesson/'+l.id+'" data-link">'+
-      '<div class="art">'+featArt(l.sim,s.color)+'</div><div class="body">'+
-      '<div class="meta"><span class="badge sub">'+s.name+'</span><span class="badge inter">интерактив</span><span style="font:11px var(--mono);color:var(--dim)">'+l.min+' мин</span></div>'+
-      '<h4>'+esc(l.t)+'</h4><p>'+esc(l.goals[0])+'. Управляй параметрами и наблюдай результат вживую.</p></div></a>';
-  });
-  h+='</div>';
-
-  h+='<div class="shead reveal"><h2>Как устроен каждый урок</h2><span class="rule"></span><span class="tag">четыре шага</span></div><div class="steps reveal">'+
-    [['01','Цели','Сразу видно, чему ты научишься: три конкретных умения вместо размытой темы.'],
-     ['02','Теория','Два коротких абзаца по сути, без воды. Ключевые термины выделены.'],
-     ['03','Формула и пример','Формула с расшифровкой каждой буквы и полностью разобранный расчёт.'],
-     ['04','Проверь себя','Вопрос с мгновенной проверкой и объяснением. Отметил — урок засчитан.']]
-    .map(function(s){return '<div class="card step"><div class="n">'+s[0]+'</div><h4>'+s[1]+'</h4><p>'+s[2]+'</p></div>';}).join('')+'</div>';
-  return h;
-}
-function featArt(kind,c){
-  if(kind==='archimedes')return '<svg viewBox="0 0 300 132" preserveAspectRatio="none"><rect x="60" y="46" width="180" height="72" rx="6" fill="'+c+'" opacity=".18"/><path d="M60 62q30 6 60 0t60 0 60 0v56H60z" fill="'+c+'" opacity=".3"/><rect x="130" y="52" width="40" height="40" rx="6" fill="#e9dfcf"/><path d="M150 52V22" stroke="#8fe04a" stroke-width="4"/><path d="M150 22l-7 11h14z" fill="#8fe04a"/><path d="M150 92v26" stroke="#ffb020" stroke-width="4"/><path d="M150 118l-7-11h14z" fill="#ffb020"/></svg>';
-  if(kind==='periodic'){var s='';for(var i=0;i<18;i++)for(var j=0;j<4;j++){if(j===0&&i>0&&i<17)continue;if(j===1&&i>1&&i<12)continue;if(j===2&&i>1&&i<12)continue;var cc=[ '#7ed957','#ff8a5c','#ffb020','#35d6c0','#a78bfa','#ff6f9c','#6fa8ff','#d9a441'][(i+j)%8];s+='<rect x="'+(14+i*15.4)+'" y="'+(24+j*24)+'" width="13" height="20" rx="3" fill="'+cc+'" opacity=".8"/>';}return '<svg viewBox="0 0 300 132">'+s+'</svg>';}
-  return '<svg viewBox="0 0 300 132"><ellipse cx="150" cy="66" rx="86" ry="46" fill="'+c+'" opacity=".18" stroke="'+c+'" stroke-opacity=".5" stroke-width="2"/><ellipse cx="150" cy="66" rx="30" ry="30" fill="none" stroke="'+c+'" stroke-opacity=".45" stroke-width="2" stroke-dasharray="4 4"/><g stroke="#ff6f9c" stroke-width="5" stroke-linecap="round"><path d="M132 48l14 14M146 48l-14 14"/><path d="M156 70l14 14M170 70l-14 14"/></g><g stroke="#35d6c0" stroke-width="1.4" opacity=".65"><path d="M64 66l60 -16M64 66l60 16M236 66l-60 -16M236 66l-60 16"/></g><circle cx="64" cy="66" r="4" fill="#35d6c0"/><circle cx="236" cy="66" r="4" fill="#35d6c0"/></svg>';
-}
-
-/* ================= РАЗДЕЛ ================= */
-function viewSubject(k){
-  var s=SUBJ[k],all=LESSONS.filter(function(l){return l.s===k;});
-  var grades=[];all.forEach(function(l){if(grades.indexOf(l.g)<0)grades.push(l.g);});grades.sort(function(a,b){return a-b;});
-  if(gradeF!=='all'&&grades.indexOf(+gradeF)<0)gradeF='all';
-  var shown=gradeF==='all'?all:all.filter(function(l){return String(l.g)===gradeF;});
-  var pct=all.length?Math.round(learnedCount(k)/all.length*100):0;
-  var h='<div class="crumb"><a href="#/" data-link>Главная</a><span>/</span><span>'+s.name+'</span></div>'+
-    '<div class="card subjhead reveal" style="--acc:'+s.color+';--acc2:'+s.color+'">'+mascot('masc')+'<div>'+
-    '<h1>'+s.name+'</h1><p>'+s.desc+'</p>'+
-    '<div style="display:flex;gap:14px;align-items:center;margin-top:14px;flex-wrap:wrap"><span class="pill">'+all.length+' уроков</span><span class="pill hot">изучено '+learnedCount(k)+'</span>'+
-    '<div class="pbar" style="flex:1;min-width:120px;--sc:'+s.color+'"><i style="width:'+pct+'%"></i></div></div></div>'+ring(pct,s.color,64)+'</div>';
-  h+='<div class="filters reveal"><button class="chip'+(gradeF==='all'?' on':'')+'" data-grade="all">Все классы <span class="n">'+all.length+'</span></button>'+
-    grades.map(function(g){var n=all.filter(function(l){return l.g===g;}).length;
-      return '<button class="chip'+(gradeF===String(g)?' on':'')+'" data-grade="'+g+'">'+g+' класс <span class="n">'+n+'</span></button>';}).join('')+'</div>';
-  var secs=[];shown.forEach(function(l){if(secs.indexOf(l.sec)<0)secs.push(l.sec);});
-  secs.forEach(function(sec){
-    var ls=shown.filter(function(l){return l.sec===sec;});
-    h+='<div class="group reveal"><div class="gtitle"><h3>'+esc(sec)+'</h3><span class="c">'+ls.length+' уроков</span><span class="rule"></span></div><div class="rows">';
-    ls.forEach(function(l,i){
-      h+='<a class="row'+(progress[l.id]?' learned':'')+'" href="#/lesson/'+l.id+'" data-link>'+
-        '<span class="num">'+(progress[l.id]?'✓':String(i+1).padStart(2,'0'))+'</span>'+
-        '<span class="t">'+esc(l.t)+'</span>'+
-        '<span class="m">'+l.g+' класс · '+l.min+' мин'+(l.sim?' · интерактив':'')+'</span>'+
-        '<span class="go">→</span></a>';
-    });
-    h+='</div></div>';
-  });
-  return h;
-}
-
-/* ================= УРОК ================= */
-var quizState={};
-function viewLesson(l){
-  var s=SUBJ[l.s],mates=LESSONS.filter(function(x){return x.s===l.s;});
-  var idx=mates.indexOf(l),prev=mates[idx-1],next=mates[idx+1];
-  var qs=quizState[l.id]||(quizState[l.id]={answered:false,correct:false});
-  var h='<div class="crumb"><a href="#/" data-link>Главная</a><span>/</span><a href="#/'+l.s+'" data-link>'+s.name+'</a><span>/</span><span>'+esc(l.sec)+'</span></div>';
-  h+='<div class="lesson"><div class="lmain">';
-  h+='<div class="card lhead reveal"><div class="lmeta"><span class="badge sub" style="--sc:'+s.color+'">'+s.name+'</span>'+
-    '<span class="pill">'+l.g+' класс</span><span class="pill">'+l.min+' мин</span>'+(l.sim?'<span class="badge inter">интерактив</span>':'')+
-    (progress[l.id]?'<span class="pill" style="color:var(--success);border-color:rgba(143,224,74,.5)">✓ изучено</span>':'')+'</div>'+
-    '<h1>'+esc(l.t)+'</h1><ul class="goals">'+l.goals.map(function(g){return '<li>'+esc(g)+'</li>';}).join('')+'</ul></div>';
-
-  h+='<div class="card pad reveal"><div class="blocktitle"><span class="dot"></span>Теория</div><div class="prose">'+l.th.map(function(p){return '<p>'+p+'</p>';}).join('')+'</div></div>';
-
-  if(l.f){h+='<div class="card pad reveal"><div class="blocktitle"><span class="dot"></span>Формула</div><div class="formula">'+l.f.html+'</div>'+
-    '<div class="legend">'+l.f.leg.map(function(x){return '<div><b>'+x[0]+'</b><span>'+esc(x[1])+'</span></div>';}).join('')+'</div></div>';}
-
-  h+='<div class="card pad reveal"><div class="blocktitle"><span class="dot"></span>Ключевые понятия</div><div class="keys">'+
-    l.keys.map(function(k){return '<div class="key"><b>'+esc(k[0])+'</b><span>'+esc(k[1])+'</span></div>';}).join('')+'</div></div>';
-
-  if(l.sim){h+='<div class="reveal">'+simShell(l.sim)+'</div>';}
-
-  if(l.ex){h+='<div class="card pad reveal"><div class="blocktitle"><span class="dot"></span>Разобранный пример</div>'+
-    '<div class="ex"><p class="q">'+esc(l.ex.q)+'</p><ol>'+l.ex.steps.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol><div class="a">Ответ: '+esc(l.ex.a)+'</div></div></div>';}
-
-  h+='<div class="card pad quiz reveal" id="quiz"><div class="blocktitle"><span class="dot"></span>Проверь себя</div><p style="margin:0 0 14px;color:#dbe8ce">'+esc(l.q.q)+'</p>';
-  if(l.q.type==='choice'){
-    h+='<div class="opts">'+l.q.opts.map(function(o,i){return '<label class="opt"><input type="radio" name="qz" value="'+i+'"><span>'+esc(o)+'</span></label>';}).join('')+'</div>'+
-      '<button class="btn p" data-check="'+l.id+'">Проверить ответ</button>';
-  }else{
-    h+='<div class="numin"><input type="text" inputmode="decimal" id="numin" placeholder="0,00" aria-label="Ответ">'+
-      (l.q.unit?'<span style="font:600 13px var(--mono);color:var(--dim)">'+esc(l.q.unit)+'</span>':'')+
-      '<button class="btn p" data-check="'+l.id+'">Проверить ответ</button></div>';
-  }
-  h+='<div class="fb" id="fb"></div></div>';
-
-  if(l.ext)h+='<div class="card pad reveal" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:200px"><b style="display:block;margin-bottom:4px">Расширенная версия урока</b><span style="font-size:13px;color:var(--muted)">Полная симуляция пружины с графиком и набором задач.</span></div><a class="btn" href="'+l.ext+'">Открыть →</a></div>';
-
-  h+='<div class="card pad reveal" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">'+
-    '<button class="btn '+(progress[l.id]?'done':'p')+'" data-learn="'+l.id+'">'+(progress[l.id]?'✓ Урок изучен':'Отметить изученным')+'</button>'+
-    '<a class="btn" href="#/'+l.s+'" data-link>К списку тем</a></div>';
-
-  h+='<div class="lnav reveal">'+(prev?'<a class="btn" href="#/lesson/'+prev.id+'" data-link>← '+esc(prev.t)+'</a>':'<span></span>')+
-    (next?'<a class="btn p" href="#/lesson/'+next.id+'" data-link">'+esc(next.t)+' →</a>':'<a class="btn p" href="#/'+l.s+'" data-link>Раздел пройден →</a>')+'</div>';
-  h+='</div><aside class="lside">';
-  h+='<div class="card tip reveal">'+mascot('')+'<div class="b"><b>АВО ПОДСКАЗЫВАЕТ</b>'+esc(l.tip)+'</div></div>';
-  h+='<div class="card pad reveal"><div class="blocktitle" style="font-size:14px"><span class="dot"></span>Темы раздела</div><div class="navlist">'+
-    mates.map(function(m,i){return '<a class="'+(m.id===l.id?'cur':'')+(progress[m.id]?' ok':'')+'" href="#/lesson/'+m.id+'" data-link><span class="n">'+(progress[m.id]?'✓':String(i+1).padStart(2,'0'))+'</span><span>'+esc(m.t)+'</span></a>';}).join('')+
-    '</div></div>';
-  var pct=Math.round(learnedCount(l.s)/mates.length*100);
-  h+='<div class="card pad reveal" style="--sc:'+s.color+'"><div style="display:flex;justify-content:space-between;font:11px var(--mono);color:var(--dim);margin-bottom:8px"><span>ПРОГРЕСС РАЗДЕЛА</span><span>'+learnedCount(l.s)+' / '+mates.length+'</span></div><div class="pbar"><i style="width:'+pct+'%"></i></div></div>';
-  h+='</aside></div>';
-  return h;
-}
-
-/* ================= ПОИСК ================= */
-function viewSearch(q){
-  var t=q.trim().toLowerCase();
-  var res=LESSONS.filter(function(l){return (l.t+' '+l.sec+' '+l.goals.join(' ')+' '+SUBJ[l.s].name).toLowerCase().indexOf(t)>=0;});
-  var h='<div class="crumb"><a href="#/" data-link>Главная</a><span>/</span><span>Поиск</span></div>'+
-    '<div class="shead"><h2>Результаты поиска</h2><span class="rule"></span><span class="tag">«'+esc(q)+'» · найдено '+res.length+'</span></div>';
-  if(!res.length){
-    h+='<div class="empty">'+mascot('')+'<h3>Ничего не нашлось</h3><p>Попробуй короче: «сила», «кислота», «клетка». Или открой раздел и посмотри список тем.</p>'+
-      '<a class="btn p" href="#/" data-link>На главную</a></div>';
-  }else{
-    h+='<div class="searchres">'+res.map(function(l){var s=SUBJ[l.s];
-      return '<a class="row'+(progress[l.id]?' learned':'')+'" href="#/lesson/'+l.id+'" data-link" style="--acc:'+s.color+'">'+
-        '<span class="num">'+(progress[l.id]?'✓':'·')+'</span><span class="t">'+esc(l.t)+'</span>'+
-        '<span class="m">'+s.name+' · '+l.g+' класс · '+l.min+' мин</span><span class="go">→</span></a>';}).join('')+'</div>';
-  }
-  return h;
-}
-
-/* ================= СИМУЛЯЦИИ ================= */
-function simShell(kind){
-  var titles={archimedes:'Ванна Архимеда',mitosis:'Деление клетки',periodic:'Периодическая таблица'};
-  var h='<div class="simwrap"><div class="simbar"><span class="t">'+titles[kind]+'</span><span class="pill" id="simPill">живая модель</span><span style="flex:1"></span>'+
-    '<button class="btn xs" data-simreset>↺ Сброс</button></div>';
-  if(kind==='periodic'){h+='<div id="simRoot"></div>';}
-  else{h+='<div class="sim"><div class="stage" id="stage"><canvas id="cv"></canvas><div class="hud" id="hud"></div></div><aside class="panel" id="panel"></aside></div>';}
-  h+='</div>';
-  return h;
-}
-var activeSim=null,ro=null;
-function destroySim(){if(ro){try{ro.disconnect();}catch(e){}ro=null;}activeSim=null;}
-function loop(now){requestAnimationFrame(loop);if(activeSim&&activeSim.tick)activeSim.tick(now);}
-requestAnimationFrame(loop);
-function cvs(){
-  var cv=$('#cv'),stage=$('#stage'),ctx=cv.getContext('2d'),DPR=Math.min(2,window.devicePixelRatio||1),W=320,H=300;
-  function resize(){var r=stage.getBoundingClientRect();W=Math.max(240,Math.round(r.width));H=Math.max(240,Math.round(r.height));
-    cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0);}
-  resize();
-  if(window.ResizeObserver){ro=new ResizeObserver(resize);ro.observe(stage);}
-  return {cv:cv,ctx:ctx,get W(){return W;},get H(){return H;}};
-}
-var MONO='"Cascadia Mono",Consolas,ui-monospace,monospace';
-function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
-function arrow(c,x1,y1,x2,y2,col,label){
-  var dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy);if(L<4)return;
-  var ux=dx/L,uy=dy/L,hl=Math.min(11,L*.34);
-  c.strokeStyle=col;c.lineWidth=3;c.lineCap='round';c.beginPath();c.moveTo(x1,y1);c.lineTo(x2-ux*hl*.7,y2-uy*hl*.7);c.stroke();
-  c.fillStyle=col;c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-ux*hl-uy*hl*.42,y2-uy*hl+ux*hl*.42);c.lineTo(x2-ux*hl+uy*hl*.42,y2-uy*hl-ux*hl*.42);c.closePath();c.fill();
-  if(label){c.font='700 11px '+MONO;var tw=c.measureText(label).width,tx=x2-tw/2,ty=y2+(dy<0?-10:19);
-    c.fillStyle='rgba(8,15,11,.85)';rr(c,tx-5,ty-11,tw+10,16,5);c.fill();c.fillStyle=col;c.fillText(label,tx,ty);}
-}
-function slider(id,label,min,max,step,val,unit){
-  return '<div class="ctl"><div class="lb"><span>'+label+'</span><b><span id="v_'+id+'">'+val+'</span> '+unit+'</b></div>'+
-  '<input type="range" id="'+id+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'" aria-label="'+label+'"></div>';
-}
-function toggle(id,label,on){return '<label class="sw"><span>'+label+'</span><input type="checkbox" id="'+id+'"'+(on?' checked':'')+'><span class="track"></span></label>';}
-function bindRange(id,fn,fmt){var el=$('#'+id);el.addEventListener('input',function(){var v=+this.value;$('#v_'+id).textContent=fmt?fmt(v):v;fn(v);sfx('tap');});}
-function bindToggle(id,fn){$('#'+id).addEventListener('change',function(){fn(this.checked);sfx('tap');});}
-function png(cv,name){try{var d=cv.toDataURL('image/png'),b=atob(d.split(',')[1]),a=new Uint8Array(b.length);
-  for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);
-  var u=URL.createObjectURL(new Blob([a],{type:'image/png'})),link=document.createElement('a');
-  link.href=u;link.download=name;document.body.appendChild(link);link.click();document.body.removeChild(link);
-  setTimeout(function(){URL.revokeObjectURL(u);},1200);toast('Кадр сохранён');}catch(e){toast('Не удалось сохранить');}}
-
-/* ---- АРХИМЕД ---- */
-function simArchimedes(){
-  var C=cvs(),ctx=C.ctx,G=9.8,seed=7;
-  function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
-  var S={V:200,rb:600,rl:1000,sp:1,vec:true,grid:true,bub:true};
-  var y=-4,v=0,t=0,last=0,acc=0,bub=[],prevF=0;
-  var TW=30,TH=28,WD=18,SURF=10;
-  function side(){return Math.pow(S.V,1/3);}
-  function reset(){var s=side();y=-(s/2+1.4);v=0;bub=[];prevF=0;}
-  $('#panel').innerHTML='<div class="pt">ПАРАМЕТРЫ ОПЫТА</div>'+
-    slider('V','Объём тела',50,500,10,S.V,'см³')+slider('rb','Плотность тела',200,2000,10,S.rb,'кг/м³')+
-    '<div class="ctl"><div class="lb"><span>Жидкость</span></div><select id="liq"><option value="790">Спирт · 790</option><option value="920">Масло · 920</option><option value="1000" selected>Вода · 1000</option><option value="1030">Морская вода · 1030</option><option value="1200">Рассол · 1200</option><option value="1260">Глицерин · 1260</option></select></div>'+
-    slider('rl','Плотность жидкости',700,1600,10,S.rl,'кг/м³')+slider('sp','Скорость времени',0.2,2,0.1,S.sp,'×')+
-    toggle('vec','Векторы сил',true)+toggle('grid','Линейка',true)+toggle('bub','Пузырьки',true)+
-    '<div class="reads"><div class="rd"><i>F_A, Н</i><b id="oF">0</b></div><div class="rd"><i>mg, Н</i><b id="oM">0</b></div><div class="rd"><i>ПОГРУЖЕНИЕ</i><b id="oS">0%</b></div><div class="rd"><i>МАССА, г</i><b id="oW">0</b></div></div>'+
-    '<div class="btns"><button class="p" id="bR">Сброс</button><button id="bN">Случайно</button><button class="wide" id="bP">Сохранить кадр</button></div>'+
-    '<div class="simnote">Тело само найдёт равновесие: доля погружения равна отношению плотностей.</div>';
-  bindRange('V',function(x){S.V=x;var s=side(),mx=WD-s/2-.4;if(y>mx)y=mx;});
-  bindRange('rb',function(x){S.rb=x;});
-  bindRange('rl',function(x){S.rl=x;$('#liq').value=[790,920,1000,1030,1200,1260].indexOf(x)>=0?String(x):$('#liq').value;});
-  bindRange('sp',function(x){S.sp=x;},function(x){return x.toFixed(1);});
-  bindToggle('vec',function(x){S.vec=x;});bindToggle('grid',function(x){S.grid=x;});bindToggle('bub',function(x){S.bub=x;if(!x)bub=[];});
-  $('#liq').addEventListener('change',function(){S.rl=+this.value;$('#rl').value=S.rl;$('#v_rl').textContent=S.rl;sfx('tap');});
-  $('#bR').addEventListener('click',function(){reset();sfx('tap');});
-  $('#bN').addEventListener('click',function(){S.V=Math.round((50+rnd()*450)/10)*10;S.rb=Math.round((200+rnd()*1800)/10)*10;
-    var ls=[790,920,1000,1030,1200,1260];S.rl=ls[Math.floor(rnd()*6)];
-    $('#V').value=S.V;$('#v_V').textContent=S.V;$('#rb').value=S.rb;$('#v_rb').textContent=S.rb;$('#rl').value=S.rl;$('#v_rl').textContent=S.rl;$('#liq').value=String(S.rl);reset();sfx('tap');});
-  $('#bP').addEventListener('click',function(){png(C.cv,'arhimed.png');});
-  function wave(x){return Math.sin(x*.55+t*1.7)*.16+Math.sin(x*.21-t*1.05)*.11;}
-  function step(dt){
-    var s=side(),Vm=S.V*1e-6,m=S.rb*Vm,f=Math.max(0,Math.min(1,(y+s/2)/s));
-    var FA=S.rl*G*Vm*f,MG=m*G,a=(MG-FA)/m*100,k=2.2+8.5*f;
-    v+=(a-k*v)*dt;y+=v*dt;
-    var mx=WD-s/2-.4,mn=s/2-9.4;
-    if(y>mx){y=mx;v=-v*.22;if(Math.abs(v)<.6)v=0;}
-    if(y<mn){y=mn;if(v<0)v=0;}
-    if(prevF<=.001&&f>.001&&v>7&&S.bub)for(var i=0;i<8;i++)bub.push({x:TW/2+(rnd()-.5)*s,y:SURF+.6+rnd()*2,r:.08+rnd()*.2,vy:2.5+rnd()*4});
-    prevF=f;
-    if(S.bub&&f>.05&&rnd()<.05)bub.push({x:TW/2+(rnd()-.5)*s,y:SURF+y+s/2-.2,r:.07+rnd()*.15,vy:2+rnd()*3});
-    for(var b=bub.length-1;b>=0;b--){bub[b].y-=bub[b].vy*dt;if(bub[b].y<SURF+wave(bub[b].x))bub.splice(b,1);}
-    if(bub.length>60)bub.splice(0,bub.length-60);
-    t+=dt;
-  }
-  var uiT=0;
-  activeSim={tick:function(now){
-    if(!last)last=now;var dt=Math.min(.05,(now-last)/1000);last=now;
-    acc+=dt*S.sp;var g=0;while(acc>=1/120&&g<40){step(1/120);acc-=1/120;g++;}if(acc>.5)acc=0;
-    var W=C.W,H=C.H;ctx.clearRect(0,0,W,H);
-    var sc=Math.min((W-26)/TW,(H-26)/TH),ox=(W-TW*sc)/2,oy=(H-TH*sc)/2;
-    function X(c){return ox+c*sc;}function Y(c){return oy+c*sc;}
-    var s=side(),f=Math.max(0,Math.min(1,(y+s/2)/s)),Vm=S.V*1e-6,FA=S.rl*G*Vm*f,MG=S.rb*Vm*G;
-    ctx.save();rr(ctx,X(0),Y(0),TW*sc,TH*sc,10);ctx.fillStyle='rgba(8,20,14,.8)';ctx.fill();ctx.clip();
-    var wp=new Path2D();wp.moveTo(X(0),Y(SURF+wave(0)));
-    for(var x=0;x<=TW;x+=.5)wp.lineTo(X(x),Y(SURF+wave(x)));
-    wp.lineTo(X(TW),Y(TH));wp.lineTo(X(0),Y(TH));wp.closePath();
-    var gr=ctx.createLinearGradient(0,Y(SURF),0,Y(TH));
-    gr.addColorStop(0,'rgba(53,214,192,.42)');gr.addColorStop(1,'rgba(20,80,70,.6)');
-    ctx.fillStyle=gr;ctx.fill(wp);
-    if(S.grid){ctx.strokeStyle='rgba(168,210,74,.16)';ctx.lineWidth=1;ctx.setLineDash([3,5]);
-      for(var d=2;d<=WD;d+=2){ctx.beginPath();ctx.moveTo(X(1.6),Y(SURF+d));ctx.lineTo(X(TW-1),Y(SURF+d));ctx.stroke();}
-      ctx.setLineDash([]);ctx.fillStyle='rgba(169,191,160,.85)';ctx.font='9px '+MONO;
-      for(var d2=0;d2<=WD;d2+=4)ctx.fillText(String(d2),X(2.2),Y(SURF+d2)+3);}
-    var px=X(TW/2-s/2),py=Y(SURF+y-s/2),ps=s*sc;
-    var bg=ctx.createLinearGradient(px,py,px+ps,py+ps);bg.addColorStop(0,'#ece2cd');bg.addColorStop(1,'#8b9a86');
-    ctx.save();ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=12;ctx.shadowOffsetY=4;
-    rr(ctx,px,py,ps,ps,Math.min(7,ps*.16));ctx.fillStyle=bg;ctx.fill();ctx.restore();
-    ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1.2;rr(ctx,px,py,ps,ps,Math.min(7,ps*.16));ctx.stroke();
-    ctx.save();ctx.clip(wp);ctx.fillStyle='rgba(53,214,192,.26)';ctx.fillRect(X(0),Y(SURF-1),TW*sc,(TH-SURF+1)*sc);
-    ctx.strokeStyle='rgba(210,255,240,.7)';ctx.lineWidth=1.1;
-    for(var i=0;i<bub.length;i++){ctx.beginPath();ctx.arc(X(bub[i].x),Y(bub[i].y),Math.max(1,bub[i].r*sc),0,6.284);ctx.stroke();}
-    ctx.restore();
-    ctx.strokeStyle='rgba(200,255,235,.85)';ctx.lineWidth=2;ctx.beginPath();
-    for(var wx=0;wx<=TW;wx+=.4){var wy=Y(SURF+wave(wx));if(wx===0)ctx.moveTo(X(wx),wy);else ctx.lineTo(X(wx),wy);}ctx.stroke();
-    if(S.vec){var k=sc*.9,cx=X(TW/2),cy=Y(SURF+y);
-      arrow(ctx,cx-1.3*sc,cy,cx-1.3*sc,cy-Math.min(8*sc,FA*k),'#8fe04a','F_A '+FA.toFixed(2));
-      arrow(ctx,cx+1.3*sc,cy,cx+1.3*sc,cy+Math.min(8*sc,MG*k),'#ffb020','mg '+MG.toFixed(2));}
-    ctx.restore();
-    ctx.strokeStyle='rgba(168,210,74,.4)';ctx.lineWidth=1.6;rr(ctx,X(0),Y(0),TW*sc,TH*sc,10);ctx.stroke();
-    var st=f>.995&&Math.abs(v)<1?'ТОНЕТ':(Math.abs(v)<.8&&f>.002&&f<.995?'ПЛАВАЕТ':'ДВИЖЕНИЕ');
-    $('#hud').innerHTML='<span class="hchip">'+st+'</span><span class="hchip">'+Math.round(f*100)+' % ПОГРУЖЕНО</span>';
-    uiT+=dt;if(uiT>.12){uiT=0;$('#oF').textContent=FA.toFixed(2);$('#oM').textContent=MG.toFixed(2);
-      $('#oS').textContent=Math.round(f*100)+'%';$('#oW').textContent=(S.rb*Vm*1000).toFixed(0);}
-  }};
-  reset();
-}
-
-/* ---- МИТОЗ ---- */
-function simMitosis(){
-  var C=cvs(),ctx=C.ctx;
-  var PH=['Интерфаза','Профаза','Метафаза','Анафаза','Телофаза','Цитокинез'];
-  var SET=['2n4c','2n4c','2n4c','4n4c','2n2c','2n2c'];
-  var S={p:1,play:true,sp:1,n:4,spindle:true,labels:true,env:true};
-  var t=0,last=0;
-  $('#panel').innerHTML='<div class="pt">УПРАВЛЕНИЕ ДЕЛЕНИЕМ</div>'+
-    '<div class="ctl"><div class="lb"><span>Фаза</span></div><select id="ph">'+PH.map(function(p,i){return '<option value="'+i+'"'+(i===1?' selected':'')+'>'+p+'</option>';}).join('')+'</select></div>'+
-    slider('sp','Скорость показа',0.2,2,0.1,1,'×')+
-    '<div class="ctl"><div class="lb"><span>Число хромосом</span></div><select id="cn"><option value="2">2n = 2</option><option value="4" selected>2n = 4</option><option value="6">2n = 6</option></select></div>'+
-    toggle('pl','Автопоказ',true)+toggle('sd','Веретено деления',true)+toggle('lb','Подписи',true)+toggle('en','Ядерная оболочка',true)+
-    '<div class="reads"><div class="rd"><i>ФАЗА</i><b id="oP" style="font-size:11px">Профаза</b></div><div class="rd"><i>НАБОР</i><b id="oS">2n4c</b></div><div class="rd"><i>ХРОМОСОМ</i><b id="oC">4</b></div><div class="rd"><i>КЛЕТОК</i><b id="oK">1</b></div></div>'+
-    '<div class="btns"><button id="bB">← Назад</button><button id="bF">Вперёд →</button><button class="p wide" id="bR">В начало</button><button class="wide" id="bP">Сохранить кадр</button></div>'+
-    '<div class="simnote">Набор меняется только в анафазе: хроматиды расходятся и становятся хромосомами.</div>';
-  function setP(i){S.p=(i+6)%6;$('#ph').value=String(S.p);}
-  $('#ph').addEventListener('change',function(){S.p=+this.value;sfx('tap');});
-  bindRange('sp',function(x){S.sp=x;},function(x){return x.toFixed(1);});
-  $('#cn').addEventListener('change',function(){S.n=+this.value;sfx('tap');});
-  bindToggle('pl',function(x){S.play=x;});bindToggle('sd',function(x){S.spindle=x;});
-  bindToggle('lb',function(x){S.labels=x;});bindToggle('en',function(x){S.env=x;});
-  $('#bB').addEventListener('click',function(){setP(S.p-1);sfx('tap');});
-  $('#bF').addEventListener('click',function(){setP(S.p+1);sfx('tap');});
-  $('#bR').addEventListener('click',function(){setP(0);t=0;sfx('tap');});
-  $('#bP').addEventListener('click',function(){png(C.cv,'mitoz.png');});
-  function chrom(cx,cy,size,split,col,ang){
-    ctx.save();ctx.translate(cx,cy);ctx.rotate(ang||0);
-    ctx.strokeStyle=col;ctx.lineWidth=Math.max(3,size*.22);ctx.lineCap='round';
-    if(split){ctx.beginPath();ctx.moveTo(0,-size);ctx.lineTo(0,size);ctx.stroke();}
-    else{ctx.beginPath();ctx.moveTo(-size*.5,-size);ctx.lineTo(-size*.12,0);ctx.lineTo(-size*.5,size);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(size*.5,-size);ctx.lineTo(size*.12,0);ctx.lineTo(size*.5,size);ctx.stroke();
-      ctx.fillStyle='#f6f2e2';ctx.beginPath();ctx.arc(0,0,size*.16,0,6.284);ctx.fill();}
-    ctx.restore();
-  }
-  activeSim={tick:function(now){
-    if(!last)last=now;var dt=Math.min(.05,(now-last)/1000);last=now;
-    t+=dt*S.sp;
-    if(S.play&&t>2.6){t=0;setP(S.p+1);}
-    var W=C.W,H=C.H;ctx.clearRect(0,0,W,H);
-    var cx=W/2,cy=H/2,rx=Math.min(W*.4,180),ry=Math.min(H*.36,120);
-    var p=S.p,n=S.n;
-    var pinch=p===5?Math.min(1,t/2.6)*.55:0;
-    ctx.save();
-    ctx.beginPath();
-    for(var a=0;a<=6.284;a+=.06){
-      var fx=Math.cos(a),fy=Math.sin(a);
-      var squeeze=1-pinch*Math.exp(-Math.pow(fx/.34,2));
-      var X=cx+fx*rx,Y=cy+fy*ry*squeeze;
-      if(a===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y);
-    }
-    ctx.closePath();
-    var gg=ctx.createRadialGradient(cx,cy-ry*.3,10,cx,cy,rx);
-    gg.addColorStop(0,'rgba(168,210,74,.20)');gg.addColorStop(1,'rgba(40,80,45,.30)');
-    ctx.fillStyle=gg;ctx.fill();ctx.strokeStyle='rgba(168,210,74,.7)';ctx.lineWidth=2.4;ctx.stroke();
-    ctx.clip();
-    var poleL=cx-rx*.82,poleR=cx+rx*.82;
-    if(S.spindle&&p>=1&&p<=4){
-      ctx.strokeStyle='rgba(53,214,192,.42)';ctx.lineWidth=1.1;
-      for(var i=0;i<n;i++){
-        var yy=cy+(i-(n-1)/2)*Math.min(26,ry*1.4/n);
-        var sp=p===3?Math.min(1,t/2.2):0;
-        var lx=p===3?cx-sp*rx*.55:cx,rxp=p===3?cx+sp*rx*.55:cx;
-        ctx.beginPath();ctx.moveTo(poleL,cy);ctx.lineTo(p>=3?lx:cx,yy);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(poleR,cy);ctx.lineTo(p>=3?rxp:cx,yy);ctx.stroke();
+  if(so)so.disconnect();
+  var links=Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  so=new IntersectionObserver(function(es){
+    es.forEach(function(en){
+      if(en.isIntersecting){
+        document.body.dataset.hue=en.target.id;
+        links.forEach(function(a){a.classList.toggle('on',a.dataset.h===en.target.id);});
       }
-      ctx.fillStyle='#35d6c0';ctx.beginPath();ctx.arc(poleL,cy,4,0,6.284);ctx.fill();
-      ctx.beginPath();ctx.arc(poleR,cy,4,0,6.284);ctx.fill();
-    }
-    var envA=(p===0||p>=4)?1:(p===1?Math.max(0,1-t/2):0);
-    if(S.env&&envA>0.02){
-      ctx.globalAlpha=envA;ctx.strokeStyle='rgba(214,240,125,.75)';ctx.lineWidth=2;ctx.setLineDash([5,4]);
-      if(p>=4){var off=p===5?rx*.42:rx*.4;
-        ctx.beginPath();ctx.ellipse(cx-off,cy,rx*.3,ry*.5,0,0,6.284);ctx.stroke();
-        ctx.beginPath();ctx.ellipse(cx+off,cy,rx*.3,ry*.5,0,0,6.284);ctx.stroke();
-      }else{ctx.beginPath();ctx.ellipse(cx,cy,rx*.46,ry*.62,0,0,6.284);ctx.stroke();}
-      ctx.setLineDash([]);ctx.globalAlpha=1;
-    }
-    var size=Math.min(15,ry*.24);
-    for(var i2=0;i2<n;i2++){
-      var yy2=cy+(i2-(n-1)/2)*Math.min(26,ry*1.4/n);
-      var col=i2%2?'#ff6f9c':'#ffb020';
-      if(p===0){chrom(cx+(i2-(n-1)/2)*18,cy+Math.sin(i2*2+t)*4,size*.8,false,'rgba(214,240,125,.55)',i2*.7);}
-      else if(p===1){chrom(cx+(i2-(n-1)/2)*22,cy+(i2-(n-1)/2)*10,size,false,col,i2*.5+Math.sin(t)*.1);}
-      else if(p===2){chrom(cx,yy2,size,false,col,0);}
-      else if(p===3){var sp2=Math.min(1,t/2.2);chrom(cx-sp2*rx*.55,yy2,size*.9,true,col,0);chrom(cx+sp2*rx*.55,yy2,size*.9,true,col,0);}
-      else{var off2=p===5?rx*.42:rx*.4;chrom(cx-off2,yy2*.55+cy*.45,size*.8,true,col,0);chrom(cx+off2,yy2*.55+cy*.45,size*.8,true,col,0);}
-    }
-    ctx.restore();
-    if(S.labels){
-      ctx.font='700 12px '+MONO;ctx.fillStyle='rgba(246,242,226,.9)';
-      var txt=PH[p]+' · '+SET[p];ctx.fillText(txt,14,H-14);
-      if(p===2){ctx.fillStyle='rgba(53,214,192,.9)';ctx.font='600 10px '+MONO;ctx.fillText('экватор клетки',cx-42,cy+ry*.85);}
-    }
-    $('#hud').innerHTML='<span class="hchip">'+PH[p].toUpperCase()+'</span><span class="hchip">'+SET[p]+'</span>';
-    $('#oP').textContent=PH[p];$('#oS').textContent=SET[p];
-    $('#oC').textContent=String(p===3?n*2:(p>=4?n:n));$('#oK').textContent=p===5?'2':'1';
-  }};
-}
-
-/* ---- ТАБЛИЦА ---- */
-function simPeriodic(){
-  var S={T:293,mode:'cat',names:true,masses:true,sel:26,filter:'all',q:''};
-  function state(e){var T=S.T;if(T<e[7])return 'тв';if(T<e[8])return 'ж';return 'газ';}
-  var STC={'тв':'#8fb3c7','ж':'#35d6c0','газ':'#ff6f9c'};
-  function render(){
-    var root=$('#simRoot');
-    var cells='';
-    for(var per=1;per<=4;per++)for(var gr=1;gr<=18;gr++){
-      var e=null;for(var i=0;i<ELEMENTS.length;i++)if(ELEMENTS[i][5]===gr&&ELEMENTS[i][6]===per){e=ELEMENTS[i];break;}
-      if(!e){cells+='<div></div>';continue;}
-      var col=S.mode==='cat'?CATS[e[4]][1]:STC[state(e)];
-      var dim=(S.filter!=='all'&&e[4]!==S.filter)||(S.q&&e[2].toLowerCase().indexOf(S.q)<0&&e[1].toLowerCase().indexOf(S.q)<0);
-      cells+='<div class="el'+(S.sel===e[0]?' sel':'')+(dim?' dim':'')+'" data-el="'+e[0]+'" style="background:'+col+'22;border-color:'+col+'66;color:'+col+'" tabindex="0" role="button" aria-label="'+esc(e[2])+'">'+
-        '<span class="z">'+e[0]+'</span><span class="s">'+e[1]+'</span>'+
-        (S.names?'<span class="n">'+esc(e[2])+'</span>':'')+(S.masses?'<span class="m">'+e[3]+'</span>':'')+'</div>';
-    }
-    var e=null;for(var j=0;j<ELEMENTS.length;j++)if(ELEMENTS[j][0]===S.sel)e=ELEMENTS[j];
-    var st=state(e),col2=S.mode==='cat'?CATS[e[4]][1]:STC[st];
-    var stName=st==='тв'?'Твёрдое':(st==='ж'?'Жидкое':'Газообразное');
-    root.innerHTML='<div class="ptable">'+
-      '<div class="sim"><div style="min-width:0">'+
-      '<div class="pgrid">'+cells+'</div>'+
-      '<div class="elegend" style="margin-top:10px">'+(S.mode==='cat'?Object.keys(CATS).map(function(k){return '<span><i style="background:'+CATS[k][1]+'"></i>'+CATS[k][0]+'</span>';}).join(''):
-        ['тв','ж','газ'].map(function(k){return '<span><i style="background:'+STC[k]+'"></i>'+(k==='тв'?'Твёрдое':k==='ж'?'Жидкое':'Газ')+'</span>';}).join(''))+'</div>'+
-      '<div class="edetail" style="margin-top:12px"><div class="big" style="background:'+col2+'26;border:1px solid '+col2+'66;color:'+col2+'"><b>'+e[1]+'</b><i>№ '+e[0]+'</i></div>'+
-      '<div><h4>'+esc(e[2])+'</h4><div style="font-size:13px;color:var(--muted)">'+CATS[e[4]][0]+' · '+e[6]+'-й период, '+e[5]+'-я группа</div>'+
-      '<div class="efacts"><div><i>АТ. МАССА</i><b>'+e[3]+'</b></div><div><i>ЭЛЕКТРОНЫ</i><b>'+e[9].join(', ')+'</b></div>'+
-      '<div><i>ПЛАВЛЕНИЕ</i><b>'+e[7]+' K</b></div><div><i>КИПЕНИЕ</i><b>'+e[8]+' K</b></div>'+
-      '<div><i>ПРИ '+S.T+' K</i><b style="color:'+STC[st]+'">'+stName+'</b></div></div></div></div>'+
-      '</div><aside class="panel" style="max-height:none">'+
-      '<div class="pt">УПРАВЛЕНИЕ ТАБЛИЦЕЙ</div>'+
-      slider('T','Температура',1,3000,1,S.T,'K')+
-      '<div class="ctl"><div class="lb"><span>Раскраска</span></div><select id="md"><option value="cat"'+(S.mode==='cat'?' selected':'')+'>По категориям</option><option value="state"'+(S.mode==='state'?' selected':'')+'>По агрегатному состоянию</option></select></div>'+
-      '<div class="ctl"><div class="lb"><span>Поиск элемента</span></div><input type="text" id="eq" value="'+esc(S.q)+'" placeholder="железо или Fe" style="background:#0b1510;border:1px solid var(--line);color:var(--cream);border-radius:9px;padding:7px 9px;font:12.5px var(--sans);width:100%"></div>'+
-      '<div class="ctl"><div class="lb"><span>Категория</span></div><select id="cf"><option value="all">Все категории</option>'+Object.keys(CATS).map(function(k){return '<option value="'+k+'"'+(S.filter===k?' selected':'')+'>'+CATS[k][0]+'</option>';}).join('')+'</select></div>'+
-      toggle('nm','Названия',S.names)+toggle('ms','Атомные массы',S.masses)+
-      '<div class="reads"><div class="rd"><i>ЭЛЕМЕНТОВ</i><b>36</b></div><div class="rd"><i>ТЕМПЕРАТУРА</i><b>'+S.T+' K</b></div></div>'+
-      '<div class="btns"><button class="p" id="pr">Сброс</button><button id="pn">Случайный</button>'+
-      '<button class="wide" id="p20">Комнатная · 293 K</button><button class="wide" id="p0">Абсолютный ноль附近 · 1 K</button></div>'+
-      '<div class="simnote">Двигай температуру — элементы меняют цвет по агрегатному состоянию.</div>'+
-      '</aside></div></div>';
-    bindRange('T',function(x){S.T=x;render();});
-    $('#md').addEventListener('change',function(){S.mode=this.value;sfx('tap');render();});
-    $('#cf').addEventListener('change',function(){S.filter=this.value;sfx('tap');render();});
-    $('#eq').addEventListener('input',function(){S.q=this.value.toLowerCase().trim();render();var f=$('#eq');f.focus();f.setSelectionRange(f.value.length,f.value.length);});
-    $('#nm').addEventListener('change',function(){S.names=this.checked;sfx('tap');render();});
-    $('#ms').addEventListener('change',function(){S.masses=this.checked;sfx('tap');render();});
-    $('#pr').addEventListener('click',function(){S={T:293,mode:'cat',names:true,masses:true,sel:26,filter:'all',q:''};sfx('tap');render();});
-    $('#pn').addEventListener('click',function(){S.sel=ELEMENTS[Math.floor(Math.random()*ELEMENTS.length)][0];sfx('tap');render();});
-    $('#p20').addEventListener('click',function(){S.T=293;sfx('tap');render();});
-    $('#p0').addEventListener('click',function(){S.T=1;sfx('tap');render();});
-    root.querySelectorAll('[data-el]').forEach(function(el){
-      el.addEventListener('click',function(){S.sel=+this.dataset.el;sfx('tap');render();});
-      el.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();S.sel=+this.dataset.el;sfx('tap');render();}});
     });
-  }
-  render();
-  activeSim=null;
+  },{rootMargin:'-130px 0px -68% 0px'});
+  document.querySelectorAll('.subj').forEach(function(s){so.observe(s);});
 }
 
-/* ================= РОУТЕР ================= */
-function parseHash(){
-  var h=location.hash.replace(/^#\/?/,'');
-  if(!h)return {v:'home'};
-  var p=h.split('/');
-  if(p[0]==='lesson'&&p[1]&&byId(p[1]))return {v:'lesson',id:p[1]};
-  if(SUBJ[p[0]])return {v:'subject',s:p[0]};
-  return {v:'home'};
+/* ---------- внешний lessons.json и поиск файла ---------- */
+async function loadExternal(){
+  if(location.protocol==='file:')return;
+  try{
+    var r=await fetch('lessons.json',{cache:'no-store'});
+    if(r.ok){
+      var j=await r.json();
+      if(j&&j.ready){
+        Object.keys(j.ready).forEach(function(id){
+          var path=typeof j.ready[id]==='string'?j.ready[id]:(j.ready[id]&&j.ready[id].href);
+          if(!path)return;
+          var l=null;for(var i=0;i<LESSONS.length;i++)if(LESSONS[i].id===id)l=LESSONS[i];
+          if(l){l.ready=true;l.href=path;l.alt=[path];l.link='unknown';}
+        });
+        render();
+      }
+    }
+  }catch(e){}
+  probe();
 }
-function render(){
-  destroySim();
-  route=parseHash();
-  var html='';
-  if(searchQ.trim()){html=viewSearch(searchQ);}
-  else if(route.v==='home')html=viewHome();
-  else if(route.v==='subject')html=viewSubject(route.s);
-  else{var l=byId(route.id);last=l.id;save();html=viewLesson(l);}
-  app.innerHTML=html;
-  updateHeader();reveal();
-  if(!searchQ.trim()&&route.v==='lesson'){
-    var l=byId(route.id);
-    if(l.sim==='archimedes')simArchimedes();
-    else if(l.sim==='mitosis')simMitosis();
-    else if(l.sim==='periodic')simPeriodic();
-    var qs=quizState[l.id];
-    if(qs&&qs.answered)showFeedback(l,qs.correct,true);
+async function probe(){
+  if(location.protocol==='file:')return;
+  var rs=LESSONS.filter(function(l){return l.ready&&l.alt&&l.alt.length;});
+  var changed=false;
+  for(var i=0;i<rs.length;i++){
+    var l=rs[i],hit=null;
+    for(var j=0;j<l.alt.length;j++){
+      try{var r=await fetch(l.alt[j],{method:'HEAD',cache:'no-store'});if(r.ok){hit=l.alt[j];break;}}catch(e){}
+    }
+    if(hit){if(l.href!==hit){l.href=hit;changed=true;}l.link='ok';}
+    else{l.link='missing';changed=true;}
   }
-  window.scrollTo({top:0,behavior:'instant' in window?'instant':'auto'});
-}
-window.addEventListener('hashchange',function(){searchQ='';$('#q').value='';gradeF='all';render();sfx('open');});
-
-/* ================= ПРОВЕРКА ================= */
-function showFeedback(l,ok,silent){
-  var fb=$('#fb');if(!fb)return;
-  fb.className='fb show '+(ok?'ok':'no');
-  fb.innerHTML=ok?'<b>Верно.</b> '+esc(l.q.why):'<b>Пока нет.</b> Перечитай теорию и попробуй ещё раз.';
-  if(ok){
-    document.querySelectorAll('#quiz .opt').forEach(function(o,i){
-      var inp=o.querySelector('input');
-      if(l.q.type==='choice'){if(i===l.q.c)o.classList.add('right');else if(inp.checked)o.classList.add('wrong');}
-    });
-    if(!progress[l.id]){progress[l.id]=true;save();updateHeader();}
-    var lb=document.querySelector('[data-learn="'+l.id+'"]');
-    if(lb){lb.className='btn done';lb.textContent='✓ Урок изучен';}
-    if(!silent)sfx('ok');
-  }else if(!silent){
-    var q=$('#quiz');q.classList.remove('shake');void q.offsetWidth;q.classList.add('shake');sfx('no');
-  }
-}
-function checkAnswer(id){
-  var l=byId(id);initAudio();
-  var qs=quizState[id]||(quizState[id]={});
-  if(l.q.type==='choice'){
-    var sel=document.querySelector('#quiz input[name="qz"]:checked');
-    if(!sel){var fb=$('#fb');fb.className='fb show no';fb.textContent='Выбери один из вариантов.';sfx('no');return;}
-    qs.answered=true;qs.correct=(+sel.value===l.q.c);
-  }else{
-    var raw=($('#numin').value||'').trim().toLowerCase().replace(/,/g,'.');
-    raw=raw.replace(/\s*(н|n|кг|м|дж|вт|па|кпа|а|в|ом|см|моль|%|джоуль\w*|ньютон\w*)$/,'').trim();
-    var val=parseFloat(raw);
-    if(!isFinite(val)){var f2=$('#fb');f2.className='fb show no';f2.textContent='Введи число, например 2,94';sfx('no');return;}
-    var exact=l.q.solve(),tol=Math.max(.005,Math.abs(exact)*.01);
-    qs.answered=true;qs.correct=Math.abs(val-exact)<=tol;
-  }
-  showFeedback(l,qs.correct);
-  if(qs.correct)toast('Правильно! Урок засчитан');
+  if(changed)render();
 }
 
-/* ================= ДЕЛЕГИРОВАНИЕ ================= */
-document.addEventListener('click',function(e){
-  var a=e.target.closest('[data-link]');
-  if(a){initAudio();sfx('open');if(a.getAttribute('href')===location.hash){e.preventDefault();searchQ='';$('#q').value='';render();}return;}
-  var c=e.target.closest('[data-check]');if(c){checkAnswer(c.dataset.check);return;}
-  var g=e.target.closest('[data-grade]');if(g){gradeF=g.dataset.grade;render();sfx('tap');return;}
-  var ln=e.target.closest('[data-learn]');
-  if(ln){initAudio();var id=ln.dataset.learn;
-    if(progress[id]){delete progress[id];ln.className='btn p';ln.textContent='Отметить изученным';toast('Отметка снята');sfx('tap');}
-    else{progress[id]=true;ln.className='btn done';ln.textContent='✓ Урок изучен';toast('Урок засчитан');sfx('done');}
-    save();updateHeader();
-    document.querySelectorAll('.navlist a').forEach(function(x){
-      var lid=x.getAttribute('href').split('/').pop();
-      x.classList.toggle('ok',!!progress[lid]);
-      var n=x.querySelector('.n'),i=Array.prototype.indexOf.call(x.parentNode.children,x);
-      n.textContent=progress[lid]?'✓':String(i+1).padStart(2,'0');
-    });
-    return;}
-  var sr=e.target.closest('[data-simreset]');
-  if(sr){var b=$('#bR')||$('#pr');if(b)b.click();return;}
-});
-document.addEventListener('keydown',function(e){
-  if(e.key==='Enter'&&e.target.id==='numin'){var l=byId(route.id);if(l)checkAnswer(l.id);}
-  if(e.key==='/'&&!/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){e.preventDefault();$('#q').focus();}
-  if(e.key==='Escape'&&searchQ){searchQ='';$('#q').value='';render();}
-});
-var qTimer=null;
-$('#q').addEventListener('input',function(){
-  var v=this.value;clearTimeout(qTimer);
-  qTimer=setTimeout(function(){searchQ=v;render();var f=$('#q');f.focus();},220);
-});
-
-/* ================= СТАРТ ================= */
+/* ---------- старт ---------- */
+$('#mascBox').innerHTML=mascot('masc');
 render();
+loadExternal();
 })();
 </script>
 </body>
